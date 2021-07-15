@@ -76,32 +76,40 @@ class _TypeFood extends State<TypeFood> {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ListTile(
-                              title: Text("ธรรมดา"),
-                              leading: Radio(
-                                value: 0,
-                                groupValue: valRadio,
-                                onChanged: (int? value0){
-                                  setState((){
-                                    valRadio = value0!;
-                                    _nameMenu = "${searchListMenu[index].name} ธรรมดา";
-                                    _priceMenu = searchListMenu[index].priceMenuNormal;
-                                  });
-                                },
-                              ),
+                            Center(
+                              child: searchListMenu[index].priceMenuNormal == 0
+                              ? null
+                              : ListTile(
+                                 title: Text("ธรรมดา"),
+                                 leading: Radio(
+                                   value: 0,
+                                   groupValue: valRadio,
+                                   onChanged: (int? value0){
+                                     setState((){
+                                       valRadio = value0!;
+                                       _nameMenu = "${searchListMenu[index].name} ธรรมดา";
+                                       _priceMenu = searchListMenu[index].priceMenuNormal;
+                                     });
+                                   },
+                                 ),
+                               ),
                             ),
-                            ListTile(
-                              title: Text("พิเศษ"),
-                              leading: Radio(
-                                value: 1,
-                                groupValue: valRadio,
-                                onChanged: (int? value1){
-                                  setState((){
-                                    valRadio = value1!;
-                                    _nameMenu = "${searchListMenu[index].name} พิเศษ";
-                                    _priceMenu = searchListMenu[index].priceMenuSpecial;
-                                  });
-                                },
+                            Center(
+                              child: searchListMenu[index].priceMenuSpecial == 0
+                              ? null
+                              : ListTile(
+                                title: Text("พิเศษ"),
+                                leading: Radio(
+                                  value: 1,
+                                  groupValue: valRadio,
+                                  onChanged: (int? value1){
+                                    setState((){
+                                      valRadio = value1!;
+                                      _nameMenu = "${searchListMenu[index].name} พิเศษ";
+                                      _priceMenu = searchListMenu[index].priceMenuSpecial;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ],
