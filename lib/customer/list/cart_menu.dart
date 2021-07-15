@@ -41,7 +41,7 @@ class _CartMenu extends State<CartMenu> {
     for(int i=0; i<_cart.length; i++) {
       params['numberMenu'] = _cart[i].numberMenu.toString();
       params['numberTable'] = numberTable.toString();
-      params['nameMenu'] = _cart[i].name.toString();
+      params['nameMenu'] = _cart[i].nameMenu.toString();
       params['priceMenu'] = _cart[i].priceMenu.toString();
       params['managerId'] = userManager[0].managerId.toString();
       params['makeStatus'] = makeStatus; /// Set value in backend = กำลังทำ;
@@ -130,7 +130,7 @@ class _CartMenu extends State<CartMenu> {
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("${_cart[index].name}"),
+                            Text("${_cart[index].nameMenu}"),
                             Text("${_cart[index].numberMenu}"),
                           ],
                         ),

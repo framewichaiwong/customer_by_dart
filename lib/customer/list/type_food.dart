@@ -84,10 +84,8 @@ class _TypeFood extends State<TypeFood> {
                                 onChanged: (int? value0){
                                   setState((){
                                     valRadio = value0!;
-                                    if(valRadio==0){
-                                      _nameMenu = "${searchListMenu[index].name} ธรรมดา";
-                                      _priceMenu = searchListMenu[index].priceMenuNormal;
-                                    }
+                                    _nameMenu = "${searchListMenu[index].name} ธรรมดา";
+                                    _priceMenu = searchListMenu[index].priceMenuNormal;
                                   });
                                 },
                               ),

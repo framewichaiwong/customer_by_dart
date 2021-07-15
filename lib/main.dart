@@ -1,6 +1,7 @@
-import 'package:customer_by_dart/customer/main/QRValue.dart';
-import 'package:customer_by_dart/customer/main/qr_scan.dart';
+
 import 'package:flutter/material.dart';
+
+import 'customer/main/qr_value_test.dart';
 
 void main() {
   runApp(MyApp());
