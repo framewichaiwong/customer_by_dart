@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_menu.dart';
+import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:http/http.dart' as http;
 class TypeFood extends StatefulWidget {
   List<UserManager> userManager;
   int numberTable;
-  final ValueSetter<Menu> _valueSetterAddMenu;
+  final ValueSetter<MenuCart> _valueSetterAddMenu;
   TypeFood(this.userManager,this.numberTable,this._valueSetterAddMenu);
 
   @override
@@ -21,7 +22,7 @@ class TypeFood extends StatefulWidget {
 class _TypeFood extends State<TypeFood> {
   List<UserManager> userManager;
   int numberTable;
-  final ValueSetter<Menu> _valueSetterAddMenu;
+  final ValueSetter<MenuCart> _valueSetterAddMenu;
   _TypeFood(this.userManager,this.numberTable,this._valueSetterAddMenu);
 
   //input TextField
@@ -32,10 +33,16 @@ class _TypeFood extends State<TypeFood> {
   int number = 1;
 
   String typeFood = 'อาหาร';
+  String? _nameMenu;
+  int? _priceMenu;
+  int? valRadio;
 
   void initState() {
     super.initState();
     _getMenu();
+    setState(() {
+      valRadio = 0;  /// Radio select.
+    });
   }
 
   Future<List<Menu>> _getMenu() async {
@@ -54,7 +61,6 @@ class _TypeFood extends State<TypeFood> {
     return listMenu;
   }
 
-  int? val = 0;
   _selectMenu(index) {
     return showDialog(
         context: context,
@@ -74,10 +80,14 @@ class _TypeFood extends State<TypeFood> {
                               title: Text("ธรรมดา"),
                               leading: Radio(
                                 value: 0,
-                                groupValue: val,
+                                groupValue: valRadio,
                                 onChanged: (int? value0){
                                   setState((){
-                                    val = value0;
+                                    valRadio = value0!;
+                                    if(valRadio==0){
+                                      _nameMenu = "${searchListMenu[index].name} ธรรมดา";
+                                      _priceMenu = searchListMenu[index].priceMenuNormal;
+                                    }
                                   });
                                 },
                               ),
@@ -86,10 +96,12 @@ class _TypeFood extends State<TypeFood> {
                               title: Text("พิเศษ"),
                               leading: Radio(
                                 value: 1,
-                                groupValue: val,
+                                groupValue: valRadio,
                                 onChanged: (int? value1){
                                   setState((){
-                                    val = value1;
+                                    valRadio = value1!;
+                                    _nameMenu = "${searchListMenu[index].name} พิเศษ";
+                                    _priceMenu = searchListMenu[index].priceMenuSpecial;
                                   });
                                 },
                               ),
@@ -132,22 +144,20 @@ class _TypeFood extends State<TypeFood> {
                     child: ElevatedButton(
                       child: Text("ยืนยัน"),
                       onPressed: () {
-                        setState(() {
-                          List<Menu> addListMenu = [];
-                          for(int i=0; i<searchListMenu.length; i++){
-                            Menu lst = new Menu(searchListMenu[index].menuId,searchListMenu[index].picture,searchListMenu[index].name,searchListMenu[index].priceMenuNormal,searchListMenu[index].priceMenuSpecial,searchListMenu[index].priceMenuPromotion,searchListMenu[index].typeMenu,searchListMenu[index].statusSale,searchListMenu[index].managerId,number);
-                            addListMenu.add(lst);
-                          }
-                          _valueSetterAddMenu(addListMenu[index]);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            new SnackBar(
-                              duration: Duration(seconds: 1),
-                              content: Text("เพิ่ม ${searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ",style: TextStyle(fontSize: 20),),
-                            ),
-                          );
-                          Navigator.pop(context);
-                          number = 1;
-                        });
+                        List<MenuCart> addListMenu = [];
+                        for(int i=0; i<searchListMenu.length; i++){
+                          MenuCart lst = new MenuCart(searchListMenu[index].menuId,searchListMenu[index].picture,_nameMenu!,_priceMenu!,searchListMenu[index].typeMenu,searchListMenu[index].managerId,number);
+                          addListMenu.add(lst);
+                        }
+                        _valueSetterAddMenu(addListMenu[index]);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          new SnackBar(
+                            duration: Duration(seconds: 1),
+                            content: Text("เพิ่ม ${searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ",style: TextStyle(fontSize: 20),),
+                          ),
+                        );
+                        Navigator.pop(context);
+                        number = 1;
                       },
                     ),
                   ),
@@ -256,8 +266,7 @@ class _TypeFood extends State<TypeFood> {
                                               Container(
                                                 child: searchListMenu[index].priceMenuSpecial==0
                                                     ? null
-                                                    : Text(
-                                                  "พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
+                                                    : Text("พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
                                                   style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -266,8 +275,7 @@ class _TypeFood extends State<TypeFood> {
                                               Container(
                                                 child: searchListMenu[index].priceMenuPromotion==0
                                                     ? null
-                                                    : Text(
-                                                  "โปรโมชั่น ${searchListMenu[index].priceMenuPromotion.toString()} บาท",
+                                                    : Text("โปรโมชั่น ${searchListMenu[index].priceMenuPromotion.toString()} บาท",
                                                   style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -294,18 +302,4 @@ class _TypeFood extends State<TypeFood> {
       ),
     );
   }
-}
-
-class ListMenuCart {
-  int menuId;
-  final picture;
-  String name;
-  int priceMenuNormal;
-  int priceMenuSpecial;
-  int priceMenuPromotion;
-  String typeMenu;
-  String statusSale;
-  int managerId;
-  int numberMenu;//number of menu
-  ListMenuCart();
 }

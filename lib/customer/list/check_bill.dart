@@ -52,7 +52,7 @@ class _CheckBill extends State<CheckBill> {
       listOrder.add(lstOrder);
 
       /// Class name this page.
-      if(o['makeStatus']==1) {
+      if(o['makeStatus']=="ทำเสร็จแล้ว") {
         ListOrderMakeStatus listOrderMakeStatus = new ListOrderMakeStatus(o['makeStatus']);
         listMakeStatus.add(listOrderMakeStatus);
       }
@@ -102,7 +102,7 @@ class _CheckBill extends State<CheckBill> {
           }else{
             ScaffoldMessenger.of(context).showSnackBar(
               new SnackBar(
-                content: Text("ไม่สำเร็จ..!",style: TextStyle(fontSize: 20),),
+                content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่..",style: TextStyle(fontSize: 20),),
               ),
             );
           }
@@ -167,21 +167,21 @@ class _CheckBill extends State<CheckBill> {
                               title: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text("เมนู",style: TextStyle(fontSize: 20),),
-                                  Text("ราคา",style: TextStyle(fontSize: 20),),
+                                  Text("เมนู",style: TextStyle(fontSize: 20)),
+                                  Text("ราคา",style: TextStyle(fontSize: 20)),
                                 ],
                               ),
                               trailing: Text("         "),
                             ),
                           ),
-                          SizedBox(height: 8,),
+                          SizedBox(height: 8),
                           Expanded(
                             child: ListView.builder(
                               itemCount: snapshot.data.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Container(
                                     color: Colors.white,
-                                    child: snapshot.data[index].makeStatus == 1 /// Status condition
+                                    child: snapshot.data[index].makeStatus == "ทำเสร็จแล้ว" /// Status condition
                                         ? ListTile(
                                       title: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -308,6 +308,6 @@ class _CheckBill extends State<CheckBill> {
 }
 
 class ListOrderMakeStatus { /// Check Status for use if().
-  int listMakeStatus;
+  String listMakeStatus;
   ListOrderMakeStatus(this.listMakeStatus);
 }

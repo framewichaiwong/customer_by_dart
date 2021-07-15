@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_menu.dart';
+import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ import 'package:http/http.dart' as http;
 class TypeDrink extends StatefulWidget{
   List<UserManager> userManager;
   int numberTable;
-  final ValueSetter<Menu> _valueSetterAddMenu;
+  final ValueSetter<MenuCart> _valueSetterAddMenu;
   TypeDrink(this.userManager,this.numberTable,this._valueSetterAddMenu);
 
   @override
@@ -20,7 +21,7 @@ class TypeDrink extends StatefulWidget{
 class _TypeDrink extends State<TypeDrink> {
   List<UserManager> userManager;
   int numberTable;
-  final ValueSetter<Menu> _valueSetterAddMenu;
+  final ValueSetter<MenuCart> _valueSetterAddMenu;
   _TypeDrink(this.userManager,this.numberTable,this._valueSetterAddMenu);
 
   //search_menu
@@ -45,9 +46,11 @@ class _TypeDrink extends State<TypeDrink> {
     List<Menu> listMenu = [];
     searchListMenu = listMenu;
     for (Map m in data) {
-      final _img64 = base64Decode(m['picture']);
-      Menu lst = new Menu(m['menuId'],_img64,m['name'],m['priceMenuNormal'],m['priceMenuSpecial'],m['priceMenuPromotion'],m['typeMenu'],m['statusSale'],m['managerId'],number);
-      listMenu.add(lst);
+      if(m['statusSale']=="ขาย"){
+        final _img64 = base64Decode(m['picture']);
+        Menu lst = new Menu(m['menuId'],_img64,m['name'],m['priceMenuNormal'],m['priceMenuSpecial'],m['priceMenuPromotion'],m['typeMenu'],m['statusSale'],m['managerId'],number);
+        listMenu.add(lst);
+      }
     }
     return listMenu;
   }
@@ -100,9 +103,9 @@ class _TypeDrink extends State<TypeDrink> {
                       child: Text("ยืนยัน"),
                       onPressed: () {
                         setState(() {
-                          List<Menu> addListMenu = [];
+                          List<MenuCart> addListMenu = [];
                           for(int i=0; i<searchListMenu.length; i++){
-                            Menu lst = new Menu(searchListMenu[index].menuId,searchListMenu[index].picture,searchListMenu[index].name,searchListMenu[index].priceMenuNormal,searchListMenu[index].priceMenuSpecial,searchListMenu[index].priceMenuPromotion,searchListMenu[index].typeMenu,searchListMenu[index].statusSale,searchListMenu[index].managerId,number);
+                            MenuCart lst = new MenuCart(searchListMenu[index].menuId,searchListMenu[index].picture,searchListMenu[index].name,searchListMenu[index].priceMenuNormal,searchListMenu[index].typeMenu,searchListMenu[index].managerId,number);
                             addListMenu.add(lst);
                           }
                           _valueSetterAddMenu(addListMenu[index]);

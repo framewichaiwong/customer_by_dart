@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_menu.dart';
+import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,8 @@ import 'package:http/http.dart' as http;
 class CartMenu extends StatefulWidget {
   List<UserManager> userManager;
   int numberTable;
-  List<Menu> _cart;
-  final ValueSetter<Menu?> _valueSetterRemoveMenu;
+  List<MenuCart> _cart;
+  final ValueSetter<MenuCart?> _valueSetterRemoveMenu;
   CartMenu(this.userManager,this.numberTable,this._cart,this._valueSetterRemoveMenu);
 
   @override
@@ -23,9 +24,11 @@ class CartMenu extends StatefulWidget {
 class _CartMenu extends State<CartMenu> {
   List<UserManager> userManager;
   int numberTable;
-  List<Menu> _cart;
-  final ValueSetter<Menu?> _valueSetterRemoveMenu;
+  List<MenuCart> _cart;
+  final ValueSetter<MenuCart?> _valueSetterRemoveMenu;
   _CartMenu(this.userManager,this.numberTable,this._cart,this._valueSetterRemoveMenu);
+
+  String makeStatus = "กำลังทำ"; /// create status is beginner send to backend.
 
   cartMenu() async{
     Navigator.pop(context);
@@ -36,13 +39,12 @@ class _CartMenu extends State<CartMenu> {
     );
     Map params = new Map();
     for(int i=0; i<_cart.length; i++) {
-      int makeStatus = 0; /// create status is beginner send to backend
       params['numberMenu'] = _cart[i].numberMenu.toString();
       params['numberTable'] = numberTable.toString();
       params['nameMenu'] = _cart[i].name.toString();
-      params['priceMenu'] = _cart[i].priceMenuNormal.toString();
+      params['priceMenu'] = _cart[i].priceMenu.toString();
       params['managerId'] = userManager[0].managerId.toString();
-      params['makeStatus'] = makeStatus.toString(); /// Set value in backend = 0;
+      params['makeStatus'] = makeStatus; /// Set value in backend = กำลังทำ;
       await http.post(Uri.parse("${Config.url}/order/saveOrder"),body: params,headers: {'Accept' : 'Application/json; charset=UTF-8'}).then((response) {
         print(response.body);
         var jsonData = jsonDecode(response.body);
@@ -80,20 +82,28 @@ class _CartMenu extends State<CartMenu> {
           color: Colors.red[100],
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: Container(
-                        width: 300,
-                        color: Colors.red[300],
-                        child: Center(
-                            child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",
-                              style: TextStyle(fontSize: 25, color: Colors.white),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios),
+                    onPressed: (){Navigator.of(context).pop();},
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                            width: 300,
+                            color: Colors.red[300],
+                            child: Center(
+                                child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",
+                                  style: TextStyle(fontSize: 25, color: Colors.white),
+                                )
                             )
                         )
-                    )
-                ),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 height: 50,
@@ -153,7 +163,7 @@ class _CartMenu extends State<CartMenu> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text("ราคารวม :",style: TextStyle(fontSize: 20),),
-                                Text("${_cart.length > 0 ? _cart.map((cart) => cart.priceMenuNormal * cart.numberMenu).reduce((value, element) => value + element) : 0}" + " บาท",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                                Text("${_cart.length > 0 ? _cart.map((cart) => cart.priceMenu * cart.numberMenu).reduce((value, element) => value + element) : 0}" + " บาท",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
                               ],
                             ),
                           ),

@@ -1,3 +1,4 @@
+import 'package:customer_by_dart/customer/main/QRValue.dart';
 import 'package:customer_by_dart/customer/main/qr_scan.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: QrCodeScan(),
+      home: QRValue(),
     );
   }
 }

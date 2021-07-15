@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:badges/badges.dart';
 import 'package:customer_by_dart/customer/class/class_menu.dart';
+import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:customer_by_dart/customer/list/type_drink.dart';
 import 'package:customer_by_dart/customer/list/type_food.dart';
@@ -24,7 +25,7 @@ class _ListMenu extends State<ListMenu> {
   int numberTable;
   _ListMenu(this.userManager,this.numberTable);
 
-  List<Menu> _cart = [];
+  List<MenuCart> _cart = [];
 
   @override
   Widget build(BuildContext context) {

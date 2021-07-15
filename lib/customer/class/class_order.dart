@@ -5,6 +5,6 @@ class ListOrder {
   String nameMenu;
   int priceMenu;
   int managerId;
-  int makeStatus;
+  String makeStatus;
   ListOrder(this.orderId,this.numberMenu,this.numberTable,this.nameMenu,this.priceMenu,this.managerId,this.makeStatus);
 }

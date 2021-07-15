@@ -31,6 +31,7 @@ class _QrCodeScan extends State<QrCodeScan> {
           ),
         );
         await http.get(Uri.parse("${Config.url}/userManager/listUser/${_qr.managerId}")).then((response) {
+          print("Status Code => ${response.statusCode}");
           var jsonData = jsonDecode(response.body);
           var status = jsonData['status'];
           var data = jsonData['data'];
