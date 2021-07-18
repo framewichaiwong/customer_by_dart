@@ -29,14 +29,16 @@ class _TypeDrink extends State<TypeDrink> {
   int number = 1;
 
   String typeDrink = 'เครื่องดื่ม';
+  String? _nameMenu;
+  int? _priceMenu;
+  int? valRadio;
 
   void initState() {
     super.initState();
-    setState(() {
-      // ignore: unnecessary_statements
-      searchListMenu;
-    });
     _getMenu();
+    setState(() {
+      valRadio = 0;
+    });
   }
 
   Future<List<Menu>> _getMenu() async {
@@ -65,36 +67,113 @@ class _TypeDrink extends State<TypeDrink> {
                 title: Text("${searchListMenu[index].name}", textAlign: TextAlign.center,
                 ),
                 content: SingleChildScrollView(
-                  child: ListBody(children: <
-                      Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  child: ListBody(
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.remove_circle_outline,color: Colors.red),
-                          iconSize: 40,
-                          onPressed: (){
-                            setState(() {
-                              number--;
-                              if(number < 1) {
-                                number = 1;
-                              }
-                            });
-                          },
+                        Center(
+                          child: searchListMenu[index].priceMenuPromotion==0 /// if
+                              ? Column(  ///true
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: valRadio == 0
+                                    ? Text("*กรุณาเลือก พิเศษ หรือ ธรรมดา",style: TextStyle(color: Colors.redAccent),)
+                                    : null,
+                              ),
+                              Center(
+                                child: searchListMenu[index].priceMenuNormal == 0
+                                    ? null
+                                    : ListTile(
+                                  title: Text("ธรรมดา"),
+                                  leading: Radio(
+                                    value: 1,
+                                    groupValue: valRadio,
+                                    onChanged: (int? value0){
+                                      setState((){
+                                        valRadio = value0!;
+                                        _nameMenu = "${searchListMenu[index].name} ธรรมดา";
+                                        _priceMenu = searchListMenu[index].priceMenuNormal;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: searchListMenu[index].priceMenuSpecial == 0
+                                    ? null
+                                    : ListTile(
+                                  title: Text("พิเศษ"),
+                                  leading: Radio(
+                                    value: 2,
+                                    groupValue: valRadio,
+                                    onChanged: (int? value1){
+                                      setState((){
+                                        valRadio = value1!;
+                                        _nameMenu = "${searchListMenu[index].name} พิเศษ";
+                                        _priceMenu = searchListMenu[index].priceMenuSpecial;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                              : Column( /// false
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: valRadio==0
+                                    ? Text("*กรุณาเลือกโปรโมชั่น",style: TextStyle(color: Colors.redAccent),)
+                                    : null,
+                              ),Center(
+                                child: searchListMenu[index].priceMenuNormal==0 /// if
+                                    ? null
+                                    : ListTile(
+                                  title: Text("โปรโมชั่น"),
+                                  leading: Radio(
+                                    value: 1,
+                                    groupValue: valRadio,
+                                    onChanged: (int? value0){
+                                      setState((){
+                                        valRadio = value0!;
+                                        _nameMenu = "${searchListMenu[index].name} โปรโมชั่น";
+                                        _priceMenu = searchListMenu[index].priceMenuPromotion;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ), ///
                         ),
-                        Text("$number",style: TextStyle(fontSize: 25)),
-                        IconButton(
-                          icon: Icon(Icons.add_circle_outline,color: Colors.green),
-                          iconSize: 40,
-                          onPressed: (){
-                            setState(() {
-                              number++;
-                            });
-                          },
-                        ),
-                      ],
-                    )
-                  ]),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.remove_circle_outline,color: Colors.red),
+                              iconSize: 40,
+                              onPressed: (){
+                                setState(() {
+                                  number--;
+                                  if(number < 1) {
+                                    number = 1;
+                                  }
+                                });
+                              },
+                            ),
+                            Text("$number",style: TextStyle(fontSize: 25)),
+                            IconButton(
+                              icon: Icon(Icons.add_circle_outline,color: Colors.green),
+                              iconSize: 40,
+                              onPressed: (){
+                                setState(() {
+                                  number++;
+                                });
+                              },
+                            ),
+                          ],
+                        )
+                    ]
+                  ),
                 ),
                 actions: [
                   Padding(
@@ -103,20 +182,25 @@ class _TypeDrink extends State<TypeDrink> {
                       child: Text("ยืนยัน"),
                       onPressed: () {
                         setState(() {
-                          List<MenuCart> addListMenu = [];
-                          for(int i=0; i<searchListMenu.length; i++){
-                            MenuCart lst = new MenuCart(searchListMenu[index].menuId,searchListMenu[index].picture,searchListMenu[index].name,searchListMenu[index].priceMenuNormal,searchListMenu[index].typeMenu,searchListMenu[index].managerId,number);
-                            addListMenu.add(lst);
+                          if(valRadio == 0){
+                            valRadio = 0;
+                          }else{
+                            List<MenuCart> addListMenu = [];
+                            for(int i=0; i<searchListMenu.length; i++){
+                              MenuCart lst = new MenuCart(searchListMenu[index].menuId,searchListMenu[index].picture,_nameMenu!,_priceMenu!,searchListMenu[index].typeMenu,searchListMenu[index].managerId,number);
+                              addListMenu.add(lst);
+                            }
+                            _valueSetterAddMenu(addListMenu[index]);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              new SnackBar(
+                                duration: Duration(seconds: 1),
+                                content: Text("เพิ่ม ${searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ",style: TextStyle(fontSize: 20),),
+                              ),
+                            );
+                            number = 1;
+                            valRadio = 0;
+                            Navigator.pop(context);
                           }
-                          _valueSetterAddMenu(addListMenu[index]);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            new SnackBar(
-                              duration: Duration(seconds: 1),
-                              content: Text("เพิ่ม ${searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ",style: TextStyle(fontSize: 20),),
-                            ),
-                          );
-                          Navigator.pop(context);
-                          number = 1;
                         });
                       },
                     ),
@@ -129,6 +213,7 @@ class _TypeDrink extends State<TypeDrink> {
                       onPressed: () {
                         setState(() {
                           number = 1;
+                          valRadio = 0;
                         });
                         Navigator.pop(context);
                       },
@@ -182,9 +267,11 @@ class _TypeDrink extends State<TypeDrink> {
                         itemCount: searchListMenu.length,
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
+                            onTap: (){_selectMenu(index);},
                             child: Card(
                               elevation: 5,
                               child: Container(
+                                width: MediaQuery.of(context).size.width,
                                 child: Column(
                                   children: <Widget>[
                                     Container(
@@ -195,7 +282,6 @@ class _TypeDrink extends State<TypeDrink> {
                                         fit: BoxFit.fitWidth,
                                       ),
                                     ),
-                                    SizedBox(width: 10),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
@@ -213,30 +299,39 @@ class _TypeDrink extends State<TypeDrink> {
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Container(
-                                                child: searchListMenu[index].priceMenuNormal==0
+                                                child: searchListMenu[index].priceMenuNormal==0 /// if
                                                     ? null
-                                                    : Text(
-                                                  "ธรรมดา ${searchListMenu[index].priceMenuNormal.toString()} บาท",
+                                                    : searchListMenu[index].priceMenuPromotion==0 /// if
+                                                    ? Text("ธรรมดา ${searchListMenu[index].priceMenuNormal.toString()} บาท",
                                                   style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
+                                                  ),
+                                                )
+                                                    : Text("ธรรมดา ${searchListMenu[index].priceMenuNormal.toString()} บาท",
+                                                  style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
+                                                    decoration: TextDecoration.lineThrough,
                                                   ),
                                                 ),
                                               ),
                                               SizedBox(width: 25),
                                               Container(
-                                                child: searchListMenu[index].priceMenuSpecial==0
+                                                child: searchListMenu[index].priceMenuSpecial==0 /// if
                                                     ? null
-                                                    : Text(
-                                                  "พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
+                                                    : searchListMenu[index].priceMenuPromotion==0 /// if
+                                                    ? Text("พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
                                                   style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
+                                                  ),
+                                                )
+                                                    : Text("พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
+                                                  style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
+                                                    decoration: TextDecoration.lineThrough,
                                                   ),
                                                 ),
                                               ),
                                               SizedBox(width: snapshot.data[index].priceMenuSpecial==0 ?105 :25),
                                               Container(
-                                                child: searchListMenu[index].priceMenuPromotion==0
+                                                child: searchListMenu[index].priceMenuPromotion==0 ///if
                                                     ? null
-                                                    : Text(
-                                                  "โปรโมชั่น ${searchListMenu[index].priceMenuPromotion.toString()} บาท",
+                                                    : Text("โปรโมชั่น ${searchListMenu[index].priceMenuPromotion.toString()} บาท",
                                                   style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -250,7 +345,6 @@ class _TypeDrink extends State<TypeDrink> {
                                 ),
                               ),
                             ),
-                            onTap: (){_selectMenu(index);},
                           );
                         },
                       );

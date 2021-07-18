@@ -40,7 +40,7 @@ class _ResInformation extends State<ResInformation> {
                   ),
                   SizedBox(height: 25),
                   Container(
-                    width: 350,
+                    width: 400,
                     height: 250,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
@@ -55,11 +55,13 @@ class _ResInformation extends State<ResInformation> {
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
                       color: Colors.purple[100],
-                      child: Text(
-                        "เจ้าของร้าน : คุณ ${userManager[0].name} ${userManager[0].surName}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                      child: ListTile(
+                        title: Text(
+                          "เจ้าของร้าน : คุณ ${userManager[0].name} ${userManager[0].surName}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -68,11 +70,13 @@ class _ResInformation extends State<ResInformation> {
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
                         color: Colors.purple[200],
-                        child: Text(
-                          "เบอร์โทร : " + "${userManager[0].tel}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                        child: ListTile(
+                          title: Text(
+                            "เบอร์โทร : " + "${userManager[0].tel}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
                         )
                     ),
@@ -81,23 +85,27 @@ class _ResInformation extends State<ResInformation> {
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
                       color: Colors.purple[100],
-                      child: Column(
-                        children: [
-                          Text(
-                            "ที่อยู่ : ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25,
+                      child: ListTile(
+                        title: Row(
+                          children: [
+                            Text(
+                              "ที่อยู่ : ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "${userManager[0].address}",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20,
+                            Expanded(
+                              child: Text(
+                                "${userManager[0].address}",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
