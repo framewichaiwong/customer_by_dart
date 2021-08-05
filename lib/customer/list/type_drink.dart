@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_menu.dart';
 import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
@@ -35,13 +36,13 @@ class _TypeDrink extends State<TypeDrink> {
 
   void initState() {
     super.initState();
-    _getMenu();
+    getMenu(); /// initState function (getMenu).
     setState(() {
       valRadio = 0;
     });
   }
 
-  Future<List<Menu>> _getMenu() async {
+  Future<List<Menu>> getMenu() async {
     var response = await http.get(Uri.parse("${Config.url}/menu/getMenu/${userManager[0].managerId}/$typeDrink"),headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
@@ -49,12 +50,20 @@ class _TypeDrink extends State<TypeDrink> {
     searchListMenu = listMenu;
     for (Map m in data) {
       if(m['statusSale']=="ขาย"){
-        final _img64 = base64Decode(m['picture']);
-        Menu lst = new Menu(m['menuId'],_img64,m['name'],m['priceMenuNormal'],m['priceMenuSpecial'],m['priceMenuPromotion'],m['typeMenu'],m['statusSale'],m['managerId'],number);
+        Menu lst = new Menu(m['menuId'],m['name'],m['priceMenuNormal'],m['priceMenuSpecial'],m['priceMenuPromotion'],m['typeMenu'],m['statusSale'],m['managerId'],number);
         listMenu.add(lst);
       }
     }
     return listMenu;
+  }
+
+  Future getMenuImage(snapshot) async{
+    var dataImage;
+    await http.get(Uri.parse("${Config.url}/image/list/${snapshot.managerId}/${snapshot.menuId}/$typeDrink"),headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response) {
+      var jsonData = jsonDecode(response.body);
+      dataImage = jsonData['data'];
+    });
+    return dataImage;
   }
 
   _selectMenu(index) {
@@ -187,7 +196,7 @@ class _TypeDrink extends State<TypeDrink> {
                           }else{
                             List<MenuCart> addListMenu = [];
                             for(int i=0; i<searchListMenu.length; i++){
-                              MenuCart lst = new MenuCart(searchListMenu[index].menuId,searchListMenu[index].picture,_nameMenu!,_priceMenu!,searchListMenu[index].typeMenu,searchListMenu[index].managerId,number);
+                              MenuCart lst = new MenuCart(searchListMenu[index].menuId,_nameMenu!,_priceMenu!,searchListMenu[index].typeMenu,searchListMenu[index].managerId,number);
                               addListMenu.add(lst);
                             }
                             _valueSetterAddMenu(addListMenu[index]);
@@ -253,8 +262,9 @@ class _TypeDrink extends State<TypeDrink> {
                 ),
               ),
               Expanded(
+                /// FutureBuilder
                 child: FutureBuilder(
-                  future: _getMenu(),
+                  future: getMenu(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.data == null) {
                       return Container(
@@ -274,13 +284,39 @@ class _TypeDrink extends State<TypeDrink> {
                                 width: MediaQuery.of(context).size.width,
                                 child: Column(
                                   children: <Widget>[
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Image.memory(
-                                        searchListMenu[index].picture,
-                                        height: 150,
-                                        fit: BoxFit.fitWidth,
-                                      ),
+                                    /// FutureBuilder
+                                    FutureBuilder(
+                                      future: getMenuImage(searchListMenu[index]),
+                                      builder: (BuildContext context,AsyncSnapshot snapshot){
+                                        if(snapshot.data == null){
+                                          return Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        }else{
+                                          /// Start for show picture by menu.
+                                          List<dynamic> imageByMenu = [];
+                                          for(var i in snapshot.data){
+                                            imageByMenu.add(i);
+                                          }
+                                          /// End.
+                                          /// Start Slide_Image.
+
+                                          return CarouselSlider(
+                                            options: CarouselOptions(height: 150,autoPlay: true),
+                                            items: imageByMenu.map((e) {
+                                              return Builder(
+                                                builder: (BuildContext context) {
+                                                  return Container(
+                                                      height: 150,
+                                                      width: MediaQuery.of(context).size.width,
+                                                      child: Image.memory(base64Decode(e),fit: BoxFit.fitWidth)
+                                                  );
+                                                },
+                                              );
+                                            }).toList(),
+                                          );
+                                        }
+                                      },
                                     ),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
