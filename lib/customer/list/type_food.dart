@@ -309,7 +309,9 @@ class _TypeFood extends State<TypeFood> {
                                                   return Container(
                                                       height: 150,
                                                       width: MediaQuery.of(context).size.width,
-                                                      child: Image.memory(base64Decode(e),fit: BoxFit.fitWidth)
+                                                      child: Card(
+                                                          child: Image.memory(base64Decode(e),fit: BoxFit.fitWidth)
+                                                      )
                                                   );
                                                 },
                                               );
