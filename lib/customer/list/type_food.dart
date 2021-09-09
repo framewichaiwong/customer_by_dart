@@ -35,15 +35,14 @@ class _TypeFood extends State<TypeFood> {
   int? _priceMenu;
   int? valRadio;
 
+  @override
   void initState() {
     super.initState();
-    getMenu(); /// initState function (getMenu).
-    setState(() {
-      valRadio = 0;
-    });
+    _getMenu(); /// initState function (getMenu).
+    valRadio = 0; /// Can to setState((){});
   }
 
-  Future<List<Menu>> getMenu() async {
+  Future<List<Menu>> _getMenu() async {
     var response = await http.get(Uri.parse("${Config.url}/menu/getMenu/${userManager[0].managerId}/$typeFood"),headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
@@ -54,11 +53,12 @@ class _TypeFood extends State<TypeFood> {
         Menu lst = new Menu(m['menuId'],m['name'],m['priceMenuNormal'],m['priceMenuSpecial'],m['priceMenuPromotion'],m['typeMenu'],m['statusSale'],m['managerId'],number);
         listMenu.add(lst);
       }
+      listMenu.sort((a,b) => a.menuId.compareTo(b.menuId));
     }
     return listMenu;
   }
 
-  Future getMenuImage(snapshot) async{
+  Future _getMenuImage(snapshot) async{
     var dataImage;
     await http.get(Uri.parse("${Config.url}/image/list/${snapshot.managerId}/${snapshot.menuId}/$typeFood"),headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response) {
       var jsonData = jsonDecode(response.body);
@@ -67,6 +67,7 @@ class _TypeFood extends State<TypeFood> {
     return dataImage;
   }
 
+  /// Show Dialog.
   _selectMenu(index) {
     return showDialog(
         context: context,
@@ -134,7 +135,8 @@ class _TypeFood extends State<TypeFood> {
                                 child: valRadio == 0
                                     ? Text("*กรุณาเลือกโปรโมชั่น",style: TextStyle(color: Colors.redAccent),)
                                     : null,
-                              ),Center(
+                              ),
+                              Center(
                                 child: searchListMenu[index].priceMenuNormal == 0
                                     ? null
                                     : ListTile(
@@ -152,7 +154,6 @@ class _TypeFood extends State<TypeFood> {
                                   ),
                                 ),
                               ),
-
                             ],
                           ), ///
                         ),
@@ -241,157 +242,158 @@ class _TypeFood extends State<TypeFood> {
     // TODO: implement build
     return Scaffold(
       body: SafeArea(
-        child: Card(
-          color: Colors.red[100],
-          child: Column(
-            children: [
-              Card(
-                color: Colors.white,
-                child: Container(
-                  child: ListTile(
-                    leading: Icon(Icons.search),
-                    title: TextField(
-                      decoration: InputDecoration(hintText: "Search menu", border: InputBorder.none),
-                      onChanged: (searchMenu){
-                        setState(() {
-                          searchListMenu = searchListMenu.where((value) => (value.name.toLowerCase().contains(searchMenu.toLowerCase()))).toList();
-                        });
-                      },
-                    ),
+        child: Column(
+          children: [
+            /*Card(
+              color: Colors.white,
+              child: Container(
+                child: ListTile(
+                  leading: Icon(Icons.search),
+                  title: TextField(
+                    decoration: InputDecoration(hintText: "Search menu", border: InputBorder.none),
+                    onChanged: (searchMenu){
+                      setState(() {
+                        searchListMenu = searchListMenu.where((value) => (value.name.toLowerCase().contains(searchMenu.toLowerCase()))).toList();
+                      });
+                    },
                   ),
                 ),
               ),
-              Expanded(
-                /// FutureBuilder
-                child: FutureBuilder(
-                  future: getMenu(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if(snapshot.data == null) {
-                      return Container(
-                        child: Center(
-                            child: CircularProgressIndicator()
-                        ),
-                      );
-                    }else {
-                      return ListView.builder(
-                        itemCount: searchListMenu.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: (){_selectMenu(index);},
-                            child: Card(
-                              elevation: 5,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                child: Column(
-                                  children: <Widget>[
-                                    /// FutureBuilder
-                                    FutureBuilder(
-                                      future: getMenuImage(searchListMenu[index]),
-                                      builder: (BuildContext context,AsyncSnapshot snapshot){
-                                        if(snapshot.data == null){
-                                          return Center(
-                                            child: CircularProgressIndicator(),
-                                          );
-                                        }else{
-                                          /// Start for show picture by menu.
-                                          List<dynamic> imageByMenu = [];
-                                          for(var i in snapshot.data){
-                                            imageByMenu.add(i);
-                                          }
-                                          /// End.
-                                          /// Start Slide_Image.
-
-                                          return CarouselSlider(
-                                            options: CarouselOptions(height: 150,autoPlay: true),
-                                            items: imageByMenu.map((e) {
-                                              return Builder(
-                                                builder: (BuildContext context) {
-                                                  return Container(
-                                                      height: 150,
-                                                      width: MediaQuery.of(context).size.width,
-                                                      child: Card(
-                                                          child: Image.memory(base64Decode(e),fit: BoxFit.fitWidth)
-                                                      )
-                                                  );
-                                                },
-                                              );
-                                            }).toList(),
-                                          );
+            ),*/
+            Expanded(
+              child: FutureBuilder(
+                future: _getMenu(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if(snapshot.data == null) {
+                    return Container(
+                      child: Center(
+                          child: CircularProgressIndicator()
+                      ),
+                    );
+                  }else {
+                    return ListView.builder(
+                      itemCount: searchListMenu.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: (){
+                            _selectMenu(index);
+                            },
+                          child: Card(
+                            elevation: 5,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                children: <Widget>[
+                                  /// FutureBuilder
+                                  FutureBuilder(
+                                    future: _getMenuImage(searchListMenu[index]),
+                                    builder: (BuildContext context,AsyncSnapshot snapshot){
+                                      if(snapshot.data == null){
+                                        return Container(
+                                          height: 150,
+                                          width: MediaQuery.of(context).size.width,
+                                          child: Card(
+                                              child: Icon(Icons.photo)
+                                          ),
+                                        );
+                                      }else{
+                                        /// Start for show picture by menu.
+                                        List<dynamic> imageByMenu = [];
+                                        for(var i in snapshot.data){
+                                          imageByMenu.add(i);
                                         }
-                                      },
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 10),
-                                          child: Text(
-                                            searchListMenu[index].name,
-                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                            ),
+                                        /// End.
+                                        /// Start Slide_Image.
+                                        return CarouselSlider(
+                                          options: CarouselOptions(height: 150,autoPlay: true),
+                                          items: imageByMenu.map((e) {
+                                            return Builder(
+                                              builder: (BuildContext context) {
+                                                return Container(
+                                                    height: 150,
+                                                    width: MediaQuery.of(context).size.width,
+                                                    child: Card(
+                                                        child: Image.memory(base64Decode(e),fit: BoxFit.fitWidth)
+                                                    )
+                                                );
+                                              },
+                                            );
+                                          }).toList(),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          searchListMenu[index].name,
+                                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 10),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                child: searchListMenu[index].priceMenuNormal==0 /// if
-                                                    ? null
-                                                    : searchListMenu[index].priceMenuPromotion==0 /// if
-                                                      ? Text("ธรรมดา ${searchListMenu[index].priceMenuNormal.toString()} บาท",
-                                                          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
-                                                          ),
-                                                        )
-                                                      : Text("ธรรมดา ${searchListMenu[index].priceMenuNormal.toString()} บาท",
-                                                          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
-                                                            decoration: TextDecoration.lineThrough,
-                                                          ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 10),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              child: searchListMenu[index].priceMenuNormal==0 /// if
+                                                  ? null
+                                                  : searchListMenu[index].priceMenuPromotion==0 /// if
+                                                    ? Text("ธรรมดา ${searchListMenu[index].priceMenuNormal.toString()} บาท",
+                                                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
                                                         ),
-                                              ),
-                                              SizedBox(width: 25),
-                                              Container(
-                                                child: searchListMenu[index].priceMenuSpecial==0 /// if
-                                                    ? null
-                                                    : searchListMenu[index].priceMenuPromotion==0 /// if
-                                                      ? Text("พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
-                                                          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
-                                                          ),
-                                                        )
-                                                      : Text("พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
-                                                          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
-                                                            decoration: TextDecoration.lineThrough,
-                                                          ),
+                                                      )
+                                                    : Text("ธรรมดา ${searchListMenu[index].priceMenuNormal.toString()} บาท",
+                                                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
+                                                          decoration: TextDecoration.lineThrough,
                                                         ),
-                                              ),
-                                              SizedBox(width: snapshot.data[index].priceMenuSpecial==0 ?105 :25),
-                                              Container(
-                                                child: searchListMenu[index].priceMenuPromotion==0 /// if
-                                                    ? null
-                                                    : Text("โปรโมชั่น ${searchListMenu[index].priceMenuPromotion.toString()} บาท",
-                                                  style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
-                                                  ),
+                                                      ),
+                                            ),
+                                            SizedBox(width: 25),
+                                            Container(
+                                              child: searchListMenu[index].priceMenuSpecial==0 /// if
+                                                  ? null
+                                                  : searchListMenu[index].priceMenuPromotion==0 /// if
+                                                    ? Text("พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
+                                                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
+                                                        ),
+                                                      )
+                                                    : Text("พิเศษ ${searchListMenu[index].priceMenuSpecial.toString()} บาท",
+                                                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
+                                                          decoration: TextDecoration.lineThrough,
+                                                        ),
+                                                      ),
+                                            ),
+                                            SizedBox(width: snapshot.data[index].priceMenuSpecial==0 ?105 :25),
+                                            Container(
+                                              child: searchListMenu[index].priceMenuPromotion==0 /// if
+                                                  ? null
+                                                  : Text("โปรโมชั่น ${searchListMenu[index].priceMenuPromotion.toString()} บาท",
+                                                style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          );
-                        },
-                      );
-                    }
-                  },
-                ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

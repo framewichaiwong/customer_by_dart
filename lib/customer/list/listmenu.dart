@@ -60,7 +60,6 @@ class _ListMenu extends State<ListMenu> {
         length: _tabPage.length,
         child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
             backgroundColor: Colors.red[300],
             title: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -76,8 +75,7 @@ class _ListMenu extends State<ListMenu> {
                     icon: Icon(Icons.add_shopping_cart),
                     iconSize: 35,
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => CartMenu(userManager, numberTable, _cart,
+                      Navigator.push(context,MaterialPageRoute(builder: (context) => CartMenu(userManager, numberTable, _cart,
                                   (removeMenu){setState(() {
                                 if(removeMenu == null){ /// get value from Page(cart_menu) after press the button(สั่งอาหาร).
                                   _cart.removeRange(0, _cart.length);/// reset value in (_cart) Arrays at start[0] to end[...length]
@@ -97,7 +95,6 @@ class _ListMenu extends State<ListMenu> {
               indicatorColor: Colors.blueGrey,
               unselectedLabelColor: Colors.grey[500],
             ),
-
           ),
           body: TabBarView(
             children: _tabPage,

@@ -30,17 +30,24 @@ class _QrCodeScan extends State<QrCodeScan> {
             content: Text("กำลังอ่าน QR Code..."),
           ),
         );
-        await http.get(Uri.parse("${Config.url}/userManager/listUser/${_qr.managerId}")).then((response) {
-          print("Status Code => ${response.statusCode}");
+        await http.get(Uri.parse("${Config.url}/userManager/listUser/${_qr.managerId}"),headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response) {
+          print("--- status Code ===>>> ${response.statusCode}");
           var jsonData = jsonDecode(response.body);
           var status = jsonData['status'];
           var data = jsonData['data'];
           List<UserManager> userManager = [];
           if(status==1){
-            final _img64 = base64Decode(data['picture']);
+            ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("สแกนสำเร็จ กำลังเข้าสู่รายการ"),
+              )
+            );
+            var _img64 = base64Decode(data['picture']);
             UserManager user = new UserManager(data['managerId'], data['name'], data['surName'], data['tel'], data['nameRestaurant'], data['numberTable'], data['address'], _img64);
             userManager.add(user);
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home(userManager,_qr.numberTable)), (route) => false);
+            Future.delayed(Duration(seconds: 3),
+                    (){Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home(userManager,_qr.numberTable)), (route) => false);
+            });
           }else{
             ScaffoldMessenger.of(context).showSnackBar(
               new SnackBar(
