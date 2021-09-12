@@ -86,7 +86,9 @@ class _CartMenu extends State<CartMenu> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.arrow_back_ios),
-                    onPressed: (){Navigator.of(context).pop();},
+                    onPressed: (){
+                      Navigator.of(context).pop();
+                      },
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),

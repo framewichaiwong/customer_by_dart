@@ -20,11 +20,15 @@ class TypeFood extends StatefulWidget {
   State<StatefulWidget> createState() => _TypeFood(userManager,numberTable,_valueSetterAddMenu);
 }
 
-class _TypeFood extends State<TypeFood> {
+class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
   List<UserManager> userManager;
   int numberTable;
   final ValueSetter<MenuCart> _valueSetterAddMenu;
   _TypeFood(this.userManager,this.numberTable,this._valueSetterAddMenu);
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true; /// ไม่ต้องรีเฟรซหน้าใหม่เมื่อเปลี่ยน TabBar. And add (with AutomaticKeepAliveClientMixin) behind Class.
 
   //search_menu
   List<Menu> searchListMenu = [];
@@ -221,10 +225,8 @@ class _TypeFood extends State<TypeFood> {
                     child: ElevatedButton(
                       child: Text("ยกเลิก"),
                       onPressed: () {
-                        setState(() {
-                          number = 1;
-                          valRadio = 0;
-                        });
+                        number = 1;
+                        valRadio = 0;
                         Navigator.pop(context);
                       },
                     ),

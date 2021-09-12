@@ -19,11 +19,15 @@ class TypeDrink extends StatefulWidget{
   State<StatefulWidget> createState() => _TypeDrink(userManager,numberTable,_valueSetterAddMenu);
 }
 
-class _TypeDrink extends State<TypeDrink> {
+class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
   List<UserManager> userManager;
   int numberTable;
   final ValueSetter<MenuCart> _valueSetterAddMenu;
   _TypeDrink(this.userManager,this.numberTable,this._valueSetterAddMenu);
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true; /// ไม่ต้องรีเฟรซหน้าใหม่เมื่อเปลี่ยน TabBar. And add (with AutomaticKeepAliveClientMixin) behind Class.
 
   //search_menu
   List<Menu> searchListMenu = [];
