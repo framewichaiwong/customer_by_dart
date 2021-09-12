@@ -42,7 +42,7 @@ class _CheckBill extends State<CheckBill> {
     if(mounted){
       setState(() {
         _listOrder = listOrder;
-        _listMakeStatus = listMakeStatus; /// Class name this page.
+        _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
       });
     }else{
       return;
@@ -57,6 +57,7 @@ class _CheckBill extends State<CheckBill> {
         listMakeStatus.add(listOrderMakeStatus);
       }
     }
+    listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
     yield _listOrder;
   }
 
