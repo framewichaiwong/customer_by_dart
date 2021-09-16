@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   http:
+  provider:
   permission_handler:
   qrscan:
   badges:

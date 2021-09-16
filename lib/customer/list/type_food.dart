@@ -5,26 +5,27 @@ import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_menu.dart';
 import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
+import 'package:customer_by_dart/customer/list/provider_method/provider_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class TypeFood extends StatefulWidget {
   List<UserManager> userManager;
   int numberTable;
-  final ValueSetter<MenuCart> _valueSetterAddMenu;
-  TypeFood(this.userManager,this.numberTable,this._valueSetterAddMenu);
+
+  TypeFood(this.userManager, this.numberTable);
 
   @override
-  State<StatefulWidget> createState() => _TypeFood(userManager,numberTable,_valueSetterAddMenu);
+  State<StatefulWidget> createState() => _TypeFood(userManager, numberTable);
 }
 
 class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
   List<UserManager> userManager;
   int numberTable;
-  final ValueSetter<MenuCart> _valueSetterAddMenu;
-  _TypeFood(this.userManager,this.numberTable,this._valueSetterAddMenu);
+  _TypeFood(this.userManager,this.numberTable);
 
   @override
   // TODO: implement wantKeepAlive
@@ -205,7 +206,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                             MenuCart lst = new MenuCart(searchListMenu[index].menuId,_nameMenu!,_priceMenu!,searchListMenu[index].typeMenu,searchListMenu[index].managerId,number);
                             addListMenu.add(lst);
                           }
-                          _valueSetterAddMenu(addListMenu[index]);
+                          context.read<MenuProvider>().addMenuToCart(addListMenu[index]); /// Add cart menu by Provider.
                           ScaffoldMessenger.of(context).showSnackBar(
                             new SnackBar(
                               duration: Duration(seconds: 1),
@@ -241,6 +242,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+
     // TODO: implement build
     return Scaffold(
       body: SafeArea(

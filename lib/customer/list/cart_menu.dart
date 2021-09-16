@@ -2,35 +2,32 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:customer_by_dart/config/config.dart';
-import 'package:customer_by_dart/customer/class/class_menu.dart';
 import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
+import 'package:customer_by_dart/customer/list/provider_method/provider_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class CartMenu extends StatefulWidget {
   List<UserManager> userManager;
   int numberTable;
-  List<MenuCart> _cart;
-  final ValueSetter<MenuCart?> _valueSetterRemoveMenu;
-  CartMenu(this.userManager,this.numberTable,this._cart,this._valueSetterRemoveMenu);
+  CartMenu(this.userManager,this.numberTable);
 
   @override
-  State<StatefulWidget> createState() => _CartMenu(userManager,numberTable,_cart,_valueSetterRemoveMenu);
+  State<StatefulWidget> createState() => _CartMenu(userManager,numberTable);
 }
 
 class _CartMenu extends State<CartMenu> {
   List<UserManager> userManager;
   int numberTable;
-  List<MenuCart> _cart;
-  final ValueSetter<MenuCart?> _valueSetterRemoveMenu;
-  _CartMenu(this.userManager,this.numberTable,this._cart,this._valueSetterRemoveMenu);
+  _CartMenu(this.userManager,this.numberTable);
 
   String makeStatus = "กำลังทำ"; /// create status is beginner send to backend.
 
-  cartMenu() async{
+  cartMenuToOrder(_cart) async{
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       new SnackBar(
@@ -57,8 +54,8 @@ class _CartMenu extends State<CartMenu> {
               ),
             );
             setState(() {
-              _valueSetterRemoveMenu(null); /// reset value in cart is null value
-              _cart.removeRange(0, _cart.length); /// reset value in (_cart) Arrays at start[0] to end[...length]
+              context.read<MenuProvider>().clearAllMenuFromCart(); /// Clear cart menu by Provider.
+              ///_cart.removeRange(0, _cart.length); /// reset value in (_cart) Arrays at start[0] to end[...length]
             });
           }
         }else{
@@ -75,6 +72,9 @@ class _CartMenu extends State<CartMenu> {
 
   @override
   Widget build(BuildContext context) {
+
+    List<MenuCart> _cart = context.watch<MenuProvider>().cart; /// Call data from Provider(cart).
+
     // TODO: implement build
     return Scaffold(
       body: SafeArea(
@@ -124,6 +124,7 @@ class _CartMenu extends State<CartMenu> {
               SizedBox(height: 8,),
               Expanded(
                 child: ListView.builder(
+                  ///itemCount: _cart.length,
                   itemCount: _cart.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
@@ -142,7 +143,7 @@ class _CartMenu extends State<CartMenu> {
                           splashColor: Colors.green,
                           onPressed: () {
                             setState(() {
-                              _valueSetterRemoveMenu(_cart[index]);
+                              context.read<MenuProvider>().removeMenuTFromCart(_cart[index]); /// Send data by Provider.
                             });
                           },
                         ),
@@ -216,7 +217,7 @@ class _CartMenu extends State<CartMenu> {
                                         padding: const EdgeInsets.all(10),
                                         child: ElevatedButton(
                                           child: Text("ยืนยัน"),
-                                          onPressed: cartMenu,
+                                          onPressed: () => cartMenuToOrder(_cart),
                                         ),
                                       ),
                                       SizedBox(width: 100),
