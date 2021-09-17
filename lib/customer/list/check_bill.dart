@@ -88,7 +88,7 @@ class _CheckBill extends State<CheckBill> {
                 if(status==1 && i==(_listOrder.length - 1)){
                   ScaffoldMessenger.of(context).showSnackBar(
                     new SnackBar(
-                      content: Text("เรียกชำระเงินแล้ว",style: TextStyle(fontSize: 20),),
+                      content: Text("เรียกชำระเงินแล้ว"),
                     ),
                   );
                 }/*else{
@@ -103,7 +103,7 @@ class _CheckBill extends State<CheckBill> {
           }else{
             ScaffoldMessenger.of(context).showSnackBar(
               new SnackBar(
-                content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่..",style: TextStyle(fontSize: 20),),
+                content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
               ),
             );
           }
@@ -111,14 +111,14 @@ class _CheckBill extends State<CheckBill> {
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
-            content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน",style: TextStyle(fontSize: 20),),
+            content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
           ),
         );
       }
     }else{
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
-          content: Text("คุณยังไม่มีรายการอาหาร..!",style: TextStyle(fontSize: 20),),
+          content: Text("คุณยังไม่มีรายการอาหาร..!"),
         ),
       );
     }
@@ -283,14 +283,6 @@ class _CheckBill extends State<CheckBill> {
                                       }
                                   );
                                 },
-                                /*onPressed: () async{ /// Test notification
-                                  var androidDetails = new AndroidNotificationDetails("Channel ID", "Desi programmer", "This is my channel", importance: Importance.Max);
-                                  var iSODetails = new IOSNotificationDetails();
-                                  var generalNotificationDetails = new NotificationDetails(androidDetails,iSODetails);
-                                  for(int i=0; i<_listOrder.length; i++){
-                                    await flutterLocalNotificationsPlugin.show(i, "โต๊ะ : $numberTable", "${_listOrder[i].nameMenu} x${_listOrder[i].numberMenu}", generalNotificationDetails, payload: "frame");
-                                  }
-                                },*/
                               ),
                             ),
                           ),

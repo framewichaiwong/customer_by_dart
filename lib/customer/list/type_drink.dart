@@ -208,7 +208,7 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
                             ScaffoldMessenger.of(context).showSnackBar(
                               new SnackBar(
                                 duration: Duration(seconds: 1),
-                                content: Text("เพิ่ม ${searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ",style: TextStyle(fontSize: 20),),
+                                content: Text("เพิ่ม ${searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
                               ),
                             );
                             number = 1;

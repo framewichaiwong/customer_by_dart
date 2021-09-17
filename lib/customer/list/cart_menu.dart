@@ -31,7 +31,7 @@ class _CartMenu extends State<CartMenu> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       new SnackBar(
-        content: Text("กำลังสั่งรายการอาหาร กรุณารอสักครู่...",style: TextStyle(fontSize: 20),),
+        content: Text("กำลังสั่งรายการอาหาร กรุณารอสักครู่..."),
       ),
     );
     Map params = new Map();
@@ -50,7 +50,7 @@ class _CartMenu extends State<CartMenu> {
           if(i==(_cart.length-1)){
             ScaffoldMessenger.of(context).showSnackBar(
               new SnackBar(
-                content: Text("สั่งอาหารเรียบร้อย",style: TextStyle(fontSize: 20),),
+                content: Text("สั่งอาหารเรียบร้อย"),
               ),
             );
             setState(() {
@@ -61,7 +61,7 @@ class _CartMenu extends State<CartMenu> {
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
             new SnackBar(
-              content: Text("กดสั่งอาหารอีกครั้ง...",style: TextStyle(fontSize: 20),),
+              content: Text("กดสั่งอาหารอีกครั้ง..."),
             ),
           );
           Navigator.pop(context);
@@ -189,7 +189,7 @@ class _CartMenu extends State<CartMenu> {
                           if(_cart.isEmpty){
                             ScaffoldMessenger.of(context).showSnackBar(
                               new SnackBar(
-                                content: Text("กรุณาเลือกรายการอาหาร!!",style: TextStyle(fontSize: 20),),
+                                content: Text("กรุณาเลือกรายการอาหาร!!"),
                               ),
                             );
                           }else{
