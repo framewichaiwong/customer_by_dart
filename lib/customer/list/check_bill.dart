@@ -24,16 +24,43 @@ class _CheckBill extends State<CheckBill> {
   List<ListOrder> _listOrder = [];
   List<ListOrderMakeStatus> _listMakeStatus = [];
 
-  ///Test Notification
-  //FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
-
   @override
+  void initState(){
+    super.initState();
+    _getOrder();
+  }
+
+  /*@override
   void dispose() {
     _getOrder();
     super.dispose();
+  }*/
+
+  Future _getOrder() async{
+    var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTable/${userManager[0].managerId}/$numberTable"), headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var jsonData = jsonDecode(response.body);
+    var data = jsonData['data'];
+    List<ListOrder> listOrder = [];
+    List<ListOrderMakeStatus> listMakeStatus = []; /// Class name this page.
+    ///
+    _listOrder = listOrder;
+    _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
+
+    for (Map o in data) {
+      ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus']);
+      listOrder.add(lstOrder);
+
+      /// Class name this page.
+      if(o['makeStatus']=="ทำเสร็จแล้ว") {
+        ListOrderMakeStatus listOrderMakeStatus = new ListOrderMakeStatus(o['makeStatus']);
+        listMakeStatus.add(listOrderMakeStatus);
+      }
+    }
+    listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
+    return _listOrder;
   }
 
-  Stream<void> _getOrder() async*{
+  /*Stream<void> _getOrder() async*{
     var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTable/${userManager[0].managerId}/$numberTable"), headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
@@ -59,7 +86,7 @@ class _CheckBill extends State<CheckBill> {
     }
     listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
     yield _listOrder;
-  }
+  }*/
 
   checkBill() {
     Navigator.of(context).pop();
@@ -148,8 +175,8 @@ class _CheckBill extends State<CheckBill> {
                 ),
               ),
               Expanded(
-                child: StreamBuilder(
-                  stream: _getOrder(),
+                child: FutureBuilder(
+                  future: _getOrder(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     print("data is : $snapshot");
                     if (snapshot.data == null){
