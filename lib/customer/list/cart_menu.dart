@@ -25,7 +25,7 @@ class _CartMenu extends State<CartMenu> {
   int numberTable;
   _CartMenu(this.userManager,this.numberTable);
 
-  String makeStatus = "กำลังทำ"; /// create status is beginner send to backend.
+  String makeStatus = "ยังไม่ส่ง"; /// create status is beginner send to backend.
 
   cartMenuToOrder(_cart) async{
     Navigator.pop(context);

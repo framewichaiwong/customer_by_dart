@@ -51,7 +51,7 @@ class _CheckBill extends State<CheckBill> {
       listOrder.add(lstOrder);
 
       /// Class name this page.
-      if(o['makeStatus']=="ทำเสร็จแล้ว") {
+      if(o['makeStatus']=="ส่งแล้ว") {
         ListOrderMakeStatus listOrderMakeStatus = new ListOrderMakeStatus(o['makeStatus']);
         listMakeStatus.add(listOrderMakeStatus);
       }
@@ -209,7 +209,7 @@ class _CheckBill extends State<CheckBill> {
                               itemBuilder: (BuildContext context, int index) {
                                 return Container(
                                     color: Colors.white,
-                                    child: snapshot.data[index].makeStatus == "ทำเสร็จแล้ว" /// Status condition
+                                    child: snapshot.data[index].makeStatus == "ส่งแล้ว" /// Status condition
                                         ? ListTile(
                                       title: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -58,7 +58,8 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
         Menu lst = new Menu(m['menuId'],m['name'],m['priceMenuNormal'],m['priceMenuSpecial'],m['priceMenuPromotion'],m['typeMenu'],m['statusSale'],m['managerId'],number);
         listMenu.add(lst);
       }
-      listMenu.sort((a,b) => a.menuId.compareTo(b.menuId));
+      listMenu.sort((a,b) => a.menuId.modInverse(b.menuId)); /// Sort Inverse data by menuId.
+      //listMenu.sort((a,b) => a.menuId.compareTo(b.menuId)); /// Sort data by menuId.
     }
     return listMenu;
   }
