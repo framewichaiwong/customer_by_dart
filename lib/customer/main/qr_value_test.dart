@@ -34,7 +34,7 @@ class _QRValueState extends State<QRValue> {
       List<UserManager> userManager = [];
       if(status==1){
         final _img64 = base64Decode(data['picture']);
-        UserManager user = new UserManager(data['managerId'], data['name'], data['surName'], data['tel'], data['nameRestaurant'], data['numberTable'], data['address'], _img64);
+        UserManager user = new UserManager(data['managerId'], data['name'], data['surName'], data['tel'], data['nameRestaurant'], data['numberTableTotal'], data['address'], _img64);
         userManager.add(user);
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home(userManager,numberTable)), (route) => false);
       }else{

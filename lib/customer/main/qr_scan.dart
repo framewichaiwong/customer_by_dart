@@ -43,7 +43,7 @@ class _QrCodeScan extends State<QrCodeScan> {
               )
             );
             var _img64 = base64Decode(data['picture']);
-            UserManager user = new UserManager(data['managerId'], data['name'], data['surName'], data['tel'], data['nameRestaurant'], data['numberTable'], data['address'], _img64);
+            UserManager user = new UserManager(data['managerId'], data['name'], data['surName'], data['tel'], data['nameRestaurant'], data['numberTableTotal'], data['address'], _img64);
             userManager.add(user);
             Future.delayed(Duration(seconds: 3),
                     (){Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home(userManager,_qr.numberTable)), (route) => false);
