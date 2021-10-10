@@ -9,7 +9,7 @@
 
    <application
         android:label="customer_by_dart"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/ic_launcher"
         tools:replace="android:icon">
         <activity
             android:name=".MainActivity"
