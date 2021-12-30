@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_order.dart';
+import 'package:customer_by_dart/customer/class/class_order_other_menu.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,12 +47,20 @@ class _CheckBill extends State<CheckBill> {
     _listOrder = listOrder;
     _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
 
-    for (Map o in data) {
-      ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus']);
+    for(Map o in data) {
+      var response = await http.get(Uri.parse("${Config.url}/orderOtherMenu/listForCustomer/${o['orderId']}"),headers: {'Accept': 'Application/json; charset=UTF-8'});
+      var jsonData = jsonDecode(response.body);
+      var data = jsonData['data'];
+      List<OrderOtherMenu> listOrderOtherMenu = [];
+      for(Map m in data){
+        OrderOtherMenu list = new OrderOtherMenu(m['orderOtherId'], m['orderOtherName'], m['orderOtherPrice'], m['orderId']);
+        listOrderOtherMenu.add(list);
+      }
+      ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'],listOrderOtherMenu);
       listOrder.add(lstOrder);
 
       /// Class name this page.
-      if(o['makeStatus']=="ส่งแล้ว") {
+      if(o['makeStatus']=="ส่งแล้ว" || o['makeStatus']=="ยกเลิก") {
         ListOrderMakeStatus listOrderMakeStatus = new ListOrderMakeStatus(o['makeStatus']);
         listMakeStatus.add(listOrderMakeStatus);
       }
@@ -60,96 +69,117 @@ class _CheckBill extends State<CheckBill> {
     return _listOrder;
   }
 
-  /*Stream<void> _getOrder() async*{
-    var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTable/${userManager[0].managerId}/$numberTable"), headers: {'Accept': 'Application/json; charset=UTF-8'});
-    var jsonData = jsonDecode(response.body);
-    var data = jsonData['data'];
-    List<ListOrder> listOrder = [];
-    List<ListOrderMakeStatus> listMakeStatus = []; /// Class name this page.
-    if(mounted){
-      setState(() {
-        _listOrder = listOrder;
-        _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
-      });
-    }else{
-      return;
-    }
-    for (Map o in data) {
-      ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus']);
-      listOrder.add(lstOrder);
+  /// List order_other_menu.
+  // Future getOrderOtherMenu(orderId) async{
+  //   var response = await http.get(Uri.parse("${Config.url}/orderOtherMenu/listForCustomer/$orderId"),headers: {'Accept': 'Application/json; charset=UTF-8'});
+  //   var jsonData = jsonDecode(response.body);
+  //   var data = jsonData['data'];
+  //   List<OrderOtherMenu> listOrderOtherMenu = [];
+  //   for(Map o in data){
+  //     OrderOtherMenu list = new OrderOtherMenu(o['orderOtherId'], o['orderOtherName'], o['orderOtherPrice'], o['orderId']);
+  //     listOrderOtherMenu.add(list);
+  //   }
+  //   return listOrderOtherMenu;
+  // }
 
-      /// Class name this page.
-      if(o['makeStatus']=="ทำเสร็จแล้ว") {
-        ListOrderMakeStatus listOrderMakeStatus = new ListOrderMakeStatus(o['makeStatus']);
-        listMakeStatus.add(listOrderMakeStatus);
-      }
-    }
-    listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
-    yield _listOrder;
-  }*/
+  // Stream<void> _getOrder() async*{
+  //   var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTable/${userManager[0].managerId}/$numberTable"), headers: {'Accept': 'Application/json; charset=UTF-8'});
+  //   var jsonData = jsonDecode(response.body);
+  //   var data = jsonData['data'];
+  //   List<ListOrder> listOrder = [];
+  //   List<ListOrderMakeStatus> listMakeStatus = []; /// Class name this page.
+  //   if(mounted){
+  //     setState(() {
+  //       _listOrder = listOrder;
+  //       _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
+  //     });
+  //   }else{
+  //     return;
+  //   }
+  //   for (Map o in data) {
+  //     ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus']);
+  //     listOrder.add(lstOrder);
+  //
+  //     /// Class name this page.
+  //     if(o['makeStatus']=="ทำเสร็จแล้ว") {
+  //       ListOrderMakeStatus listOrderMakeStatus = new ListOrderMakeStatus(o['makeStatus']);
+  //       listMakeStatus.add(listOrderMakeStatus);
+  //     }
+  //   }
+  //   listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
+  //   yield _listOrder;
+  // }
 
-  checkBill() {
+  checkBill() async{
     Navigator.of(context).pop();
-    if(_listOrder.length >= 1){
-      if(_listOrder.length == _listMakeStatus.length){
-        Map params = new Map();
-        params['managerId'] = userManager[0].managerId.toString();
-        params['numberTable'] = numberTable.toString();
-        http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
-          print(response.body); /// show data on console
-          var jsonData = jsonDecode(response.body);
-          var status = jsonData['status'];
-          if(status == 1){
-            Map params = new Map();
-            for(int i=0; i<_listOrder.length; i++){ /// Save listOrder to new OrderCheckBill
-              params['numberMenu'] = _listOrder[i].numberMenu.toString();
-              params['numberTable'] = numberTable.toString();
-              params['nameMenu'] = _listOrder[i].nameMenu;
-              params['priceMenu'] = _listOrder[i].priceMenu.toString();
-              params['managerId'] = userManager[0].managerId.toString();
-              params['makeStatus'] = _listOrder[i].makeStatus.toString();
-              http.post(Uri.parse("${Config.url}/orderCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
-                print(response.body);
-                var jsonData = jsonDecode(response.body);
-                var status = jsonData['status'];
-                if(status==1 && i==(_listOrder.length - 1)){
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    new SnackBar(
-                      content: Text("เรียกชำระเงินแล้ว"),
-                    ),
-                  );
-                }/*else{
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    new SnackBar(
-                      content: Text("รายการอาหารยังไม่เสร็จทั้งหมด"),
-                    ),
-                  );
-                }*/
-              });
-            }
-          }else{
-            ScaffoldMessenger.of(context).showSnackBar(
-              new SnackBar(
-                content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
-              ),
-            );
-          }
-        });
-      }else{
-        ScaffoldMessenger.of(context).showSnackBar(
-          new SnackBar(
-            content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
-          ),
-        );
-      }
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(
-        new SnackBar(
-          content: Text("คุณยังไม่มีรายการอาหาร..!"),
-        ),
-      );
-    }
+      // if(_listOrder.length == _listMakeStatus.length){
+      //   Map params = new Map();
+      //   params['managerId'] = userManager[0].managerId.toString();
+      //   params['numberTable'] = numberTable.toString();
+      //   await http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
+      //     print(response.body); /// show data on console
+      //     var jsonData = jsonDecode(response.body);
+      //     var status = jsonData['status'];
+      //     if(status == 1){
+      //       Map params = new Map();
+      //       for(int i=0; i<_listOrder.length; i++){ /// Save listOrder to new OrderCheckBill
+      //         params['numberMenu'] = _listOrder[i].numberMenu.toString();
+      //         params['numberTable'] = numberTable.toString();
+      //         params['nameMenu'] = _listOrder[i].nameMenu;
+      //         params['priceMenu'] = _listOrder[i].priceMenu.toString();
+      //         params['managerId'] = userManager[0].managerId.toString();
+      //         params['makeStatus'] = _listOrder[i].makeStatus.toString();
+      //         http.post(Uri.parse("${Config.url}/orderCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
+      //           var jsonData = jsonDecode(response.body);
+      //           var status = jsonData['status'];
+      //           if(status==1 && i==(_listOrder.length - 1)){
+      //             ScaffoldMessenger.of(context).showSnackBar(
+      //               new SnackBar(
+      //                 content: Text("เรียกชำระเงินแล้ว"),
+      //               ),
+      //             );
+      //           }/*else{
+      //             ScaffoldMessenger.of(context).showSnackBar(
+      //               new SnackBar(
+      //                 content: Text("รายการอาหารยังไม่เสร็จทั้งหมด"),
+      //               ),
+      //             );
+      //           }*/
+      //         });
+      //       }
+      //     }else{
+      //       ScaffoldMessenger.of(context).showSnackBar(
+      //         new SnackBar(
+      //           content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
+      //         ),
+      //       );
+      //     }
+      //   });
+      // }else{
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     new SnackBar(
+      //       content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
+      //     ),
+      //   );
+      // }
   }
+
+  /// Widget.
+  Text headerText(String string){
+    return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),);
+  }
+  Text bodyText(String string){
+    return Text("$string",style: TextStyle(fontSize: 14),);
+  }
+
+  // FutureBuilder buildFutureBuilder(orderId){
+  //   return FutureBuilder(
+  //     future: getOrderOtherMenu(orderId),
+  //     builder: (BuildContext context, AsyncSnapshot snapshot) => snapshot.data == null
+  //       ? Container()
+  //       : ListViewForCheckBill(snapshot.data)
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -178,8 +208,7 @@ class _CheckBill extends State<CheckBill> {
                 child: FutureBuilder(
                   future: _getOrder(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    print("data is : $snapshot");
-                    if (snapshot.data == null){
+                    if(snapshot.data == null){
                       return Container(
                         child: Center(
                           child: CircularProgressIndicator(),
@@ -189,17 +218,23 @@ class _CheckBill extends State<CheckBill> {
                       return Column(
                         children: [
                           Container(
-                            height: 50,
+                            height: 40,
                             color: Colors.amber,
-                            child: ListTile(
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Text("เมนู",style: TextStyle(fontSize: 20)),
-                                  Text("ราคา",style: TextStyle(fontSize: 20)),
+                                  Container(
+                                      width: MediaQuery.of(context).size.width * 0.4,
+                                      child: headerText("เมนู")
+                                  ),
+                                  headerText("ราคา"),
+                                  headerText("จำนวน"),
+                                  headerText("รวม"),
+                                  SizedBox(width: MediaQuery.of(context).size.width * 0.1),
                                 ],
                               ),
-                              trailing: Text("         "),
                             ),
                           ),
                           SizedBox(height: 8),
@@ -207,111 +242,159 @@ class _CheckBill extends State<CheckBill> {
                             child: ListView.builder(
                               itemCount: snapshot.data.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return Container(
-                                    color: Colors.white,
-                                    child: snapshot.data[index].makeStatus == "ส่งแล้ว" /// Status condition
-                                        ? ListTile(
-                                      title: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text("${snapshot.data[index].nameMenu}",style: TextStyle(fontWeight: FontWeight.bold),),
-                                          Text("${snapshot.data[index].priceMenu * snapshot.data[index].numberMenu}" + " บาท",style: TextStyle(fontWeight: FontWeight.bold),),
-                                        ],
-                                      ),
-                                      subtitle: Text("${snapshot.data[index].priceMenu}" + " บาท x " + "${snapshot.data[index].numberMenu}"),
-                                      trailing: Container(
-                                        width: 25,
-                                        height: 25,
-                                        child: Icon(Icons.done,color: Colors.green,size: 32,),
-                                      ),
-                                    )
-                                        : ListTile(
-                                      title: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text("${snapshot.data[index].nameMenu}",style: TextStyle(fontWeight: FontWeight.bold),),
-                                          Text("${snapshot.data[index].priceMenu * snapshot.data[index].numberMenu}" + " บาท",style: TextStyle(fontWeight: FontWeight.bold),),
-                                        ],
-                                      ),
-                                      subtitle: Text("${snapshot.data[index].priceMenu}" + " บาท x " + "${snapshot.data[index].numberMenu}"),
-                                      trailing: Container(
-                                        width: 25,
-                                        height: 25,
-                                        child: CircularProgressIndicator(strokeWidth: 2,),
-                                      ),
-                                    )
+                                return Card(
+                                  child: Container(
+                                      color: Colors.white,
+                                      child: snapshot.data[index].makeStatus == "ส่งแล้ว" /// Status condition
+                                          ? ListTile(
+                                            title: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Container(
+                                                    width: MediaQuery.of(context).size.width * 0.4,
+                                                    child: bodyText("${snapshot.data[index].nameMenu}")
+                                                ),
+                                                bodyText("${snapshot.data[index].priceMenu}"),
+                                                bodyText("${snapshot.data[index].numberMenu}"),
+                                                bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                              ],
+                                            ),
+                                            subtitle: ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                            trailing: Container(
+                                              width: 40,
+                                              height: 25,
+                                              // child: Icon(Icons.done,color: Colors.green,size: 32,),
+                                              child: Text("ได้รับ",style: TextStyle(color: Colors.greenAccent),),
+                                            ),
+                                          )
+                                          : snapshot.data[index].makeStatus == "ยังไม่ส่ง"
+                                              ? ListTile(
+                                                title: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Container(
+                                                        width: MediaQuery.of(context).size.width * 0.4,
+                                                        child: bodyText("${snapshot.data[index].nameMenu}")
+                                                    ),
+                                                    bodyText("${snapshot.data[index].priceMenu}"),
+                                                    bodyText("${snapshot.data[index].numberMenu}"),
+                                                    bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                  ],
+                                                ),
+                                                subtitle: ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                trailing: Container(
+                                                  width: 40,
+                                                  height: 25,
+                                                  // child: CircularProgressIndicator(strokeWidth: 2),
+                                                  child: Text("รอ..."),
+                                                ),
+                                              )
+                                              : ListTile(
+                                                title: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Container(
+                                                        width: MediaQuery.of(context).size.width * 0.4,
+                                                        child: bodyText("${snapshot.data[index].nameMenu}")
+                                                    ),
+                                                    bodyText("${snapshot.data[index].priceMenu}"),
+                                                    bodyText("${snapshot.data[index].numberMenu}"),
+                                                    bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                  ],
+                                                ),
+                                                subtitle: ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                trailing: Container(
+                                                  width: 40,
+                                                  height: 25,
+                                                  // child: Icon(Icons.clear,color: Colors.red),
+                                                  child: Text("ยกเลิก",style: TextStyle(color: Colors.red),),
+                                                ),
+                                              )
+                                  ),
                                 );
                               },
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                color: Colors.yellowAccent,
-                                child: ListTile(
-                                  title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("ราคารวม :",style: TextStyle(fontSize: 20),),
-                                      Text("${_listOrder.length > 0 ? _listOrder.map((listOrder) => listOrder.priceMenu * listOrder.numberMenu).reduce((value, element) => value + element) : 0}" + " บาท",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                                    ],
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Container(
+                                      height: 40,
+                                      color: Colors.yellowAccent,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text("ราคารวม :",style: TextStyle(fontSize: 18),),
+                                          Text("${_listOrder.length <= 0 ?0 :(_listOrder.map((listOrder) => (listOrder.priceMenu * listOrder.numberMenu) + (listOrder.orderOtherMenu.map((e) => e.orderOtherPrice * listOrder.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element))}" + " บาท",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              height: 50,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  //primary: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: Text("เรียกชำระเงิน",style: TextStyle(fontSize: 18),),
-                                onPressed: (){
-                                  print(_listOrder.length);/// Show Status
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context){
-                                        return AlertDialog(
-                                          content: SingleChildScrollView(
-                                            child: ListBody(
-                                              children: [
-                                                Text("ต้องการเรียกชำระเงิน",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),),
-                                              ],
-                                            ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      //primary: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text("เรียกชำระเงิน",style: TextStyle(fontSize: 18),),
+                                    onPressed: () {
+                                      if(_listOrder.length >= 1){
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context){
+                                              return AlertDialog(
+                                                content: SingleChildScrollView(
+                                                  child: ListBody(
+                                                    children: [
+                                                      Text("ต้องการเรียกชำระเงิน",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),),
+                                                    ],
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: ElevatedButton(
+                                                      child: Text("ยืนยัน"),
+                                                      onPressed: checkBill,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 100),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: ElevatedButton(
+                                                      child: Text("ยกเลิก"),
+                                                      onPressed: (){
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }
+                                        );
+                                      }else{
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          new SnackBar(
+                                            content: Text("คุณยังไม่มีรายการอาหาร..!"),
                                           ),
-                                          actions: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: ElevatedButton(
-                                                child: Text("ยืนยัน"),
-                                                onPressed: checkBill,
-                                              ),
-                                            ),
-                                            SizedBox(width: 100),
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: ElevatedButton(
-                                                child: Text("ยกเลิก"),
-                                                onPressed: (){
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ),
-                                          ],
                                         );
                                       }
-                                  );
-                                },
+                                    }
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ],
                       );
@@ -330,4 +413,41 @@ class _CheckBill extends State<CheckBill> {
 class ListOrderMakeStatus { /// Check Status for use if().
   String listMakeStatus;
   ListOrderMakeStatus(this.listMakeStatus);
+}
+
+/// Create for listview.builder (order_other_menu).
+class ListViewForCheckBill extends StatelessWidget {
+  List<OrderOtherMenu?> listOrderOtherMenu;
+  ListViewForCheckBill(this.listOrderOtherMenu);
+
+
+  /// Widget.
+// Text headerText(String string){
+//   return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),);
+// }
+  Text bodyText(String string){
+    return Text("$string",style: TextStyle(fontSize: 14));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: listOrderOtherMenu.length,
+      itemBuilder: (BuildContext context, int index) => Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: bodyText("+${listOrderOtherMenu[index]!.orderOtherName}"),
+              ),
+              bodyText("${listOrderOtherMenu[index]!.orderOtherPrice}"),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

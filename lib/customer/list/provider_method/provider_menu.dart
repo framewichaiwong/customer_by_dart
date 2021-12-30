@@ -3,20 +3,42 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MenuProvider extends ChangeNotifier {
-  List<MenuCart> cart = [];
+  /// Menu_Cart.
+  List<MenuCart> cartMenu = [];
+  List<String> _forCheckName = [];
 
-  void addMenuToCart(addMenu){
-    cart.add(addMenu);
+  void addMenuToCart(addMenu,forCheckName) async {
+    // String? checkName;
+    bool checkName = _forCheckName.contains(forCheckName); /// เช็คว่ามีค่าใน List หรือไม่.
+    if (checkName != true) {
+      cartMenu.add(addMenu);
+      _forCheckName.add(forCheckName);
+    }else{
+      for(int i=0; i<_forCheckName.length; i++){
+        if(_forCheckName[i] == forCheckName){
+          int oldNumberMenu = cartMenu[i].numberMenu;
+          num newNumberMenu = oldNumberMenu + addMenu.numberMenu;
+          cartMenu[i].numberMenu = newNumberMenu.toInt();
+        }
+      }
+    }
     notifyListeners();
   }
 
-  void removeMenuTFromCart(removeMenu){
-    cart.remove(removeMenu);
+  /*void addMenuToCart(addMenu){
+    cartMenu.add(addMenu);
+    notifyListeners();
+  }*/
+
+  void removeMenuTFromCart(removeMenu,forCheckNameRemove){
+    cartMenu.remove(removeMenu);
+    _forCheckName.remove(forCheckNameRemove);
     notifyListeners();
   }
 
   void clearAllMenuFromCart(){
-    cart.clear();
+    cartMenu.clear();
+    _forCheckName.clear();
     notifyListeners();
   }
 

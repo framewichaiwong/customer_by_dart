@@ -1,3 +1,5 @@
+import 'package:customer_by_dart/customer/class/class_order_other_menu.dart';
+
 class ListOrder {
   int orderId;
   int numberMenu;
@@ -6,5 +8,6 @@ class ListOrder {
   int priceMenu;
   int managerId;
   String makeStatus;
-  ListOrder(this.orderId,this.numberMenu,this.numberTable,this.nameMenu,this.priceMenu,this.managerId,this.makeStatus);
+  List<OrderOtherMenu> orderOtherMenu;
+  ListOrder(this.orderId,this.numberMenu,this.numberTable,this.nameMenu,this.priceMenu,this.managerId,this.makeStatus,this.orderOtherMenu);
 }

@@ -1,5 +1,6 @@
 class Menu {
   int menuId;
+  String categoryName;
   String name;
   int priceMenuNormal;
   int priceMenuSpecial;
@@ -8,5 +9,5 @@ class Menu {
   String statusSale;
   int managerId;
   int numberMenu;//number of menu
-  Menu(this.menuId,this.name,this.priceMenuNormal,this.priceMenuSpecial,this.priceMenuPromotion,this.typeMenu,this.statusSale,this.managerId,this.numberMenu);
+  Menu(this.menuId,this.categoryName,this.name,this.priceMenuNormal,this.priceMenuSpecial,this.priceMenuPromotion,this.typeMenu,this.statusSale,this.managerId,this.numberMenu);
 }

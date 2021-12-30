@@ -51,7 +51,7 @@ class _ListMenu extends State<ListMenu> {
                 padding: const EdgeInsets.all(8.0),
                 child: Badge(
                   badgeContent: Consumer<MenuProvider>(
-                    builder: (BuildContext context, value, Widget? child) => Text("${value.cart.length}"),
+                    builder: (BuildContext context, value, Widget? child) => Text("${value.cartMenu.length}"),
                   ),
                   badgeColor: Colors.lightBlueAccent,
                   animationType: BadgeAnimationType.slide,
