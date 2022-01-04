@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:customer_by_dart/config/config.dart';
+import 'package:customer_by_dart/customer/class/class_cancel_order_menu.dart';
 import 'package:customer_by_dart/customer/class/class_order.dart';
 import 'package:customer_by_dart/customer/class/class_order_other_menu.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
@@ -21,6 +23,7 @@ class _CheckBill extends State<CheckBill> {
   int numberTable;
   _CheckBill(this.userManager,this.numberTable);
 
+  List<ListOrder> _listOrderByCheckStatusForShowTotalPrice = [];
   List<ListOrder> _listOrder = [];
   List<ListOrderMakeStatus> _listMakeStatus = [];
 
@@ -41,22 +44,41 @@ class _CheckBill extends State<CheckBill> {
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
     List<ListOrder> listOrder = [];
+    List<ListOrder> checkCancel = [];
+    List<ListOrder> checkPassAndNotSent = [];
     List<ListOrderMakeStatus> listMakeStatus = []; /// Class name this page.
-    ///
+    List<ListOrder> listOrderByCheckStatusForShowTotalPrice = [];/// For check_status == "ส่งแล้ว" && "ยังไม่ส่ง".
     _listOrder = listOrder;
     _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
+    _listOrderByCheckStatusForShowTotalPrice = listOrderByCheckStatusForShowTotalPrice;/// For check_status == "ส่งแล้ว" && "ยังไม่ส่ง".
 
     for(Map o in data) {
       var response = await http.get(Uri.parse("${Config.url}/orderOtherMenu/listForCustomer/${o['orderId']}"),headers: {'Accept': 'Application/json; charset=UTF-8'});
       var jsonData = jsonDecode(response.body);
       var data = jsonData['data'];
       List<OrderOtherMenu> listOrderOtherMenu = [];
-      for(Map m in data){
-        OrderOtherMenu list = new OrderOtherMenu(m['orderOtherId'], m['orderOtherName'], m['orderOtherPrice'], m['orderId']);
-        listOrderOtherMenu.add(list);
+      if(data == null){
+        listOrderOtherMenu = [];
+      }else{
+        for(Map m in data){
+          OrderOtherMenu list = new OrderOtherMenu(m['orderOtherId'], m['orderOtherName'], m['orderOtherPrice'], m['orderId']);
+          listOrderOtherMenu.add(list);
+        }
       }
-      ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'],listOrderOtherMenu);
-      listOrder.add(lstOrder);
+      // ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'],listOrderOtherMenu);
+      // listOrder.add(lstOrder);
+
+      /// For check_status == "ส่งแล้ว" && "ยังไม่ส่ง". ไว้สำหรับแสดงราคารวม total.
+      if(o['makeStatus']=="ส่งแล้ว" || o['makeStatus']=="ยังไม่ส่ง"){
+        ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'],listOrderOtherMenu);
+        listOrderByCheckStatusForShowTotalPrice.add(lstOrder);
+        checkPassAndNotSent.add(lstOrder); ///---
+      }
+      /// For check_status == "ยกเลิก".
+      if(o['makeStatus']=="ยกเลิก"){
+        ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'],listOrderOtherMenu);
+        checkCancel.add(lstOrder); ///---
+      }
 
       /// Class name this page.
       if(o['makeStatus']=="ส่งแล้ว" || o['makeStatus']=="ยกเลิก") {
@@ -64,22 +86,20 @@ class _CheckBill extends State<CheckBill> {
         listMakeStatus.add(listOrderMakeStatus);
       }
     }
-    listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
+
+    /// สำหรับเก็บค่าที่ เช็คโดย "ส่งแล้ว" && "ยังไม่ส่ง".
+    checkPassAndNotSent.sort((a,b) => a.orderId.compareTo(b.orderId));
+    checkPassAndNotSent.forEach((passAndNotSent) {
+      listOrder.add(passAndNotSent);
+    });
+    /// สำหรับเก็บค่าที่ เช็คโดย "ยกเลิก".
+    checkCancel.sort((a,b) => a.orderId.compareTo(b.orderId));
+    checkCancel.forEach((cancel) {
+      listOrder.add(cancel);
+    });
+    // listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
     return _listOrder;
   }
-
-  /// List order_other_menu.
-  // Future getOrderOtherMenu(orderId) async{
-  //   var response = await http.get(Uri.parse("${Config.url}/orderOtherMenu/listForCustomer/$orderId"),headers: {'Accept': 'Application/json; charset=UTF-8'});
-  //   var jsonData = jsonDecode(response.body);
-  //   var data = jsonData['data'];
-  //   List<OrderOtherMenu> listOrderOtherMenu = [];
-  //   for(Map o in data){
-  //     OrderOtherMenu list = new OrderOtherMenu(o['orderOtherId'], o['orderOtherName'], o['orderOtherPrice'], o['orderId']);
-  //     listOrderOtherMenu.add(list);
-  //   }
-  //   return listOrderOtherMenu;
-  // }
 
   // Stream<void> _getOrder() async*{
   //   var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTable/${userManager[0].managerId}/$numberTable"), headers: {'Accept': 'Application/json; charset=UTF-8'});
@@ -258,7 +278,11 @@ class _CheckBill extends State<CheckBill> {
                                                 bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
                                               ],
                                             ),
-                                            subtitle: ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                            subtitle: Container(
+                                              child: snapshot.data[index].orderOtherMenu==null
+                                                  ? null
+                                                  : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                            ),
                                             trailing: Container(
                                               width: 40,
                                               height: 25,
@@ -280,7 +304,11 @@ class _CheckBill extends State<CheckBill> {
                                                     bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
                                                   ],
                                                 ),
-                                                subtitle: ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                subtitle: Container(
+                                                  child: snapshot.data[index].orderOtherMenu==null
+                                                      ? null
+                                                      : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                ),
                                                 trailing: Container(
                                                   width: 40,
                                                   height: 25,
@@ -288,25 +316,43 @@ class _CheckBill extends State<CheckBill> {
                                                   child: Text("รอ..."),
                                                 ),
                                               )
-                                              : ListTile(
-                                                title: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Container(
+                                              : Container( /// "ยกเลิก"
+                                                color: Colors.black12,
+                                                child: ListTile(
+                                                  title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Container(
                                                         width: MediaQuery.of(context).size.width * 0.4,
                                                         child: bodyText("${snapshot.data[index].nameMenu}")
-                                                    ),
-                                                    bodyText("${snapshot.data[index].priceMenu}"),
-                                                    bodyText("${snapshot.data[index].numberMenu}"),
-                                                    bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
-                                                  ],
-                                                ),
-                                                subtitle: ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
-                                                trailing: Container(
-                                                  width: 40,
-                                                  height: 25,
-                                                  // child: Icon(Icons.clear,color: Colors.red),
-                                                  child: Text("ยกเลิก",style: TextStyle(color: Colors.red),),
+                                                      ),
+                                                      bodyText("${snapshot.data[index].priceMenu}"),
+                                                      bodyText("${snapshot.data[index].numberMenu}"),
+                                                      bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                    ],
+                                                  ),
+                                                  // subtitle: Container(
+                                                  //   child: snapshot.data[index].orderOtherMenu==null
+                                                  //     ? null
+                                                  //     : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                  // ),
+                                                  subtitle: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: [
+                                                      Container(
+                                                        child: snapshot.data[index].orderOtherMenu==null
+                                                            ? null
+                                                            : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                      ),
+                                                      ListViewCancelOrderMenu(snapshot.data[index].orderId), /// Call
+                                                    ],
+                                                  ),
+                                                  trailing: Container(
+                                                    width: 40,
+                                                    height: 25,
+                                                    // child: Icon(Icons.clear,color: Colors.red),
+                                                    child: Text("ยกเลิก",style: TextStyle(color: Colors.red),),
+                                                  ),
                                                 ),
                                               )
                                   ),
@@ -328,7 +374,7 @@ class _CheckBill extends State<CheckBill> {
                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                                         children: [
                                           Text("ราคารวม :",style: TextStyle(fontSize: 18),),
-                                          Text("${_listOrder.length <= 0 ?0 :(_listOrder.map((listOrder) => (listOrder.priceMenu * listOrder.numberMenu) + (listOrder.orderOtherMenu.map((e) => e.orderOtherPrice * listOrder.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element))}" + " บาท",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                          Text("${_listOrderByCheckStatusForShowTotalPrice.length <= 0 ?0 :(_listOrderByCheckStatusForShowTotalPrice.map((listOrder) => (listOrder.priceMenu * listOrder.numberMenu) + (listOrder.orderOtherMenu.isEmpty ?0 :listOrder.orderOtherMenu.map((e) => e.orderOtherPrice * listOrder.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element))}" + " บาท",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                                         ],
                                       ),
                                     ),
@@ -447,6 +493,58 @@ class ListViewForCheckBill extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+/// Create for listview.builder (cancel_order_menu) ในกรณียกเลิกเมนูอาหาร.
+class ListViewCancelOrderMenu extends StatefulWidget {
+  int orderId;
+  ListViewCancelOrderMenu(this.orderId);
+
+
+  @override
+  State<StatefulWidget> createState() => _ListViewCancelOrderMenu(orderId);
+}
+
+class _ListViewCancelOrderMenu extends State<ListViewCancelOrderMenu> {
+  int orderId;
+  _ListViewCancelOrderMenu(this.orderId);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCancelOrderMenu();
+  }
+
+  Future getCancelOrderMenu() async{
+    var response = await http.get(Uri.parse("${Config.url}/cancelOrderMenu/list/$orderId"),headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var jsonData = jsonDecode(response.body);
+    var data = jsonData['data'];
+    List<CancelOrderMenu> list = [];
+    CancelOrderMenu cancelOrderMenu = new CancelOrderMenu(data['cancelId'], data['cancelReason'], data['orderId']);
+    list.add(cancelOrderMenu);
+    return list;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: getCancelOrderMenu(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if(snapshot.data == null || snapshot.data.length == 0){
+          return Container();
+        }else{
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: snapshot.data.length,
+            itemBuilder: (context, int index) => Text("*** ${snapshot.data[index].cancelReason}",style: TextStyle(color: Colors.red),),
+          );
+        }
+      }
     );
   }
 }

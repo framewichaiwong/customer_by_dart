@@ -69,7 +69,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
       if (m['statusSale'] == "ขาย") {
         Menu lst = new Menu(m['menuId'], m['categoryMenu'], m['name'], m['priceMenuNormal'], m['priceMenuSpecial'], m['priceMenuPromotion'], m['typeMenu'], m['statusSale'], m['managerId'], number);
         listMenuSale.add(lst);
-      } else {
+      }else {
         Menu lst = new Menu(m['menuId'], m['categoryMenu'], m['name'], m['priceMenuNormal'], m['priceMenuSpecial'], m['priceMenuPromotion'], m['typeMenu'], m['statusSale'], m['managerId'], number);
         listMenuNotSale.add(lst);
       }
