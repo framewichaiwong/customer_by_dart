@@ -131,56 +131,56 @@ class _CheckBill extends State<CheckBill> {
 
   checkBill() async{
     Navigator.of(context).pop();
-      if(_listOrder.length == _listMakeStatus.length){
-        Map params = new Map();
-        params['managerId'] = userManager[0].managerId.toString();
-        params['numberTable'] = numberTable.toString();
-        await http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
-          print(response.body); /// show data on console
-          var jsonData = jsonDecode(response.body);
-          var status = jsonData['status'];
-          if(status == 1){
-            Map params = new Map();
-            for(int i=0; i<_listOrder.length; i++){ /// Save listOrder to new OrderCheckBill
-              params['numberMenu'] = _listOrder[i].numberMenu.toString();
-              params['numberTable'] = numberTable.toString();
-              params['nameMenu'] = _listOrder[i].nameMenu;
-              params['priceMenu'] = _listOrder[i].priceMenu.toString();
-              params['managerId'] = userManager[0].managerId.toString();
-              params['makeStatus'] = _listOrder[i].makeStatus.toString();
-              http.post(Uri.parse("${Config.url}/orderCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
-                var jsonData = jsonDecode(response.body);
-                var status = jsonData['status'];
-                if(status==1 && i==(_listOrder.length - 1)){
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    new SnackBar(
-                      content: Text("เรียกชำระเงินแล้ว"),
-                    ),
-                  );
-                }/*else{
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    new SnackBar(
-                      content: Text("รายการอาหารยังไม่เสร็จทั้งหมด"),
-                    ),
-                  );
-                }*/
-              });
-            }
-          }else{
-            ScaffoldMessenger.of(context).showSnackBar(
-              new SnackBar(
-                content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
-              ),
-            );
-          }
-        });
-      }else{
-        ScaffoldMessenger.of(context).showSnackBar(
-          new SnackBar(
-            content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
-          ),
-        );
-      }
+      // if(_listOrder.length == _listMakeStatus.length){
+      //   Map params = new Map();
+      //   params['managerId'] = userManager[0].managerId.toString();
+      //   params['numberTable'] = numberTable.toString();
+      //   await http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
+      //     print(response.body); /// show data on console
+      //     var jsonData = jsonDecode(response.body);
+      //     var status = jsonData['status'];
+      //     if(status == 1){
+      //       Map params = new Map();
+      //       for(int i=0; i<_listOrder.length; i++){ /// Save listOrder to new OrderCheckBill
+      //         params['numberMenu'] = _listOrder[i].numberMenu.toString();
+      //         params['numberTable'] = numberTable.toString();
+      //         params['nameMenu'] = _listOrder[i].nameMenu;
+      //         params['priceMenu'] = _listOrder[i].priceMenu.toString();
+      //         params['managerId'] = userManager[0].managerId.toString();
+      //         params['makeStatus'] = _listOrder[i].makeStatus.toString();
+      //         http.post(Uri.parse("${Config.url}/orderCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
+      //           var jsonData = jsonDecode(response.body);
+      //           var status = jsonData['status'];
+      //           if(status==1 && i==(_listOrder.length - 1)){
+      //             ScaffoldMessenger.of(context).showSnackBar(
+      //               new SnackBar(
+      //                 content: Text("เรียกชำระเงินแล้ว"),
+      //               ),
+      //             );
+      //           }/*else{
+      //             ScaffoldMessenger.of(context).showSnackBar(
+      //               new SnackBar(
+      //                 content: Text("รายการอาหารยังไม่เสร็จทั้งหมด"),
+      //               ),
+      //             );
+      //           }*/
+      //         });
+      //       }
+      //     }else{
+      //       ScaffoldMessenger.of(context).showSnackBar(
+      //         new SnackBar(
+      //           content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
+      //         ),
+      //       );
+      //     }
+      //   });
+      // }else{
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     new SnackBar(
+      //       content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
+      //     ),
+      //   );
+      // }
   }
 
   /// Widget.
