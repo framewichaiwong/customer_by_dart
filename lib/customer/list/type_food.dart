@@ -482,8 +482,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                                   );
                                                 } else {
                                                   /// Start for show picture by menu.
-                                                  List<dynamic> imageByMenu =
-                                                      [];
+                                                  List<dynamic> imageByMenu = [];
                                                   for (var i in snapshot.data) {
                                                     imageByMenu.add(i);
                                                   }

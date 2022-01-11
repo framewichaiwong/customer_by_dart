@@ -29,6 +29,7 @@ dependencies:
   qrscan:
   badges:
   carousel_slider:
+  image_picker:
 
 
   # The following adds the Cupertino Icons font to your application.

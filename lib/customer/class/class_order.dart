@@ -8,6 +8,7 @@ class ListOrder {
   int priceMenu;
   int managerId;
   String makeStatus;
+  int tableCheckBillId;
   List<OrderOtherMenu> orderOtherMenu;
-  ListOrder(this.orderId,this.numberMenu,this.numberTable,this.nameMenu,this.priceMenu,this.managerId,this.makeStatus,this.orderOtherMenu);
+  ListOrder(this.orderId,this.numberMenu,this.numberTable,this.nameMenu,this.priceMenu,this.managerId,this.makeStatus,this.tableCheckBillId,this.orderOtherMenu);
 }

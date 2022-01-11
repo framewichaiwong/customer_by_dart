@@ -6,6 +6,7 @@ import 'package:customer_by_dart/customer/class/class_cancel_order_menu.dart';
 import 'package:customer_by_dart/customer/class/class_order.dart';
 import 'package:customer_by_dart/customer/class/class_order_other_menu.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
+import 'package:customer_by_dart/customer/list/pay_transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,6 +28,9 @@ class _CheckBill extends State<CheckBill> {
   List<ListOrder> _listOrder = [];
   List<ListOrderMakeStatus> _listMakeStatus = [];
 
+  int tableCheckBillId = 0;
+  int? _priceTotal;
+
   @override
   void initState(){
     super.initState();
@@ -40,7 +44,7 @@ class _CheckBill extends State<CheckBill> {
   }*/
 
   Future _getOrder() async{
-    var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTable/${userManager[0].managerId}/$numberTable"), headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTableAndTableCheckBillId/${userManager[0].managerId}/$numberTable/$tableCheckBillId"), headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
     List<ListOrder> listOrder = [];
@@ -51,7 +55,6 @@ class _CheckBill extends State<CheckBill> {
     _listOrder = listOrder;
     _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
     _listOrderByCheckStatusForShowTotalPrice = listOrderByCheckStatusForShowTotalPrice;/// For check_status == "ส่งแล้ว" && "ยังไม่ส่ง".
-
     for(Map o in data) {
       var response = await http.get(Uri.parse("${Config.url}/orderOtherMenu/listForCustomer/${o['orderId']}"),headers: {'Accept': 'Application/json; charset=UTF-8'});
       var jsonData = jsonDecode(response.body);
@@ -70,13 +73,13 @@ class _CheckBill extends State<CheckBill> {
 
       /// For check_status == "ส่งแล้ว" && "ยังไม่ส่ง". ไว้สำหรับแสดงราคารวม total.
       if(o['makeStatus']=="ส่งแล้ว" || o['makeStatus']=="ยังไม่ส่ง"){
-        ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'],listOrderOtherMenu);
+        ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'], o['tableCheckBillId'],listOrderOtherMenu);
         listOrderByCheckStatusForShowTotalPrice.add(lstOrder);
         checkPassAndNotSent.add(lstOrder); ///---
       }
       /// For check_status == "ยกเลิก".
       if(o['makeStatus']=="ยกเลิก"){
-        ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'],listOrderOtherMenu);
+        ListOrder lstOrder = new ListOrder(o['orderId'], o['numberMenu'], o['numberTable'], o['nameMenu'], o['priceMenu'], o['managerId'], o['makeStatus'], o['tableCheckBillId'],listOrderOtherMenu);
         checkCancel.add(lstOrder); ///---
       }
 
@@ -97,6 +100,12 @@ class _CheckBill extends State<CheckBill> {
     checkCancel.forEach((cancel) {
       listOrder.add(cancel);
     });
+    /// /// Price Total.
+    if(listOrderByCheckStatusForShowTotalPrice.isEmpty){
+      _priceTotal = 0;
+    }else{
+      _priceTotal = listOrderByCheckStatusForShowTotalPrice.map((list) => (list.numberMenu * list.priceMenu) + (list.orderOtherMenu.length<=0 ?0 :list.orderOtherMenu.map((e) => e.orderOtherPrice * list.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element);
+    }
     // listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
     return _listOrder;
   }
@@ -129,58 +138,137 @@ class _CheckBill extends State<CheckBill> {
   //   yield _listOrder;
   // }
 
-  checkBill() async{
+
+  _onCallCheckBill() async{
+    if(_listOrder.length >= 1){
+      if(_listOrder.length == _listMakeStatus.length){
+        String _paymentStatus = "ยังไม่จ่าย";
+        Map params = new Map();
+        params['managerId'] = userManager[0].managerId.toString();
+        params['numberTable'] = numberTable.toString();
+        var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+        var jsonData = jsonDecode(response.body);
+        if(jsonData['status'] == 1){
+          ScaffoldMessenger.of(context).showSnackBar(
+            new SnackBar(
+              content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
+            ),
+          );
+        }else{
+          showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) => Container(
+                child: Wrap(
+                  children: [
+                    Card(
+                      child: ListTile(
+                          title: Center(
+                            child: Text("จ่ายด้วยการโอน"),
+                          ),
+                        onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => PayByTransfer(userManager[0],numberTable,_listOrderByCheckStatusForShowTotalPrice)));
+                        },
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        title: Center(
+                          child: Text("จ่ายด้วยเงินสด"),
+                        ),
+                        onTap: () => _checkBillDialog(),
+                      ),
+                    ),
+                    Card(
+                      color: Colors.red[300],
+                      child: ListTile(
+                        title: Center(
+                          child: Text("ยกเลิก"),
+                        ),
+                        onTap: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+          );
+        }
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          new SnackBar(
+            content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
+          )
+        );
+      }
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        new SnackBar(
+          content: Text("คุณยังไม่มีรายการอาหาร..!"),
+        ),
+      );
+    }
+  }
+
+  _checkBillDialog() {
+    Navigator.pop(context);
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text("ชำระด้วยเงินสด",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),),
+            content: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("จำนวน : $_priceTotal บาท",textAlign: TextAlign.center,style: TextStyle(fontSize: 25,color: Colors.blue),),
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      child: Text("ยืนยัน"),
+                      onPressed: () => _checkBill(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      child: Text("ยกเลิก"),
+                      onPressed: () => Navigator.pop(context)
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  _checkBill() async{
     Navigator.of(context).pop();
-      // if(_listOrder.length == _listMakeStatus.length){
-      //   Map params = new Map();
-      //   params['managerId'] = userManager[0].managerId.toString();
-      //   params['numberTable'] = numberTable.toString();
-      //   await http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
-      //     print(response.body); /// show data on console
-      //     var jsonData = jsonDecode(response.body);
-      //     var status = jsonData['status'];
-      //     if(status == 1){
-      //       Map params = new Map();
-      //       for(int i=0; i<_listOrder.length; i++){ /// Save listOrder to new OrderCheckBill
-      //         params['numberMenu'] = _listOrder[i].numberMenu.toString();
-      //         params['numberTable'] = numberTable.toString();
-      //         params['nameMenu'] = _listOrder[i].nameMenu;
-      //         params['priceMenu'] = _listOrder[i].priceMenu.toString();
-      //         params['managerId'] = userManager[0].managerId.toString();
-      //         params['makeStatus'] = _listOrder[i].makeStatus.toString();
-      //         http.post(Uri.parse("${Config.url}/orderCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
-      //           var jsonData = jsonDecode(response.body);
-      //           var status = jsonData['status'];
-      //           if(status==1 && i==(_listOrder.length - 1)){
-      //             ScaffoldMessenger.of(context).showSnackBar(
-      //               new SnackBar(
-      //                 content: Text("เรียกชำระเงินแล้ว"),
-      //               ),
-      //             );
-      //           }/*else{
-      //             ScaffoldMessenger.of(context).showSnackBar(
-      //               new SnackBar(
-      //                 content: Text("รายการอาหารยังไม่เสร็จทั้งหมด"),
-      //               ),
-      //             );
-      //           }*/
-      //         });
-      //       }
-      //     }else{
-      //       ScaffoldMessenger.of(context).showSnackBar(
-      //         new SnackBar(
-      //           content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
-      //         ),
-      //       );
-      //     }
-      //   });
-      // }else{
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     new SnackBar(
-      //       content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
-      //     ),
-      //   );
-      // }
+
+    String _paymentType = "ชำระด้วยเงินสด";
+    String _paymentStatus = "ยังไม่จ่าย";
+    Map params = new Map();
+    params['managerId'] = userManager[0].managerId.toString();
+    params['numberTable'] = numberTable.toString();
+    params['paymentType'] = _paymentType;
+    params['paymentStatus'] = _paymentStatus;
+    params['priceTotal'] = _priceTotal.toString();
+    await http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
+      print(response.body); /// show data on console
+      var jsonData = jsonDecode(response.body);
+      var status = jsonData['status'];
+      if(status == 1){
+        ScaffoldMessenger.of(context).showSnackBar(
+          new SnackBar(
+            content: Text("เรียกชำระเงินแล้ว"),
+          )
+        );
+      }
+    });
   }
 
   /// Widget.
@@ -190,15 +278,6 @@ class _CheckBill extends State<CheckBill> {
   Text bodyText(String string){
     return Text("$string",style: TextStyle(fontSize: 14),);
   }
-
-  // FutureBuilder buildFutureBuilder(orderId){
-  //   return FutureBuilder(
-  //     future: getOrderOtherMenu(orderId),
-  //     builder: (BuildContext context, AsyncSnapshot snapshot) => snapshot.data == null
-  //       ? Container()
-  //       : ListViewForCheckBill(snapshot.data)
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -393,49 +472,9 @@ class _CheckBill extends State<CheckBill> {
                                       ),
                                     ),
                                     child: Text("เรียกชำระเงิน",style: TextStyle(fontSize: 18),),
-                                    onPressed: () {
-                                      if(_listOrder.length >= 1){
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context){
-                                              return AlertDialog(
-                                                content: SingleChildScrollView(
-                                                  child: ListBody(
-                                                    children: [
-                                                      Text("ต้องการเรียกชำระเงิน",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),),
-                                                    ],
-                                                  ),
-                                                ),
-                                                actions: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: ElevatedButton(
-                                                      child: Text("ยืนยัน"),
-                                                      onPressed: checkBill,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 100),
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: ElevatedButton(
-                                                      child: Text("ยกเลิก"),
-                                                      onPressed: (){
-                                                        Navigator.of(context).pop();
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            }
-                                        );
-                                      }else{
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          new SnackBar(
-                                            content: Text("คุณยังไม่มีรายการอาหาร..!"),
-                                          ),
-                                        );
-                                      }
-                                    }
+                                    onPressed: () => setState(() {
+                                      _onCallCheckBill();
+                                    }),
                                   ),
                                 ),
                               ),

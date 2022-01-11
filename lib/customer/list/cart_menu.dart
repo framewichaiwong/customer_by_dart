@@ -25,6 +25,7 @@ class _CartMenu extends State<CartMenu> {
   _CartMenu(this.userManager,this.numberTable);
 
   String makeStatus = "ยังไม่ส่ง"; /// create status is beginner send to backend.
+  int tableCheckBillId = 0; /// create status is beginner send to backend.
 
   cartMenuToOrder(_cart) async{
     Navigator.pop(context);
@@ -42,17 +43,15 @@ class _CartMenu extends State<CartMenu> {
       params['priceMenu'] = _cart[i].priceMenu.toString();
       params['managerId'] = userManager[0].managerId.toString();
       params['makeStatus'] = makeStatus; /// กำหนด status เริ่มต้น = ยังไม่ส่ง;
+      params['tableCheckBillId'] = tableCheckBillId.toString();
       var response = await http.post(Uri.parse("${Config.url}/order/saveOrder"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
       var jsonData = jsonDecode(response.body);
       var data = jsonData['data'];
-      print("show_data ===> $data");
       if(data != null){
         /// Call api save (order_other_menu).
         Map params = new Map();
         var _orderId = data['orderId'];
-        var value = 1;
         await _cart[i].otherMenu.forEach((e) async{
-          params['OrderOtherId'] = value.toString();
           params['OrderOtherName'] = e.otherMenuName.toString();
           params['OrderOtherPrice'] = e.otherMenuPrice.toString();
           params['orderId'] = _orderId.toString();
