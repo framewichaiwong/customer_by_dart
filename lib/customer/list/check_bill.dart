@@ -152,6 +152,7 @@ class _CheckBill extends State<CheckBill> {
           ScaffoldMessenger.of(context).showSnackBar(
             new SnackBar(
               content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
+              duration: Duration(seconds: 1),
             ),
           );
         }else{
@@ -197,6 +198,7 @@ class _CheckBill extends State<CheckBill> {
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
+            duration: Duration(seconds: 1),
           )
         );
       }
@@ -204,6 +206,7 @@ class _CheckBill extends State<CheckBill> {
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
           content: Text("คุณยังไม่มีรายการอาหาร..!"),
+          duration: Duration(seconds: 1),
         ),
       );
     }
@@ -265,6 +268,7 @@ class _CheckBill extends State<CheckBill> {
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             content: Text("เรียกชำระเงินแล้ว"),
+            duration: Duration(seconds: 1),
           )
         );
       }

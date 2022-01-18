@@ -32,9 +32,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
 
   @override
   // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
-
-  /// ไม่ต้องรีเฟรซหน้าใหม่เมื่อเปลี่ยน TabBar. And add (with AutomaticKeepAliveClientMixin) behind Class.
+  bool get wantKeepAlive => true; /// ไม่ต้องรีเฟรซหน้าใหม่เมื่อเปลี่ยน TabBar. And add (with AutomaticKeepAliveClientMixin) behind Class.
 
   //search_menu
   List<Menu> searchListMenu = [];
@@ -141,79 +139,79 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                         Center(
                           child: searchListMenu[index].priceMenuPromotion == 0 /// if
                               ? Column( ///true
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: valRadio == 0
-                                    ? Text("*กรุณาเลือก พิเศษ หรือ ธรรมดา", style: TextStyle(color: Colors.redAccent),)
-                                    : Text("กรุณาเลือก พิเศษ หรือ ธรรมดา"),
-                              ),
-                              Center(
-                                child: searchListMenu[index].priceMenuNormal == 0
-                                    ? null
-                                    : ListTile(
-                                  title: Text("ธรรมดา"),
-                                  leading: Radio(
-                                    value: 1,
-                                    groupValue: valRadio,
-                                    onChanged: (int? value0) {
-                                      setState(() {
-                                        valRadio = value0!;
-                                        _nameMenu = "${searchListMenu[index].name} (ธรรมดา)";
-                                        _priceMenu = searchListMenu[index].priceMenuNormal;
-                                      });
-                                    },
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: valRadio == 0
+                                        ? Text("*กรุณาเลือก พิเศษ หรือ ธรรมดา", style: TextStyle(color: Colors.redAccent),)
+                                        : Text("กรุณาเลือก พิเศษ หรือ ธรรมดา"),
                                   ),
-                                ),
-                              ),
-                              Center(
-                                child: searchListMenu[index].priceMenuSpecial == 0
-                                    ? null
-                                    : ListTile(
-                                  title: Text("พิเศษ"),
-                                  leading: Radio(
-                                    value: 2,
-                                    groupValue: valRadio,
-                                    onChanged: (int? value1) {
-                                      setState(() {
-                                        valRadio = value1!;
-                                        _nameMenu = "${searchListMenu[index].name} (พิเศษ)";
-                                        _priceMenu =  searchListMenu[index].priceMenuSpecial;
-                                      });
-                                    },
+                                  Center(
+                                    child: searchListMenu[index].priceMenuNormal == 0
+                                        ? null
+                                        : ListTile(
+                                      title: Text("ธรรมดา"),
+                                      leading: Radio(
+                                        value: 1,
+                                        groupValue: valRadio,
+                                        onChanged: (int? value0) {
+                                          setState(() {
+                                            valRadio = value0!;
+                                            _nameMenu = "${searchListMenu[index].name} (ธรรมดา)";
+                                            _priceMenu = searchListMenu[index].priceMenuNormal;
+                                          });
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          )
+                                  Center(
+                                    child: searchListMenu[index].priceMenuSpecial == 0
+                                        ? null
+                                        : ListTile(
+                                      title: Text("พิเศษ"),
+                                      leading: Radio(
+                                        value: 2,
+                                        groupValue: valRadio,
+                                        onChanged: (int? value1) {
+                                          setState(() {
+                                            valRadio = value1!;
+                                            _nameMenu = "${searchListMenu[index].name} (พิเศษ)";
+                                            _priceMenu =  searchListMenu[index].priceMenuSpecial;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
                               : Column( ///else.
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: valRadio == 0
-                                    ? Text("*กรุณาเลือกโปรโมชั่น", style: TextStyle(color: Colors.redAccent),)
-                                    : Text("กรุณาเลือกโปรโมชั่น"),
-                              ),
-                              Center(
-                                child: searchListMenu[index].priceMenuNormal == 0
-                                    ? null
-                                    : ListTile(
-                                  title: Text("โปรโมชั่น"),
-                                  leading: Radio(
-                                    value: 1,
-                                    groupValue: valRadio,
-                                    onChanged: (int? value0) {
-                                      setState(() {
-                                        valRadio = value0!;
-                                        _nameMenu = "${searchListMenu[index].name} (โปรโมชั่น)";
-                                        _priceMenu = searchListMenu[index].priceMenuPromotion;
-                                      });
-                                    },
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: valRadio == 0
+                                        ? Text("*กรุณาเลือกโปรโมชั่น", style: TextStyle(color: Colors.redAccent),)
+                                        : Text("กรุณาเลือกโปรโมชั่น"),
                                   ),
-                                ),
+                                  Center(
+                                    child: searchListMenu[index].priceMenuNormal == 0
+                                        ? null
+                                        : ListTile(
+                                      title: Text("โปรโมชั่น"),
+                                      leading: Radio(
+                                        value: 1,
+                                        groupValue: valRadio,
+                                        onChanged: (int? value0) {
+                                          setState(() {
+                                            valRadio = value0!;
+                                            _nameMenu = "${searchListMenu[index].name} (โปรโมชั่น)";
+                                            _priceMenu = searchListMenu[index].priceMenuPromotion;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
                         ),
                         FutureBuilder(
                             future: _getCategoryAndOtherMenu(searchListMenu[index]),
@@ -308,8 +306,8 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
       context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
-          duration: Duration(seconds: 1),
           content: Text("เพิ่ม ${searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+          duration: Duration(seconds: 1),
         ),
       );
       number = 1;
@@ -395,9 +393,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                                               return Container(
                                                                   height: 150,
                                                                   width: MediaQuery.of(context).size.width,
-                                                                  child: Card(
-                                                                      child: Image.memory(base64Decode(e), fit: BoxFit.fitWidth)
-                                                                  )
+                                                                  child: Card(child: Image.memory(base64Decode(e), fit: BoxFit.fitWidth))
                                                               );
                                                             },
                                                           );

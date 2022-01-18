@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -28,6 +27,7 @@ class _QrCodeScan extends State<QrCodeScan> {
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             content: Text("กำลังอ่าน QR Code..."),
+            duration: Duration(seconds: 1),
           ),
         );
         await http.get(Uri.parse("${Config.url}/userManager/listUser/${_qr.managerId}"),headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response) {
@@ -40,18 +40,18 @@ class _QrCodeScan extends State<QrCodeScan> {
             ScaffoldMessenger.of(context).showSnackBar(
               new SnackBar(
                 content: Text("สแกนสำเร็จ กำลังเข้าสู่รายการ"),
+                duration: Duration(seconds: 1),
               )
             );
             var _img64 = base64Decode(data['picture']);
             UserManager user = new UserManager(data['managerId'], data['name'], data['surName'], data['tel'], data['nameRestaurant'], data['numberTableTotal'], data['address'], _img64);
             userManager.add(user);
-            Future.delayed(Duration(seconds: 3),
-                    (){Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home(userManager,_qr.numberTable)), (route) => false);
-            });
+            Future.delayed(Duration(seconds: 3),() => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home(userManager,_qr.numberTable)), (route) => false));
           }else{
             ScaffoldMessenger.of(context).showSnackBar(
               new SnackBar(
                 content: Text("QR Code Error"),
+                duration: Duration(seconds: 1),
               ),
             );
           }
@@ -60,6 +60,7 @@ class _QrCodeScan extends State<QrCodeScan> {
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             content: Text("QR Code ไม่ถูกต้อง"),
+            duration: Duration(seconds: 1),
           ),
         );
       }

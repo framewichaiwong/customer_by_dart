@@ -61,7 +61,8 @@ class _PayByTransfer extends State<PayByTransfer> {
     if(_image == null){
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
-          content: Text("กรุณาเลือกรูปภาพการโอนจ่ายเงิน...!"),
+          content: Text("กรุณาเลือกรูปภาพสลิปการโอนเงิน...!"),
+          duration: Duration(seconds: 1),
         )
       );
     }else{
@@ -121,6 +122,7 @@ class _PayByTransfer extends State<PayByTransfer> {
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             content: Text("เรียกชำระเงินแล้ว"),
+            duration: Duration(seconds: 1),
           )
         );
         Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
@@ -128,6 +130,7 @@ class _PayByTransfer extends State<PayByTransfer> {
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             content: Text("เรียกไม่สำเร็จ..!!"),
+            duration: Duration(seconds: 1),
           )
         );
       }
@@ -135,6 +138,7 @@ class _PayByTransfer extends State<PayByTransfer> {
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
           content: Text("รูปภาพผิดพลาด...!!"),
+          duration: Duration(seconds: 1),
         )
       );
     }

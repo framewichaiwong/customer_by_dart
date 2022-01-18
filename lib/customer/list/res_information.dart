@@ -1,5 +1,4 @@
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ResInformation extends StatefulWidget {

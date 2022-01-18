@@ -29,49 +29,65 @@ class _CartMenu extends State<CartMenu> {
 
   cartMenuToOrder(_cart) async{
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      new SnackBar(
-        content: Text("กำลังสั่งรายการอาหาร กรุณารอสักครู่..."),
-      ),
-    );
-    /// Call api save (order_menu).
+    String _paymentStatus = "ยังไม่จ่าย";
     Map params = new Map();
-    for(int i=0; i<_cart.length; i++) {
-      params['numberMenu'] = _cart[i].numberMenu.toString();
-      params['numberTable'] = numberTable.toString();
-      params['nameMenu'] = _cart[i].nameMenu.toString();
-      params['priceMenu'] = _cart[i].priceMenu.toString();
-      params['managerId'] = userManager[0].managerId.toString();
-      params['makeStatus'] = makeStatus; /// กำหนด status เริ่มต้น = ยังไม่ส่ง;
-      params['tableCheckBillId'] = tableCheckBillId.toString();
-      var response = await http.post(Uri.parse("${Config.url}/order/saveOrder"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
-      var jsonData = jsonDecode(response.body);
-      var data = jsonData['data'];
-      if(data != null){
-        /// Call api save (order_other_menu).
-        Map params = new Map();
-        var _orderId = data['orderId'];
-        await _cart[i].otherMenu.forEach((e) async{
-          params['OrderOtherName'] = e.otherMenuName.toString();
-          params['OrderOtherPrice'] = e.otherMenuPrice.toString();
-          params['orderId'] = _orderId.toString();
-          var response = await http.post(Uri.parse("${Config.url}/orderOtherMenu/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
-          print("Response ===> ${response.body}");
-        });
-        if(i==(_cart.length-1)){
+    params['managerId'] = userManager[0].managerId.toString();
+    params['numberTable'] = numberTable.toString();
+    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var jsonData = jsonDecode(response.body);
+    if(jsonData['status'] == 1){
+      ScaffoldMessenger.of(context).showSnackBar(
+        new SnackBar(
+          content: Text("เรียกชำระเงินไปแล้ว ไม่สามารถสั่งอาหารได้..!"),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        new SnackBar(
+          content: Text("กำลังสั่งรายการอาหาร กรุณารอสักครู่..."),
+        ),
+      );
+      /// Call api save (order_menu).
+      Map params = new Map();
+      for(int i=0; i<_cart.length; i++) {
+        params['numberMenu'] = _cart[i].numberMenu.toString();
+        params['numberTable'] = numberTable.toString();
+        params['nameMenu'] = _cart[i].nameMenu.toString();
+        params['priceMenu'] = _cart[i].priceMenu.toString();
+        params['managerId'] = userManager[0].managerId.toString();
+        params['makeStatus'] = makeStatus; /// กำหนด status เริ่มต้น = ยังไม่ส่ง;
+        params['tableCheckBillId'] = tableCheckBillId.toString();
+        var response = await http.post(Uri.parse("${Config.url}/order/saveOrder"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+        var jsonData = jsonDecode(response.body);
+        var data = jsonData['data'];
+        if(data != null){
+          /// Call api save (order_other_menu).
+          Map params = new Map();
+          var _orderId = data['orderId'];
+          await _cart[i].otherMenu.forEach((e) async{
+            params['OrderOtherName'] = e.otherMenuName.toString();
+            params['OrderOtherPrice'] = e.otherMenuPrice.toString();
+            params['orderId'] = _orderId.toString();
+            var response = await http.post(Uri.parse("${Config.url}/orderOtherMenu/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+          });
+          if(i==(_cart.length-1)){
+            ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("สั่งอาหารเรียบร้อย"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            context.read<MenuProvider>().clearAllMenuFromCart(); /// Clear cart menu by Provider.
+          }
+        }else{
           ScaffoldMessenger.of(context).showSnackBar(
             new SnackBar(
-              content: Text("สั่งอาหารเรียบร้อย"),
+              content: Text("กดสั่งอาหารอีกครั้ง..."),
+              duration: Duration(seconds: 1),
             ),
           );
-          context.read<MenuProvider>().clearAllMenuFromCart(); /// Clear cart menu by Provider.
         }
-      }else{
-        ScaffoldMessenger.of(context).showSnackBar(
-          new SnackBar(
-            content: Text("กดสั่งอาหารอีกครั้ง..."),
-          ),
-        );
       }
     }
   }
