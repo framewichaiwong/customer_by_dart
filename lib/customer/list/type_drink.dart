@@ -100,12 +100,12 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
   /// CheckBox Category.
   List<String> _valueFromCheckbox = [];
   /// list (category_menu) AND (other_menu).
-  Future _getCategoryAndOtherMenu(Menu searchListMenu) async {
+  Future _getCategoryAndOtherMenu(Menu showListMenu) async {
     List<OtherMenu> listOtherMenu = [];
     List<CategoryMenu> listCategoryMenu = [];
 
     /// Call api (category_menu).
-    var responseCategoryMenu = await http.get(Uri.parse("${Config.url}/categoryMenu/list/${searchListMenu.managerId}/${searchListMenu.categoryName}"), headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var responseCategoryMenu = await http.get(Uri.parse("${Config.url}/categoryMenu/list/${showListMenu.managerId}/${showListMenu.categoryName}"), headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonDataCategoryMenu = jsonDecode(responseCategoryMenu.body);
     var dataCategoryMenu = jsonDataCategoryMenu['data'];
     for (Map c in dataCategoryMenu) {
