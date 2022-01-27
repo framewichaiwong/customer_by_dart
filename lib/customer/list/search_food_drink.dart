@@ -182,7 +182,9 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                     child: null,
                                   );
                                 } else {
-                                  return CheckBoxOnDialogTypeFoodAndTypeDrink(snapShot.data,
+                                  return CheckBoxOnDialogTypeFoodAndTypeDrink(
+                                    _searchListMenu[index],
+                                        snapShot.data,
                                         (addOtherMenu) => setState(() => _otherMenu.add(addOtherMenu)),
                                         (removeOtherMenu) => setState(() => _otherMenu.remove(removeOtherMenu)),
                                   );
@@ -252,30 +254,56 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
   _buttonSelectMenu(index) {
     if (valRadio == 0) {
       valRadio = 0;
-    } else {
-      /// ทำในนี้
-      List<MenuCart> addListMenu = [];
-      String forCheckName = _nameMenu!;
-      for (int i = 0; i < _searchListMenu.length; i++) {
-        MenuCart lst = new MenuCart(_searchListMenu[index].menuId, _nameMenu!, _priceMenu!, _searchListMenu[index].typeMenu, _searchListMenu[index].managerId, number, _otherMenu);
-        addListMenu.add(lst);
+    }else { /// ถ้าเป็นอาหารเส้น
+      if(_searchListMenu[index].categoryName=="ก๋วยเตี๋ยว"||_searchListMenu[index].categoryName=="ผัดไทย"||_searchListMenu[index].categoryName=="ราดหน้า"||_searchListMenu[index].categoryName=="บะหมี่"){
+        if(_otherMenu.isNotEmpty){
+          /// ทำในนี้
+          List<MenuCart> addListMenu = [];
+          String forCheckName = _nameMenu!;
+          for (int i=0; i<_searchListMenu.length; i++) {
+            MenuCart lst = new MenuCart(_searchListMenu[index].menuId, _nameMenu!, _priceMenu!, _searchListMenu[index].typeMenu, _searchListMenu[index].managerId, number, _otherMenu);
+            addListMenu.add(lst);
+          }
+          _otherMenu.forEach((e) {
+            forCheckName += "+${e.otherMenuName}";
+          });
+          /// Add cart menu by Provider.
+          context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+          ScaffoldMessenger.of(context).showSnackBar(
+            new SnackBar(
+              content: Text("เพิ่ม ${_searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+              duration: Duration(seconds: 1),
+            ),
+          );
+          number = 1;
+          valRadio = 0;
+          _otherMenu = [];
+          Navigator.pop(context);
+        }
+      }else{
+        /// ทำในนี้
+        List<MenuCart> addListMenu = [];
+        String forCheckName = _nameMenu!;
+        for (int i=0; i<_searchListMenu.length; i++) {
+          MenuCart lst = new MenuCart(_searchListMenu[index].menuId, _nameMenu!, _priceMenu!, _searchListMenu[index].typeMenu, _searchListMenu[index].managerId, number, _otherMenu);
+          addListMenu.add(lst);
+        }
+        _otherMenu.forEach((e) {
+          forCheckName += "+${e.otherMenuName}";
+        });
+        /// Add cart menu by Provider.
+        context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+        ScaffoldMessenger.of(context).showSnackBar(
+          new SnackBar(
+            content: Text("เพิ่ม ${_searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        number = 1;
+        valRadio = 0;
+        _otherMenu = [];
+        Navigator.pop(context);
       }
-      _otherMenu.forEach((e) {
-        forCheckName += "+${e.otherMenuName}";
-      });
-
-      /// Add cart menu by Provider.
-      context.read<MenuProvider>().addMenuToCart(addListMenu[index], forCheckName);
-      ScaffoldMessenger.of(context).showSnackBar(
-        new SnackBar(
-          content: Text("เพิ่ม ${_searchListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      number = 1;
-      valRadio = 0;
-      _otherMenu = [];
-      Navigator.pop(context);
     }
   }
 

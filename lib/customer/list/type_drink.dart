@@ -223,9 +223,10 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
                                   );
                                 }else {
                                   return CheckBoxOnDialogTypeFoodAndTypeDrink(
+                                    _showListMenu[index],
                                     snapShot.data,
-                                        (addOtherMenu) => setState(() => _otherMenu.add(addOtherMenu)),
-                                        (removeOtherMenu) => setState(() => _otherMenu.remove(removeOtherMenu)),
+                                    (addOtherMenu) => setState(() => _otherMenu.add(addOtherMenu)),
+                                    (removeOtherMenu) => setState(() => _otherMenu.remove(removeOtherMenu)),
                                   ); /// Check_Box.
                                 }
                               }

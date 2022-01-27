@@ -26,7 +26,7 @@ class _QRValueState extends State<QRValue> {
   }
 
   void _scanQR() async{
-    await http.get(Uri.parse("${Config.url}/userManager/listUser/$managerId")).then((response) {
+    await http.get(Uri.parse("${Config.url}/userManager/listUser/$managerId"),headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response) {
       var jsonData = jsonDecode(response.body);
       var status = jsonData['status'];
       var data = jsonData['data'];

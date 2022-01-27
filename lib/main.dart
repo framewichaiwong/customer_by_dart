@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        // home: QrCodeScan(),
-        home: QRValue(),
+        home: QrCodeScan(),
+        // home: QRValue(),
       ),
     );
   }
