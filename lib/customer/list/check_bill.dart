@@ -456,8 +456,8 @@ class _CheckBill extends State<CheckBill> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                                         children: [
-                                          Text("ราคารวม :",style: TextStyle(fontSize: 18),),
-                                          Text("${_listOrderByCheckStatusForShowTotalPrice.length <= 0 ?0 :(_listOrderByCheckStatusForShowTotalPrice.map((listOrder) => (listOrder.priceMenu * listOrder.numberMenu) + (listOrder.orderOtherMenu.isEmpty ?0 :listOrder.orderOtherMenu.map((e) => e.orderOtherPrice * listOrder.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element))}" + " บาท",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                          Text("ราคารวม :",style: TextStyle(fontSize: 16),),
+                                          Text("${_listOrderByCheckStatusForShowTotalPrice.length <= 0 ?0 :(_listOrderByCheckStatusForShowTotalPrice.map((listOrder) => (listOrder.priceMenu * listOrder.numberMenu) + (listOrder.orderOtherMenu.isEmpty ?0 :listOrder.orderOtherMenu.map((e) => e.orderOtherPrice * listOrder.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element))}" + " บาท",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                                         ],
                                       ),
                                     ),
@@ -475,7 +475,7 @@ class _CheckBill extends State<CheckBill> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                     ),
-                                    child: Text("เรียกชำระเงิน",style: TextStyle(fontSize: 18),),
+                                    child: Text("เรียกชำระเงิน",style: TextStyle(fontSize: 16),),
                                     onPressed: () => setState(() {
                                       _onCallCheckBill();
                                     }),
