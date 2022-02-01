@@ -121,19 +121,21 @@ class _CartMenu extends State<CartMenu> {
                       Navigator.of(context).pop();
                       },
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                            width: 300,
-                            color: Colors.red[300],
-                            child: Center(
-                                child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",
-                                  style: TextStyle(fontSize: 25, color: Colors.white),
-                                )
-                            )
-                        )
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              color: Colors.red[300],
+                              child: Center(
+                                  child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",
+                                    style: TextStyle(fontSize: 25, color: Colors.white),
+                                  )
+                              )
+                          )
+                      ),
                     ),
                   ),
                 ],
@@ -313,7 +315,7 @@ class _CartMenu extends State<CartMenu> {
 
 /// Create for listview.builder (other_menu).
 class ListViewBuilderForCartMenu extends StatelessWidget {
-  List<OtherMenu> otherMenu;
+  List<OtherMenu?> otherMenu;
   ListViewBuilderForCartMenu(this.otherMenu);
 
   /// Widget.
@@ -336,9 +338,9 @@ class ListViewBuilderForCartMenu extends StatelessWidget {
             children: [
               Container(
                 width: MediaQuery.of(context).size.width * 0.48,
-                child: bodyText("+${otherMenu[index].otherMenuName}"),
+                child: bodyText("+${otherMenu[index]!.otherMenuName}"),
               ),
-              bodyText("${otherMenu[index].otherMenuPrice}"),
+              bodyText("${otherMenu[index]!.otherMenuPrice}"),
             ],
           ),
         ],

@@ -29,7 +29,7 @@ class _ResInformation extends State<ResInformation> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: Container(
-                        width: 400,
+                        width: MediaQuery.of(context).size.width,
                         color: Colors.red[300],
                         child: Center(
                           child: Text("ร้าน : " + "${userManager[0].nameRestaurant}",style: TextStyle(fontSize: 25,color: Colors.white),),

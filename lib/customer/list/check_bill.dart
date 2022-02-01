@@ -297,7 +297,7 @@ class _CheckBill extends State<CheckBill> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30),
                   child: Container(
-                    width: 300,
+                    width: MediaQuery.of(context).size.width,
                     color: Colors.red[300],
                     child: Center(
                       child: Text("รายการที่สั่ง : " + "โต๊ะ " + "$numberTable", style: TextStyle(fontSize: 25,color: Colors.white),

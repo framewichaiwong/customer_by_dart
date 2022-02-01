@@ -10,6 +10,7 @@ import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:customer_by_dart/customer/list/provider_method/provider_menu.dart';
 import 'package:customer_by_dart/customer/list/search_food_drink.dart';
 import 'package:customer_by_dart/customer/list/state/check_dialog_typefood_typedrink.dart';
+import 'package:customer_by_dart/customer/list/state/listview_other_menu_typefood_typedrink.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -38,26 +39,30 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
   List<Menu> _showListMenu = [];
   int number = 1;
 
-  String typeFood = "เครื่องดื่ม";
+  String typeDrink = "เครื่องดื่ม";
   String? _nameMenu;
   int? _priceMenu;
   int? valRadio;
 
-  List<OtherMenu> _otherMenu = []; /// Add other_menu to cart.
+  List<String> _showOtherStatus = [];
+  List<String> _showOtherSelection = [];
+  List<OtherMenu> _listOtherMenuSelect = [];
+  List<OtherMenu> _listOtherMenuNotSelect = [];
+
+  /// Add other_menu to cart.
+  List<OtherMenu> _otherMenuCheckBox = [];
+  List<OtherMenu> _otherMenuRadio = [];
 
   @override
   void initState() {
     super.initState();
     _getMenu();
-
     /// initState function (getMenu).
     valRadio = 0;
-
-    /// Can to setState((){});
   }
 
   Future<List<Menu>> _getMenu() async {
-    var response = await http.get(Uri.parse("${Config.url}/menu/getMenu/${userManager[0].managerId}/$typeFood"), headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var response = await http.get(Uri.parse("${Config.url}/menu/getMenu/${userManager[0].managerId}/$typeDrink"), headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
     List<Menu> listMenuSale = [];
@@ -90,19 +95,25 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
 
   Future _getMenuImage(snapshot) async {
     var dataImage;
-    await http.get(Uri.parse("${Config.url}/image/list/${snapshot.managerId}/${snapshot.menuId}/$typeFood"), headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response) {
+    await http.get(Uri.parse("${Config.url}/image/list/${snapshot.managerId}/${snapshot.menuId}/$typeDrink"), headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response) {
       var jsonData = jsonDecode(response.body);
       dataImage = jsonData['data'];
     });
     return dataImage;
   }
 
-  /// CheckBox Category.
-  List<String> _valueFromCheckbox = [];
   /// list (category_menu) AND (other_menu).
   Future _getCategoryAndOtherMenu(Menu showListMenu) async {
     List<OtherMenu> listOtherMenu = [];
+    List<OtherMenu> listOtherMenuSelect = [];
+    List<OtherMenu> listOtherMenuNotSelect = [];
     List<CategoryMenu> listCategoryMenu = [];
+    ///
+    List<String> showOtherStatusBySelect = [];
+    List<String> showOtherStatusByNotSelect = [];
+    List<String> showOtherStatus = [];
+    List<String> showOtherSelection = [];///
+    _showOtherSelection = [];///
 
     /// Call api (category_menu).
     var responseCategoryMenu = await http.get(Uri.parse("${Config.url}/categoryMenu/list/${showListMenu.managerId}/${showListMenu.categoryName}"), headers: {'Accept': 'Application/json; charset=UTF-8'});
@@ -116,9 +127,33 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
       var responseOtherMenu = await http.get(Uri.parse('${Config.url}/otherMenu/list/${list.otherMenuId}'), headers: {'Accept': 'Application/json; charset=UTF-8'});
       var jsonDataOtherMenu = jsonDecode(responseOtherMenu.body);
       var dataOtherMenu = jsonDataOtherMenu['data'];
-      OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
+      OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
       listOtherMenu.add(otherMenu);
+      showOtherSelection.add(dataOtherMenu['otherSelection']);///
+
+      if(dataOtherMenu['otherSelection'] == "เลือก"){
+        OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
+        listOtherMenuSelect.add(otherMenu);
+        showOtherStatusBySelect.add(dataOtherMenu['otherStatus']);
+      }else{
+        OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
+        listOtherMenuNotSelect.add(otherMenu);
+        showOtherStatusByNotSelect.add(dataOtherMenu['otherStatus']);
+      }
+      _showOtherSelection = showOtherSelection.toSet().toList();///
     }
+    _listOtherMenuSelect = listOtherMenuSelect;
+    _listOtherMenuNotSelect = listOtherMenuNotSelect;
+
+    showOtherStatusBySelect.toSet().toList();
+    for(int i=0; i<showOtherStatusBySelect.length; i++){
+      showOtherStatus.add(showOtherStatusBySelect[i]);
+    }
+    showOtherStatusByNotSelect.toSet().toList();
+    for(int i=0; i<showOtherStatusByNotSelect.length; i++){
+      showOtherStatus.add(showOtherStatusByNotSelect[i]);
+    }
+    _showOtherStatus = showOtherStatus.toSet().toList();
     return listOtherMenu;
   }
 
@@ -215,19 +250,26 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
                           ),
                           FutureBuilder(
                               future: _getCategoryAndOtherMenu(_showListMenu[index]),
-                              builder: (BuildContext context, AsyncSnapshot snapShot) {
-                                if (snapShot.data == null || snapShot.data.length == 0) {
+                              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                                if (snapshot.data == null || snapshot.data.length == 0) {
                                   return Center(
-                                    //child: CircularProgressIndicator(),
+                                    // child: CircularProgressIndicator(),
                                     child: null,
                                   );
                                 }else {
-                                  return CheckBoxOnDialogTypeFoodAndTypeDrink(
-                                    _showListMenu[index],
-                                    snapShot.data,
-                                    (addOtherMenu) => setState(() => _otherMenu.add(addOtherMenu)),
-                                    (removeOtherMenu) => setState(() => _otherMenu.remove(removeOtherMenu)),
-                                  ); /// Check_Box.
+                                  return ListViewForOtherMenu(
+                                    _listOtherMenuNotSelect,
+                                    _listOtherMenuSelect,
+                                    _showOtherStatus,
+                                        (addOtherMenu) => setState(() => _otherMenuCheckBox.add(addOtherMenu)),
+                                        (removeOtherMenu) => setState(() => _otherMenuCheckBox.remove(removeOtherMenu)),
+                                        (selectOtherMenu) => setState(() {
+                                      _otherMenuRadio = [];
+                                      for(int i=0; i<selectOtherMenu.length; i++){
+                                        _otherMenuRadio.add(selectOtherMenu[i]);
+                                      }
+                                    }),
+                                  );
                                 }
                               }
                           ),
@@ -275,7 +317,8 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
                         onPressed: () {
                           number = 1;
                           valRadio = 0;
-                          _otherMenu = [];
+                          _otherMenuCheckBox = [];
+                          _otherMenuRadio = [];
                           Navigator.pop(context);
                         },
                       ),
@@ -290,30 +333,151 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
 
   /// Button select_menu.
   _buttonSelectMenu(index) {
-    if (valRadio == 0) {
+    if(valRadio == 0){ /// ().
       valRadio = 0;
-    }else { /// ทำในนี้
-      List<MenuCart> addListMenu = [];
-      String forCheckName = _nameMenu!;
-      for (int i=0; i<_showListMenu.length; i++) {
-        MenuCart lst = new MenuCart(_showListMenu[index].menuId, _nameMenu!, _priceMenu!, _showListMenu[index].typeMenu, _showListMenu[index].managerId, number, _otherMenu);
-        addListMenu.add(lst);
+      print("ds");
+    }else{ /// ().
+      if(_showOtherSelection.isEmpty || _showOtherSelection.length==0){ /// ().
+        List<MenuCart> addListMenu = [];
+        String forCheckName = _nameMenu!;
+        for (int i=0; i<_showListMenu.length; i++) {
+          MenuCart lst = new MenuCart(_showListMenu[index].menuId, _nameMenu!, _priceMenu!, _showListMenu[index].typeMenu, _showListMenu[index].managerId, number, []);
+          addListMenu.add(lst);
+        }
+        /// Add cart menu by Provider.
+        context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+        ScaffoldMessenger.of(context).showSnackBar(
+          new SnackBar(
+            content: Text("เพิ่ม ${_showListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        number = 1;
+        valRadio = 0;
+        Navigator.pop(context);
+      }else{ /// ().
+        if(_showOtherSelection.contains("เลือก") && _showOtherSelection.contains("ไม่เลือก")){ /// ().
+          if(_otherMenuRadio.isNotEmpty && _otherMenuCheckBox.isEmpty){
+            List<MenuCart> addListMenu = [];
+            String forCheckName = _nameMenu!;
+            for (int i=0; i<_showListMenu.length; i++) {
+              MenuCart lst = new MenuCart(_showListMenu[index].menuId, _nameMenu!, _priceMenu!, _showListMenu[index].typeMenu, _showListMenu[index].managerId, number, _otherMenuRadio);
+              addListMenu.add(lst);
+            }
+            _otherMenuRadio.forEach((e) {
+              forCheckName += "+${e.otherMenuName}";
+            });
+            /// Add cart menu by Provider.
+            context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+            ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("เพิ่ม ${_showListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            number = 1;
+            valRadio = 0;
+            _otherMenuRadio = [];
+            Navigator.pop(context);
+          }else if(_otherMenuRadio.isNotEmpty && _otherMenuCheckBox.isNotEmpty){
+            List<MenuCart> addListMenu = [];
+            String forCheckName = _nameMenu!;
+            List<OtherMenu> _otherMenuByRadioAndCheckBox = [];
+            for(int i=0; i<_otherMenuRadio.length; i++){
+              _otherMenuByRadioAndCheckBox.add(_otherMenuRadio[i]);
+            }
+            for(int i=0; i<_otherMenuCheckBox.length; i++){
+              _otherMenuByRadioAndCheckBox.add(_otherMenuCheckBox[i]);
+            }
+            for (int i=0; i<_showListMenu.length; i++) {
+              MenuCart lst = new MenuCart(_showListMenu[index].menuId, _nameMenu!, _priceMenu!, _showListMenu[index].typeMenu, _showListMenu[index].managerId, number, _otherMenuByRadioAndCheckBox);
+              addListMenu.add(lst);
+            }
+            _otherMenuByRadioAndCheckBox.forEach((e) {
+              forCheckName += "+${e.otherMenuName}";
+            });
+            /// Add cart menu by Provider.
+            context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+            ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("เพิ่ม ${_showListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            number = 1;
+            valRadio = 0;
+            _otherMenuRadio = [];
+            _otherMenuCheckBox = [];
+            Navigator.pop(context);
+          }
+        }else if(_showOtherSelection.contains("เลือก")){ /// ().
+          if(_otherMenuRadio.isNotEmpty){ /// ().
+            List<MenuCart> addListMenu = [];
+            String forCheckName = _nameMenu!;
+            for (int i=0; i<_showListMenu.length; i++) {
+              MenuCart lst = new MenuCart(_showListMenu[index].menuId, _nameMenu!, _priceMenu!, _showListMenu[index].typeMenu, _showListMenu[index].managerId, number, _otherMenuRadio);
+              addListMenu.add(lst);
+            }
+            _otherMenuRadio.forEach((e) {
+              forCheckName += "+${e.otherMenuName}";
+            });
+            /// Add cart menu by Provider.
+            context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+            ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("เพิ่ม ${_showListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            number = 1;
+            valRadio = 0;
+            _otherMenuRadio = [];
+            Navigator.pop(context);
+          }
+        }else if(_showOtherSelection.contains("ไม่เลือก")){ /// ().
+          if(_otherMenuCheckBox.isEmpty){
+            List<MenuCart> addListMenu = [];
+            String forCheckName = _nameMenu!;
+            for (int i=0; i<_showListMenu.length; i++) {
+              MenuCart lst = new MenuCart(_showListMenu[index].menuId, _nameMenu!, _priceMenu!, _showListMenu[index].typeMenu, _showListMenu[index].managerId, number, []);
+              addListMenu.add(lst);
+            }
+            /// Add cart menu by Provider.
+            context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+            ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("เพิ่ม ${_showListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            number = 1;
+            valRadio = 0;
+            Navigator.pop(context);
+          }else if(_otherMenuCheckBox.isNotEmpty){
+            List<MenuCart> addListMenu = [];
+            String forCheckName = _nameMenu!;
+            for (int i=0; i<_showListMenu.length; i++) {
+              MenuCart lst = new MenuCart(_showListMenu[index].menuId, _nameMenu!, _priceMenu!, _showListMenu[index].typeMenu, _showListMenu[index].managerId, number, _otherMenuCheckBox);
+              addListMenu.add(lst);
+            }
+            _otherMenuCheckBox.forEach((e) {
+              forCheckName += "+${e.otherMenuName}";
+            });
+            /// Add cart menu by Provider.
+            context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
+            ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("เพิ่ม ${_showListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            number = 1;
+            valRadio = 0;
+            _otherMenuCheckBox = [];
+            Navigator.pop(context);
+          }
+        }
       }
-      _otherMenu.forEach((e) {
-        forCheckName += "+${e.otherMenuName}";
-      });
-      /// Add cart menu by Provider.
-      context.read<MenuProvider>().addMenuToCart(addListMenu[index],forCheckName);
-      ScaffoldMessenger.of(context).showSnackBar(
-        new SnackBar(
-          content: Text("เพิ่ม ${_showListMenu[index].name} จำนวน $number" + " ไปยังรถเข็นของคุณ"),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      number = 1;
-      valRadio = 0;
-      _otherMenu = [];
-      Navigator.pop(context);
     }
   }
 
@@ -547,12 +711,12 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
           heroTag: "searchDrink",
           onPressed: () => _showListMenu.isEmpty
               ? ScaffoldMessenger.of(context).showSnackBar(
-                new SnackBar(
-                  content: Text("ไม่มีข้อมูลรายการ"),
-                  duration: Duration(seconds: 1),
-                )
+              new SnackBar(
+                content: Text("ไม่มีข้อมูลรายการ"),
+                duration: Duration(seconds: 1),
               )
-              : Navigator.push(context, CupertinoPageRoute(builder: (context) => SearchFoodDrink(_showListMenu))),
+          )
+              : Navigator.push(context, CupertinoPageRoute(builder: (context) => SearchFoodDrink(typeDrink,_showListMenu))),
         ),
       ),
     );
