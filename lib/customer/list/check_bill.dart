@@ -289,7 +289,8 @@ class _CheckBill extends State<CheckBill> {
     return Scaffold(
       body: SafeArea(
         child: Card(
-          color: Colors.red[100],
+          // color: Colors.red[100],
+          color: Colors.white,
           child: Column(
             children: [
               Padding(
@@ -345,8 +346,8 @@ class _CheckBill extends State<CheckBill> {
                               itemCount: snapshot.data.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Card(
+                                  color: Colors.grey[200],
                                   child: Container(
-                                      color: Colors.white,
                                       child: snapshot.data[index].makeStatus == "ส่งแล้ว" /// Status condition
                                           ? ListTile(
                                             title: Row(

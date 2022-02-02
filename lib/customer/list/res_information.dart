@@ -19,7 +19,8 @@ class _ResInformation extends State<ResInformation> {
     return Scaffold(
       body: SafeArea(
         child: Card(
-          color: Colors.red[100],
+          // color: Colors.red[100],
+          color: Colors.white,
           child: ListView(
             children: [
               Column(

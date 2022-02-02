@@ -110,7 +110,8 @@ class _CartMenu extends State<CartMenu> {
     return Scaffold(
       body: SafeArea(
         child: Card(
-          color: Colors.red[100],
+          // color: Colors.red[100],
+          color: Colors.white,
           child: Column(
             children: <Widget>[
               Row(
@@ -123,7 +124,7 @@ class _CartMenu extends State<CartMenu> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(30),
                           child: Container(
@@ -167,40 +168,38 @@ class _CartMenu extends State<CartMenu> {
                   itemCount: _cart.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Card(
-                      child: Container(
-                        color: Colors.white,
-                        child: ListTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                  width: MediaQuery.of(context).size.width * 0.4,
-                                  child: bodyText("${_cart[index].nameMenu}")
-                              ),
-                              bodyText("${_cart[index].priceMenu}"),
-                              bodyText("${_cart[index].numberMenu}"),
-                              bodyText("${(_cart[index].priceMenu * _cart[index].numberMenu) + (_cart[index].otherMenu.length == 0 ?0 :_cart[index].otherMenu.map((e) => e.otherMenuPrice * _cart[index].numberMenu).reduce((value, element) => value + element))}"),
-                            ],
-                          ),
-                          subtitle: Container(
-                            child: _cart[index].otherMenu.length == 0
-                            ? null
-                            : ListViewBuilderForCartMenu(_cart[index].otherMenu),
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.clear),
-                            color: Colors.red,
-                            splashColor: Colors.green,
-                            onPressed: () {
-                              setState(() {
-                                String forCheckNameRemove = _cart[index].nameMenu;
-                                _cart[index].otherMenu.forEach((e) {
-                                  forCheckNameRemove += "+${e.otherMenuName}";
-                                });
-                                context.read<MenuProvider>().removeMenuTFromCart(_cart[index],forCheckNameRemove); /// Send data by Provider.
+                      color: Colors.grey[200],
+                      child: ListTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                child: bodyText("${_cart[index].nameMenu}")
+                            ),
+                            bodyText("${_cart[index].priceMenu}"),
+                            bodyText("${_cart[index].numberMenu}"),
+                            bodyText("${(_cart[index].priceMenu * _cart[index].numberMenu) + (_cart[index].otherMenu.length == 0 ?0 :_cart[index].otherMenu.map((e) => e.otherMenuPrice * _cart[index].numberMenu).reduce((value, element) => value + element))}"),
+                          ],
+                        ),
+                        subtitle: Container(
+                          child: _cart[index].otherMenu.length == 0
+                          ? null
+                          : ListViewBuilderForCartMenu(_cart[index].otherMenu),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.clear),
+                          color: Colors.red,
+                          splashColor: Colors.green,
+                          onPressed: () {
+                            setState(() {
+                              String forCheckNameRemove = _cart[index].nameMenu;
+                              _cart[index].otherMenu.forEach((e) {
+                                forCheckNameRemove += "+${e.otherMenuName}";
                               });
-                            },
-                          ),
+                              context.read<MenuProvider>().removeMenuTFromCart(_cart[index],forCheckNameRemove); /// Send data by Provider.
+                            });
+                          },
                         ),
                       ),
                     );
