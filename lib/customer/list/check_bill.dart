@@ -9,6 +9,7 @@ import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:customer_by_dart/customer/list/pay_transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class CheckBill extends StatefulWidget {
   List<UserManager> userManager;
@@ -23,6 +24,9 @@ class _CheckBill extends State<CheckBill> {
   List<UserManager> userManager;
   int numberTable;
   _CheckBill(this.userManager,this.numberTable);
+
+  // var numberFormat = NumberFormat("#,##0.00"); /// Format price.
+  var numberFormat = NumberFormat("#,###"); /// Format price.
 
   List<ListOrder> _listOrderByCheckStatusForShowTotalPrice = [];
   List<ListOrder> _listOrder = [];
@@ -184,7 +188,7 @@ class _CheckBill extends State<CheckBill> {
                       color: Colors.red[300],
                       child: ListTile(
                         title: Center(
-                          child: Text("ยกเลิก"),
+                          child: Text("ย้อนกลับ"),
                         ),
                         onTap: () => Navigator.pop(context),
                       ),
@@ -212,6 +216,81 @@ class _CheckBill extends State<CheckBill> {
     }
   }
 
+  /// แก้
+  // _onCallCheckBill() async{
+  //   String _paymentStatus = "ยังไม่จ่าย";
+  //   Map params = new Map();
+  //   params['managerId'] = userManager[0].managerId.toString();
+  //   params['numberTable'] = numberTable.toString();
+  //   var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+  //   var jsonData = jsonDecode(response.body);
+  //   if(jsonData['status'] == 1){
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       new SnackBar(
+  //         content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
+  //         duration: Duration(seconds: 1),
+  //       ),
+  //     );
+  //   }else{
+  //     print("_listOrder ===>> ${_listOrder.length}");
+  //     if(_listOrder.length > 0){
+  //       if(_listOrder.length == _listMakeStatus.length){
+  //         showModalBottomSheet(
+  //             context: context,
+  //             builder: (BuildContext context) => Container(
+  //               child: Wrap(
+  //                 children: [
+  //                   Card(
+  //                     child: ListTile(
+  //                       title: Center(
+  //                         child: Text("จ่ายด้วยการโอน"),
+  //                       ),
+  //                       onTap: () {
+  //                         Navigator.pop(context);
+  //                         Navigator.push(context, MaterialPageRoute(builder: (context) => PayByTransfer(userManager[0],numberTable,_listOrderByCheckStatusForShowTotalPrice)));
+  //                       },
+  //                     ),
+  //                   ),
+  //                   Card(
+  //                     child: ListTile(
+  //                       title: Center(
+  //                         child: Text("จ่ายด้วยเงินสด"),
+  //                       ),
+  //                       onTap: () => _checkBillDialog(),
+  //                     ),
+  //                   ),
+  //                   Card(
+  //                     color: Colors.red[300],
+  //                     child: ListTile(
+  //                       title: Center(
+  //                         child: Text("ยกเลิก"),
+  //                       ),
+  //                       onTap: () => Navigator.pop(context),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             )
+  //         );
+  //       }else{
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             new SnackBar(
+  //               content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
+  //               duration: Duration(seconds: 1),
+  //             )
+  //         );
+  //       }
+  //     }else{
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         new SnackBar(
+  //           content: Text("คุณยังไม่มีรายการอาหาร..!"),
+  //           duration: Duration(seconds: 1),
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
+
   _checkBillDialog() {
     Navigator.pop(context);
     return showDialog(
@@ -224,21 +303,31 @@ class _CheckBill extends State<CheckBill> {
               child: Text("จำนวน : $_priceTotal บาท",textAlign: TextAlign.center,style: TextStyle(fontSize: 25,color: Colors.blue),),
             ),
             actions: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      child: Text("ยืนยัน"),
-                      onPressed: () => _checkBill(),
+                  Center(
+                    child: Container(
+                      height: 40,
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                        ),
+                        child: Text("ยืนยัน"),
+                        onPressed: () => _checkBill(),
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      child: Text("ยกเลิก"),
-                      onPressed: () => Navigator.pop(context)
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.red[300],
+                        ),
+                        child: Text("ย้อนกลับ"),
+                        onPressed: () => Navigator.pop(context)
+                      ),
                     ),
                   ),
                 ],
@@ -280,16 +369,23 @@ class _CheckBill extends State<CheckBill> {
     return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),);
   }
   Text bodyText(String string){
-    return Text("$string",style: TextStyle(fontSize: 14),);
+    return Text("$string",style: TextStyle(fontSize: 14));
   }
-
+  Text bodyNumberMenu(String string){
+    return Text("$string",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
+  }
+  Text bodyPrice(String string){
+    return Text("${numberFormat.format(int.parse(string))}",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
+  }
+  Text bodyTotalPrice(String string){
+    return Text("${numberFormat.format(int.parse(string))} บาท",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),);
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       body: SafeArea(
         child: Card(
-          // color: Colors.red[100],
           color: Colors.white,
           child: Column(
             children: [
@@ -354,12 +450,21 @@ class _CheckBill extends State<CheckBill> {
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Container(
-                                                    width: MediaQuery.of(context).size.width * 0.4,
-                                                    child: bodyText("${snapshot.data[index].nameMenu}")
+                                                  width: MediaQuery.of(context).size.width * 0.4,
+                                                  child: bodyText("${snapshot.data[index].nameMenu}")
                                                 ),
-                                                bodyText("${snapshot.data[index].priceMenu}"),
-                                                bodyText("${snapshot.data[index].numberMenu}"),
-                                                bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width * 0.08,
+                                                  child: bodyPrice("${snapshot.data[index].priceMenu}"),
+                                                ),
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width * 0.05,
+                                                  child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
+                                                ),
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width * 0.1,
+                                                  child: bodyPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                ),
                                               ],
                                             ),
                                             subtitle: Container(
@@ -371,7 +476,7 @@ class _CheckBill extends State<CheckBill> {
                                               width: 40,
                                               height: 25,
                                               // child: Icon(Icons.done,color: Colors.green,size: 32,),
-                                              child: Text("ได้รับ",style: TextStyle(color: Colors.greenAccent),),
+                                              child: Text("ได้รับ",style: TextStyle(color: Colors.green[600]),textAlign: TextAlign.right),
                                             ),
                                           )
                                           : snapshot.data[index].makeStatus == "ยังไม่ส่ง"
@@ -383,9 +488,18 @@ class _CheckBill extends State<CheckBill> {
                                                         width: MediaQuery.of(context).size.width * 0.4,
                                                         child: bodyText("${snapshot.data[index].nameMenu}")
                                                     ),
-                                                    bodyText("${snapshot.data[index].priceMenu}"),
-                                                    bodyText("${snapshot.data[index].numberMenu}"),
-                                                    bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                    Container(
+                                                      width: MediaQuery.of(context).size.width * 0.08,
+                                                      child: bodyPrice("${snapshot.data[index].priceMenu}"),
+                                                    ),
+                                                    Container(
+                                                      width: MediaQuery.of(context).size.width * 0.05,
+                                                      child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
+                                                    ),
+                                                    Container(
+                                                      width: MediaQuery.of(context).size.width * 0.1,
+                                                      child: bodyPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                    ),
                                                   ],
                                                 ),
                                                 subtitle: Container(
@@ -397,7 +511,7 @@ class _CheckBill extends State<CheckBill> {
                                                   width: 40,
                                                   height: 25,
                                                   // child: CircularProgressIndicator(strokeWidth: 2),
-                                                  child: Text("รอ..."),
+                                                  child: Text("รอ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.right),
                                                 ),
                                               )
                                               : Container( /// "ยกเลิก"
@@ -435,7 +549,7 @@ class _CheckBill extends State<CheckBill> {
                                                     width: 40,
                                                     height: 25,
                                                     // child: Icon(Icons.clear,color: Colors.red),
-                                                    child: Text("ยกเลิก",style: TextStyle(color: Colors.red),),
+                                                    child: Text("ยกเลิก",style: TextStyle(color: Colors.red),textAlign: TextAlign.right),
                                                   ),
                                                 ),
                                               )
@@ -444,46 +558,49 @@ class _CheckBill extends State<CheckBill> {
                               },
                             ),
                           ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: Container(
-                                      height: 40,
-                                      color: Colors.yellowAccent,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text("ราคารวม :",style: TextStyle(fontSize: 16),),
-                                          Text("${_listOrderByCheckStatusForShowTotalPrice.length <= 0 ?0 :(_listOrderByCheckStatusForShowTotalPrice.map((listOrder) => (listOrder.priceMenu * listOrder.numberMenu) + (listOrder.orderOtherMenu.isEmpty ?0 :listOrder.orderOtherMenu.map((e) => e.orderOtherPrice * listOrder.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element))}" + " บาท",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                        ],
-                                      ),
+                          Card(
+                            color: Colors.grey[200],
+                            child: Column(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    height: 40,
+                                    // color: Colors.yellowAccent,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text("รวมทั้งหมด :",style: TextStyle(fontSize: 18),),
+                                        Container(
+                                          child: _listOrderByCheckStatusForShowTotalPrice.length <= 0
+                                              ? bodyTotalPrice("${0}")
+                                              : bodyTotalPrice("${_listOrderByCheckStatusForShowTotalPrice.length <= 0 ?0 :(_listOrderByCheckStatusForShowTotalPrice.map((listOrder) => (listOrder.priceMenu * listOrder.numberMenu) + (listOrder.orderOtherMenu.isEmpty ?0 :listOrder.orderOtherMenu.map((e) => e.orderOtherPrice * listOrder.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element))}"),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  height: 40,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      //primary: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8,right: 8),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.green[600]
+                                        // shape: RoundedRectangleBorder(
+                                        //   borderRadius: BorderRadius.circular(10),
+                                        // ),
                                       ),
+                                      child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
+                                      onPressed: (){
+                                        _getOrder();
+                                        _onCallCheckBill();
+                                      }
                                     ),
-                                    child: Text("เรียกชำระเงิน",style: TextStyle(fontSize: 16),),
-                                    onPressed: () => setState(() {
-                                      _onCallCheckBill();
-                                    }),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       );
@@ -517,6 +634,9 @@ class ListViewForCheckBill extends StatelessWidget {
   Text bodyText(String string){
     return Text("$string",style: TextStyle(fontSize: 14));
   }
+  Text bodyPrice(String string){
+    return Text("$string",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -529,10 +649,14 @@ class ListViewForCheckBill extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: MediaQuery.of(context).size.width * 0.48,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: bodyText("+${listOrderOtherMenu[index]!.orderOtherName}"),
               ),
-              bodyText("${listOrderOtherMenu[index]!.orderOtherPrice}"),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.1,
+                child: bodyPrice("${listOrderOtherMenu[index]!.orderOtherPrice}"),
+              ),
             ],
           ),
         ],

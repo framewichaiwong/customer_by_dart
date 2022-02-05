@@ -30,6 +30,7 @@ dependencies:
   badges:
   carousel_slider:
   image_picker:
+  intl:
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -156,27 +156,23 @@ class _PayByTransfer extends State<PayByTransfer> {
               children: [
                 Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back_ios),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                          SizedBox(width: MediaQuery.of(context).size.width * 0.1),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: Container(
-                              width: 200,
-                              color: Colors.red[300],
-                              child: Center(
-                                  child: Text("จ่ายด้วยการโอน",style: TextStyle(fontSize: 25,color: Colors.white),)
-                              ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_ios),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            color: Colors.red[300],
+                            child: Center(
+                                child: Text("จ่ายด้วยการโอน",style: TextStyle(fontSize: 25,color: Colors.white),)
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -187,7 +183,7 @@ class _PayByTransfer extends State<PayByTransfer> {
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black)
+                                      border: Border.all(color: Colors.black),
                                   ),
                                   width: MediaQuery.of(context).size.width * 0.8,
                                   height: MediaQuery.of(context).size.height * 0.5,
@@ -233,7 +229,7 @@ class _PayByTransfer extends State<PayByTransfer> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("จำนวน : $_priceTotal บาท",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),),
+                        child: Text("จำนวน : $_priceTotal บาท",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: Colors.blue),),
                       )
                     ),
                     Padding(
@@ -304,9 +300,15 @@ class _PayByTransfer extends State<PayByTransfer> {
                         ),
                       ),
                     ),
-                    ElevatedButton(
-                      child: Text("บันทึก"),
-                      onPressed: () => _showDialogOnSave(),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                        ),
+                        child: Text("บันทึก"),
+                        onPressed: () => _showDialogOnSave(),
+                      ),
                     ),
                   ],
                 ),

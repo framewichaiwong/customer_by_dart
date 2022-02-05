@@ -256,22 +256,39 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                     )
                 ),
                 actions: [
-                  Row(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ElevatedButton(
-                        child: Text("ยืนยัน"),
-                        onPressed: () => _buttonSelectMenu(index),
+                      Center(
+                        child: Container(
+                          height: 40,
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.green,
+                            ),
+                            child: Text("ยืนยัน"),
+                            onPressed: () => _buttonSelectMenu(index),
+                          ),
+                        ),
                       ),
-                      ElevatedButton(
-                        child: Text("ยกเลิก"),
-                        onPressed: () {
-                          number = 1;
-                          valRadio = 0;
-                          _otherMenuCheckBox = [];
-                          _otherMenuRadio = [];
-                          Navigator.pop(context);
-                        },
+                      Center(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red[300],
+                            ),
+                            child: Text("ย้อนกลับ"),
+                            onPressed: () {
+                              number = 1;
+                              valRadio = 0;
+                              _otherMenuCheckBox = [];
+                              _otherMenuRadio = [];
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),

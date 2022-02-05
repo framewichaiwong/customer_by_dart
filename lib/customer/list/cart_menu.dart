@@ -7,6 +7,7 @@ import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:customer_by_dart/customer/list/provider_method/provider_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -23,6 +24,9 @@ class _CartMenu extends State<CartMenu> {
   List<UserManager> userManager;
   int numberTable;
   _CartMenu(this.userManager,this.numberTable);
+
+  // var numberFormat = NumberFormat("#,##0.00"); /// Format price.
+  var numberFormat = NumberFormat("#,###"); /// Format price.
 
   String makeStatus = "ยังไม่ส่ง"; /// create status is beginner send to backend.
   int tableCheckBillId = 0; /// create status is beginner send to backend.
@@ -97,7 +101,13 @@ class _CartMenu extends State<CartMenu> {
     return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),);
   }
   Text bodyText(String string){
-    return Text("$string",style: TextStyle(fontSize: 14),);
+    return Text("$string",style: TextStyle(fontSize: 14));
+  }
+  Text bodySumPrice(String string){
+    return Text("${numberFormat.format(int.parse(string))}",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
+  }
+  Text bodyTotalPrice(String string){
+    return Text("${numberFormat.format(int.parse(string))} บาท",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),);
   }
 
   @override
@@ -109,141 +119,176 @@ class _CartMenu extends State<CartMenu> {
     // TODO: implement build
     return Scaffold(
       body: SafeArea(
-        child: Card(
-          // color: Colors.red[100],
-          color: Colors.white,
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back_ios),
-                    onPressed: (){
-                      Navigator.of(context).pop();
-                      },
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              color: Colors.red[300],
-                              child: Center(
-                                  child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",
-                                    style: TextStyle(fontSize: 25, color: Colors.white),
-                                  )
-                              )
-                          )
-                      ),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back_ios),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            color: Colors.red[300],
+                            child: Center(
+                                child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",
+                                  style: TextStyle(fontSize: 25, color: Colors.white),
+                                )
+                            )
+                        )
                     ),
                   ),
-                ],
-              ),
-              Container(
-                height: 40,
-                color: Colors.amber,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          child: headerText("เมนู")
-                      ),
-                      headerText("ราคา"),
-                      headerText("จำนวน"),
-                      headerText("รวม"),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.1),
-                    ],
-                  ),
+                ),
+              ],
+            ),
+            Container(
+              height: 45,
+              color: Colors.amber,
+              child: ListTile(
+                title: Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: headerText("เมนู")
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.12,
+                      child: headerText("ราคา"),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.22,
+                      child: headerText("จำนวน"),
+                    ),
+                    Container(
+                      child: headerText("รวม"),
+                    ),
+                    // SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+                  ],
                 ),
               ),
-              SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  ///itemCount: _cart.length,
-                  itemCount: _cart.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                      color: Colors.grey[200],
-                      child: ListTile(
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
+            ),
+            SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                ///itemCount: _cart.length,
+                itemCount: _cart.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                        color: Colors.grey[200],
+                        child: ListTile(
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
                                 width: MediaQuery.of(context).size.width * 0.4,
                                 child: bodyText("${_cart[index].nameMenu}")
-                            ),
-                            bodyText("${_cart[index].priceMenu}"),
-                            bodyText("${_cart[index].numberMenu}"),
-                            bodyText("${(_cart[index].priceMenu * _cart[index].numberMenu) + (_cart[index].otherMenu.length == 0 ?0 :_cart[index].otherMenu.map((e) => e.otherMenuPrice * _cart[index].numberMenu).reduce((value, element) => value + element))}"),
-                          ],
-                        ),
-                        subtitle: Container(
-                          child: _cart[index].otherMenu.length == 0
-                          ? null
-                          : ListViewBuilderForCartMenu(_cart[index].otherMenu),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.clear),
-                          color: Colors.red,
-                          splashColor: Colors.green,
-                          onPressed: () {
-                            setState(() {
-                              String forCheckNameRemove = _cart[index].nameMenu;
-                              _cart[index].otherMenu.forEach((e) {
-                                forCheckNameRemove += "+${e.otherMenuName}";
-                              });
-                              context.read<MenuProvider>().removeMenuTFromCart(_cart[index],forCheckNameRemove); /// Send data by Provider.
-                            });
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          height: 40,
-                          color: Colors.yellowAccent,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text("ราคารวม :",style: TextStyle(fontSize: 18),),
-                              Text(
-                                  "${_cart.length <= 0
-                                  ? 0
-                                  : _cart.map((cart) => cart.numberMenu * cart.priceMenu + (cart.otherMenu.length == 0 ?0 :cart.otherMenu.map((e) => e.otherMenuPrice * cart.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element)}"
-                                  " บาท",
-                                style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+                              ),
+                              Container(
+                                child: bodyText("${_cart[index].priceMenu}"),
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(3),
+                                      child: InkWell(
+                                        onTap: () => context.read<MenuProvider>().addNumberToCart(index),
+                                        child: Container(
+                                          color: Colors.green,
+                                          child: Icon(Icons.add,size: 15,color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height * 0.04,
+                                    width: MediaQuery.of(context).size.width * 0.05,
+                                    child: Center(
+                                      child: Align(
+                                          alignment: Alignment.center,
+                                          child: Text("${_cart[index].numberMenu}",textAlign: TextAlign.right)
+                                      ),
+                                    ),
+                                  ),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(3),
+                                    child: InkWell(
+                                      onTap: () => context.read<MenuProvider>().removeNumberToCart(index),
+                                      child: Container(
+                                        color: Colors.orange,
+                                        child: Icon(Icons.remove,size: 15,color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.14,
+                                child: bodySumPrice("${(_cart[index].priceMenu * _cart[index].numberMenu) + (_cart[index].otherMenu.length == 0 ?0 :_cart[index].otherMenu.map((e) => e.otherMenuPrice * _cart[index].numberMenu).reduce((value, element) => value + element))}"),
+                              ),
+                              Container(
+                                child: InkWell(
+                                  child: Icon(Icons.delete_forever,color: Colors.red),
+                                  onTap: () => setState(() {
+                                    String forCheckNameRemove = _cart[index].nameMenu;
+                                    _cart[index].otherMenu.forEach((e) {
+                                        forCheckNameRemove += "+${e.otherMenuName}";
+                                    });
+                                    context.read<MenuProvider>().removeMenuTFromCart(_cart[index],forCheckNameRemove); /// Send data by Provider.
+                                  }),
+                                ),
                               ),
                             ],
                           ),
+                          subtitle: Container(
+                            child: _cart[index].otherMenu.length == 0
+                            ? null
+                            : ListViewBuilderForCartMenu(_cart[index].otherMenu),
+                          ),
                         ),
+                      );
+                },
+              ),
+            ),
+            Card(
+              color: Colors.grey[200],
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      height: 40,
+                      // color: Colors.yellowAccent,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text("รวมทั้งหมด :",style: TextStyle(fontSize: 18),),
+                          Container(
+                            child: _cart.length <= 0
+                                ? bodyTotalPrice("${0}")
+                                : bodyTotalPrice("${_cart.map((cart) => cart.numberMenu * cart.priceMenu + (cart.otherMenu.length == 0 ?0 :cart.otherMenu.map((e) => e.otherMenuPrice * cart.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element)}"),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.only(left: 8,right: 8),
                     child: Container(
-                      height: 40,
+                      width: MediaQuery.of(context).size.width * 0.7,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                          primary: Colors.green[600]
+                          // shape: RoundedRectangleBorder(
+                          //   borderRadius: BorderRadius.circular(10),
+                          // ),
                         ),
-                        child: Text("สั่งอาหาร",style: TextStyle(fontSize: 18)),
+                        child: Text("สั่งซื้อ",style: TextStyle(fontSize: 18)),
                         onPressed: (){
                           if(_cart.isEmpty){
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -272,23 +317,33 @@ class _CartMenu extends State<CartMenu> {
                                       ),
                                     ),
                                     actions: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      Column(
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(10),
-                                            child: ElevatedButton(
-                                              child: Text("ยืนยัน"),
-                                              onPressed: () => cartMenuToOrder(_cart),
+                                          Center(
+                                            child: Container(
+                                              height: 40,
+                                              width: MediaQuery.of(context).size.width,
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: Colors.green,
+                                                ),
+                                                child: Text("ยืนยัน"),
+                                                onPressed: () => cartMenuToOrder(_cart),
+                                              ),
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(10),
-                                            child: ElevatedButton(
-                                              child: Text("ยกเลิก"),
-                                              onPressed: (){
-                                                Navigator.pop(context);
-                                              },
+                                          Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context).size.width,
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: Colors.red[300],
+                                                ),
+                                                child: Text("ย้อนกลับ"),
+                                                onPressed: (){
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -304,8 +359,8 @@ class _CartMenu extends State<CartMenu> {
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -324,6 +379,9 @@ class ListViewBuilderForCartMenu extends StatelessWidget {
   Text bodyText(String string){
     return Text("$string",style: TextStyle(fontSize: 14),);
   }
+  Text bodyPrice(String string){
+    return Text("$string",style: TextStyle(fontSize: 16),textAlign: TextAlign.right);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -336,10 +394,13 @@ class ListViewBuilderForCartMenu extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: MediaQuery.of(context).size.width * 0.48,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: bodyText("+${otherMenu[index]!.otherMenuName}"),
               ),
-              bodyText("${otherMenu[index]!.otherMenuPrice}"),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.08,
+                child: bodyPrice("${otherMenu[index]!.otherMenuPrice}"),
+              ),
             ],
           ),
         ],

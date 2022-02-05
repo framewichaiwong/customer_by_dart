@@ -42,5 +42,17 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addNumberToCart(int index){
+    cartMenu[index].numberMenu += 1;
+    notifyListeners();
+  }
+
+  void removeNumberToCart(int index){
+    if(cartMenu[index].numberMenu > 1){
+      cartMenu[index].numberMenu -= 1;
+    }
+    notifyListeners();
+  }
+
   //get getCartLength => this.cart.length;
 }
