@@ -100,8 +100,14 @@ class _CartMenu extends State<CartMenu> {
   Text headerText(String string){
     return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),);
   }
+  Text headerTextCenter(String string){
+    return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
+  }
   Text bodyText(String string){
     return Text("$string",style: TextStyle(fontSize: 14));
+  }
+  Text bodyPriceMenu(String string){
+    return Text("$string",style: TextStyle(fontSize: 14),textAlign: TextAlign.center);
   }
   Text bodySumPrice(String string){
     return Text("${numberFormat.format(int.parse(string))}",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
@@ -151,23 +157,24 @@ class _CartMenu extends State<CartMenu> {
               color: Colors.amber,
               child: ListTile(
                 title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width * 0.4,
                       child: headerText("เมนู")
                     ),
                     Container(
-                      width: MediaQuery.of(context).size.width * 0.12,
-                      child: headerText("ราคา"),
+                      width: MediaQuery.of(context).size.width * 0.13,
+                      child: headerTextCenter("ราคา"),
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.22,
-                      child: headerText("จำนวน"),
+                      child: headerTextCenter("จำนวน"),
                     ),
                     Container(
-                      child: headerText("รวม"),
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      child: headerTextCenter("รวม"),
                     ),
-                    // SizedBox(width: MediaQuery.of(context).size.width * 0.1),
                   ],
                 ),
               ),
@@ -179,8 +186,11 @@ class _CartMenu extends State<CartMenu> {
                 itemCount: _cart.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
-                        color: Colors.grey[200],
-                        child: ListTile(
+                    color: Colors.grey[200],
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        ListTile(
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -189,69 +199,75 @@ class _CartMenu extends State<CartMenu> {
                                 child: bodyText("${_cart[index].nameMenu}")
                               ),
                               Container(
-                                child: bodyText("${_cart[index].priceMenu}"),
+                                width: MediaQuery.of(context).size.width * 0.12,
+                                child: bodyPriceMenu("${_cart[index].priceMenu}"),
                               ),
-                              Row(
-                                children: [
-                                  Container(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(3),
-                                      child: InkWell(
-                                        onTap: () => context.read<MenuProvider>().addNumberToCart(index),
-                                        child: Container(
-                                          color: Colors.green,
-                                          child: Icon(Icons.add,size: 15,color: Colors.white),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.22,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(3),
+                                        child: InkWell(
+                                          onTap: () => context.read<MenuProvider>().addNumberToCart(index),
+                                          child: Container(
+                                            color: Colors.green,
+                                            child: Icon(Icons.add,size: 25,color: Colors.white),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    height: MediaQuery.of(context).size.height * 0.04,
-                                    width: MediaQuery.of(context).size.width * 0.05,
-                                    child: Center(
-                                      child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text("${_cart[index].numberMenu}",textAlign: TextAlign.right)
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.09,
+                                      child: Center(
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text("${_cart[index].numberMenu}",textAlign: TextAlign.right)
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(3),
-                                    child: InkWell(
-                                      onTap: () => context.read<MenuProvider>().removeNumberToCart(index),
-                                      child: Container(
-                                        color: Colors.orange,
-                                        child: Icon(Icons.remove,size: 15,color: Colors.white),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(3),
+                                      child: InkWell(
+                                        onTap: () => context.read<MenuProvider>().removeNumberToCart(index),
+                                        child: Container(
+                                          color: Colors.orange,
+                                          child: Icon(Icons.remove,size: 25,color: Colors.white),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.14,
-                                child: bodySumPrice("${(_cart[index].priceMenu * _cart[index].numberMenu) + (_cart[index].otherMenu.length == 0 ?0 :_cart[index].otherMenu.map((e) => e.otherMenuPrice * _cart[index].numberMenu).reduce((value, element) => value + element))}"),
-                              ),
-                              Container(
-                                child: InkWell(
-                                  child: Icon(Icons.delete_forever,color: Colors.red),
-                                  onTap: () => setState(() {
-                                    String forCheckNameRemove = _cart[index].nameMenu;
-                                    _cart[index].otherMenu.forEach((e) {
-                                        forCheckNameRemove += "+${e.otherMenuName}";
-                                    });
-                                    context.read<MenuProvider>().removeMenuTFromCart(_cart[index],forCheckNameRemove); /// Send data by Provider.
-                                  }),
+                                  ],
                                 ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.15,
+                                child: bodySumPrice("${(_cart[index].priceMenu * _cart[index].numberMenu) + (_cart[index].otherMenu.length == 0 ?0 :_cart[index].otherMenu.map((e) => e.otherMenuPrice * _cart[index].numberMenu).reduce((value, element) => value + element))}"),
                               ),
                             ],
                           ),
                           subtitle: Container(
                             child: _cart[index].otherMenu.length == 0
-                            ? null
-                            : ListViewBuilderForCartMenu(_cart[index].otherMenu),
+                                ? null
+                                : ListViewBuilderForCartMenu(_cart[index].otherMenu),
                           ),
                         ),
-                      );
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.09,
+                          child: InkWell(
+                            child: Icon(Icons.delete_forever,color: Colors.red),
+                            onTap: () => setState(() {
+                              String forCheckNameRemove = _cart[index].nameMenu;
+                              _cart[index].otherMenu.forEach((e) {
+                                forCheckNameRemove += "+${e.otherMenuName}";
+                              });
+                              context.read<MenuProvider>().removeMenuTFromCart(_cart[index],forCheckNameRemove); /// Send data by Provider.
+                            }),
+                          ),
+                        ),
+                      ],
+                    )
+                  );
                 },
               ),
             ),
@@ -380,7 +396,7 @@ class ListViewBuilderForCartMenu extends StatelessWidget {
     return Text("$string",style: TextStyle(fontSize: 14),);
   }
   Text bodyPrice(String string){
-    return Text("$string",style: TextStyle(fontSize: 16),textAlign: TextAlign.right);
+    return Text("$string",style: TextStyle(fontSize: 16),textAlign: TextAlign.center);
   }
 
   @override
@@ -398,7 +414,7 @@ class ListViewBuilderForCartMenu extends StatelessWidget {
                 child: bodyText("+${otherMenu[index]!.otherMenuName}"),
               ),
               Container(
-                width: MediaQuery.of(context).size.width * 0.08,
+                width: MediaQuery.of(context).size.width * 0.125,
                 child: bodyPrice("${otherMenu[index]!.otherMenuPrice}"),
               ),
             ],

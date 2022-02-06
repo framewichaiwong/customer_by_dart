@@ -368,13 +368,19 @@ class _CheckBill extends State<CheckBill> {
   Text headerText(String string){
     return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),);
   }
+  Text headerCenter(String string){
+    return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
+  }
   Text bodyText(String string){
     return Text("$string",style: TextStyle(fontSize: 14));
   }
   Text bodyNumberMenu(String string){
-    return Text("$string",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
+    return Text("$string",style: TextStyle(fontSize: 14),textAlign: TextAlign.center);
   }
   Text bodyPrice(String string){
+    return Text("${numberFormat.format(int.parse(string))}",style: TextStyle(fontSize: 14),textAlign: TextAlign.center);
+  }
+  Text bodySumPrice(String string){
     return Text("${numberFormat.format(int.parse(string))}",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
   }
   Text bodyTotalPrice(String string){
@@ -417,21 +423,28 @@ class _CheckBill extends State<CheckBill> {
                       return Column(
                         children: [
                           Container(
-                            height: 40,
+                            height: 45,
                             color: Colors.amber,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            child: ListTile(
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
-                                      width: MediaQuery.of(context).size.width * 0.4,
-                                      child: headerText("เมนู")
+                                    width: MediaQuery.of(context).size.width * 0.4,
+                                    child: headerText("เมนู")
                                   ),
-                                  headerText("ราคา"),
-                                  headerText("จำนวน"),
-                                  headerText("รวม"),
-                                  SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width * 0.15,
+                                    child: headerCenter("ราคา"),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width * 0.18,
+                                    child: headerCenter("จำนวน"),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width * 0.16,
+                                    child: headerCenter("รวม"),
+                                  ),
                                 ],
                               ),
                             ),
@@ -445,60 +458,27 @@ class _CheckBill extends State<CheckBill> {
                                   color: Colors.grey[200],
                                   child: Container(
                                       child: snapshot.data[index].makeStatus == "ส่งแล้ว" /// Status condition
-                                          ? ListTile(
-                                            title: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Container(
-                                                  width: MediaQuery.of(context).size.width * 0.4,
-                                                  child: bodyText("${snapshot.data[index].nameMenu}")
-                                                ),
-                                                Container(
-                                                  width: MediaQuery.of(context).size.width * 0.08,
-                                                  child: bodyPrice("${snapshot.data[index].priceMenu}"),
-                                                ),
-                                                Container(
-                                                  width: MediaQuery.of(context).size.width * 0.05,
-                                                  child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
-                                                ),
-                                                Container(
-                                                  width: MediaQuery.of(context).size.width * 0.1,
-                                                  child: bodyPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
-                                                ),
-                                              ],
-                                            ),
-                                            subtitle: Container(
-                                              child: snapshot.data[index].orderOtherMenu==null
-                                                  ? null
-                                                  : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
-                                            ),
-                                            trailing: Container(
-                                              width: 40,
-                                              height: 25,
-                                              // child: Icon(Icons.done,color: Colors.green,size: 32,),
-                                              child: Text("ได้รับ",style: TextStyle(color: Colors.green[600]),textAlign: TextAlign.right),
-                                            ),
-                                          )
-                                          : snapshot.data[index].makeStatus == "ยังไม่ส่ง"
-                                              ? ListTile(
+                                          ? Stack(
+                                            alignment: Alignment.bottomRight,
+                                            children: [
+                                              ListTile(
                                                 title: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Container(
-                                                        width: MediaQuery.of(context).size.width * 0.4,
-                                                        child: bodyText("${snapshot.data[index].nameMenu}")
+                                                      width: MediaQuery.of(context).size.width * 0.39,
+                                                      child: bodyText("${snapshot.data[index].nameMenu}")
                                                     ),
                                                     Container(
-                                                      width: MediaQuery.of(context).size.width * 0.08,
+                                                      width: MediaQuery.of(context).size.width * 0.15,
                                                       child: bodyPrice("${snapshot.data[index].priceMenu}"),
                                                     ),
                                                     Container(
-                                                      width: MediaQuery.of(context).size.width * 0.05,
+                                                      width: MediaQuery.of(context).size.width * 0.18,
                                                       child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
                                                     ),
                                                     Container(
-                                                      width: MediaQuery.of(context).size.width * 0.1,
-                                                      child: bodyPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                      width: MediaQuery.of(context).size.width * 0.15,
+                                                      child: bodySumPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
                                                     ),
                                                   ],
                                                 ),
@@ -507,50 +487,106 @@ class _CheckBill extends State<CheckBill> {
                                                       ? null
                                                       : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
                                                 ),
-                                                trailing: Container(
-                                                  width: 40,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(right: 10,bottom: 5),
+                                                child: Container(
                                                   height: 25,
-                                                  // child: CircularProgressIndicator(strokeWidth: 2),
-                                                  child: Text("รอ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                  child: Text("ได้รับ",style: TextStyle(color: Colors.green[600],fontWeight: FontWeight.bold)),
                                                 ),
+                                              ),
+                                            ],
+                                          )
+                                          : snapshot.data[index].makeStatus == "ยังไม่ส่ง"
+                                              ? Stack(
+                                                alignment: Alignment.bottomRight,
+                                                children: [
+                                                  ListTile(
+                                                    title: Row(
+                                                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Container(
+                                                          width: MediaQuery.of(context).size.width * 0.39,
+                                                          child: bodyText("${snapshot.data[index].nameMenu}")
+                                                        ),
+                                                        Container(
+                                                          width: MediaQuery.of(context).size.width * 0.15,
+                                                          child: bodyPrice("${snapshot.data[index].priceMenu}"),
+                                                        ),
+                                                        Container(
+                                                          width: MediaQuery.of(context).size.width * 0.18,
+                                                          child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
+                                                        ),
+                                                        Container(
+                                                          width: MediaQuery.of(context).size.width * 0.15,
+                                                          child: bodySumPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    subtitle: Container(
+                                                      child: snapshot.data[index].orderOtherMenu==null
+                                                          ? null
+                                                          : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(right: 10,bottom: 5),
+                                                    child: Container(
+                                                      height: 25,
+                                                      // child: CircularProgressIndicator(strokeWidth: 2),
+                                                      child: Text("รอ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                    ),
+                                                  ),
+                                                ],
                                               )
                                               : Container( /// "ยกเลิก"
                                                 color: Colors.black12,
-                                                child: ListTile(
-                                                  title: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Container(
-                                                        width: MediaQuery.of(context).size.width * 0.4,
-                                                        child: bodyText("${snapshot.data[index].nameMenu}")
+                                                child: Stack(
+                                                  alignment: Alignment.bottomRight,
+                                                  children: [
+                                                    ListTile(
+                                                      title: Row(
+                                                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Container(
+                                                            width: MediaQuery.of(context).size.width * 0.39,
+                                                            child: bodyText("${snapshot.data[index].nameMenu}")
+                                                          ),
+                                                          Container(
+                                                            width: MediaQuery.of(context).size.width * 0.15,
+                                                            child: bodyPrice("${snapshot.data[index].priceMenu}"),
+                                                          ),
+                                                          Container(
+                                                            width: MediaQuery.of(context).size.width * 0.18,
+                                                            child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
+                                                          ),
+                                                          Container(
+                                                            width: MediaQuery.of(context).size.width * 0.15,
+                                                            child: bodySumPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                          ),
+                                                        ],
                                                       ),
-                                                      bodyText("${snapshot.data[index].priceMenu}"),
-                                                      bodyText("${snapshot.data[index].numberMenu}"),
-                                                      bodyText("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
-                                                    ],
-                                                  ),
-                                                  // subtitle: Container(
-                                                  //   child: snapshot.data[index].orderOtherMenu==null
-                                                  //     ? null
-                                                  //     : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
-                                                  // ),
-                                                  subtitle: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    children: [
-                                                      Container(
-                                                        child: snapshot.data[index].orderOtherMenu==null
-                                                            ? null
-                                                            : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                      subtitle: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        children: [
+                                                          Container(
+                                                            child: snapshot.data[index].orderOtherMenu==null
+                                                                ? null
+                                                                : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                          ),
+                                                          ListViewCancelOrderMenu(snapshot.data[index].orderId), /// Call
+                                                        ],
                                                       ),
-                                                      ListViewCancelOrderMenu(snapshot.data[index].orderId), /// Call
-                                                    ],
-                                                  ),
-                                                  trailing: Container(
-                                                    width: 40,
-                                                    height: 25,
-                                                    // child: Icon(Icons.clear,color: Colors.red),
-                                                    child: Text("ยกเลิก",style: TextStyle(color: Colors.red),textAlign: TextAlign.right),
-                                                  ),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(right: 10,bottom: 5),
+                                                      child: Container(
+                                                        height: 25,
+                                                        // child: Icon(Icons.clear,color: Colors.red),
+                                                        child: Text("ยกเลิก",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               )
                                   ),
@@ -592,10 +628,10 @@ class _CheckBill extends State<CheckBill> {
                                         // ),
                                       ),
                                       child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
-                                      onPressed: (){
+                                      onPressed: () => setState(() {
                                         _getOrder();
                                         _onCallCheckBill();
-                                      }
+                                      }),
                                     ),
                                   ),
                                 ),
@@ -635,7 +671,7 @@ class ListViewForCheckBill extends StatelessWidget {
     return Text("$string",style: TextStyle(fontSize: 14));
   }
   Text bodyPrice(String string){
-    return Text("$string",style: TextStyle(fontSize: 14),textAlign: TextAlign.right);
+    return Text("$string",style: TextStyle(fontSize: 14),textAlign: TextAlign.center);
   }
 
   @override
@@ -652,9 +688,8 @@ class ListViewForCheckBill extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: bodyText("+${listOrderOtherMenu[index]!.orderOtherName}"),
               ),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.02),
               Container(
-                width: MediaQuery.of(context).size.width * 0.1,
+                width: MediaQuery.of(context).size.width * 0.14,
                 child: bodyPrice("${listOrderOtherMenu[index]!.orderOtherPrice}"),
               ),
             ],
@@ -705,11 +740,18 @@ class _ListViewCancelOrderMenu extends State<ListViewCancelOrderMenu> {
         if(snapshot.data == null || snapshot.data.length == 0){
           return Container();
         }else{
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: snapshot.data.length,
-            itemBuilder: (context, int index) => Text("*** ${snapshot.data[index].cancelReason}",style: TextStyle(color: Colors.red),),
+          return Row(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, int index) => Text("*** ${snapshot.data[index].cancelReason}",style: TextStyle(color: Colors.red)),
+                ),
+              ),
+            ],
           );
         }
       }

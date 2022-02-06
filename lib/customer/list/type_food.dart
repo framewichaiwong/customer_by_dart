@@ -581,27 +581,28 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                                 ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.only(left: 10),
+                                                padding: const EdgeInsets.only(left: 5,right: 5,top: 5),
                                                 child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Container(
+                                                      width: MediaQuery.of(context).size.width * 0.3,
                                                       child: _showListMenu[index].priceMenuNormal == 0 /// if (price_Normal == 0)
                                                           ? null
                                                           : _showListMenu[index].priceMenuPromotion == 0 /// if
                                                             ? Text("ธรรมดา ${_showListMenu[index].priceMenuNormal.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),)
                                                             : Text("ธรรมดา ${_showListMenu[index].priceMenuNormal.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                     ),
-                                                    SizedBox(width: 25),
                                                     Container(
+                                                      width: MediaQuery.of(context).size.width * 0.3,
                                                       child: _showListMenu[index].priceMenuSpecial == 0 /// if
                                                           ? null
                                                           : _showListMenu[index].priceMenuPromotion == 0 /// if
                                                             ? Text("พิเศษ ${_showListMenu[index].priceMenuSpecial.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),)
                                                             : Text("พิเศษ ${_showListMenu[index].priceMenuSpecial.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                     ),
-                                                    SizedBox(width: snapshot.data[index].priceMenuSpecial == 0 ? 105 : 25),
                                                     Container(
+                                                      width: MediaQuery.of(context).size.width * 0.3,
                                                       child: _showListMenu[index].priceMenuPromotion == 0 /// if
                                                           ? null
                                                           : Text("โปรโมชั่น ${_showListMenu[index].priceMenuPromotion.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),),
@@ -679,25 +680,26 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                           Padding(
                                             padding: const EdgeInsets.only(left: 10),
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Container(
+                                                  width: MediaQuery.of(context).size.width * 0.3,
                                                   child: _showListMenu[index].priceMenuNormal == 0 /// if (price_Normal == 0)
                                                       ? null
                                                       : _showListMenu[index].priceMenuPromotion == 0 /// if
                                                         ? Text("ธรรมดา ${_showListMenu[index].priceMenuNormal.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),)
                                                         : Text("ธรรมดา ${_showListMenu[index].priceMenuNormal.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                 ),
-                                                SizedBox(width: 25),
                                                 Container(
+                                                  width: MediaQuery.of(context).size.width * 0.3,
                                                   child: _showListMenu[index].priceMenuSpecial == 0 /// if
                                                       ? null
                                                       : _showListMenu[index].priceMenuPromotion == 0 /// if
                                                         ? Text("พิเศษ ${_showListMenu[index].priceMenuSpecial.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),)
                                                         : Text("พิเศษ ${_showListMenu[index].priceMenuSpecial.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                 ),
-                                                SizedBox(width: snapshot.data[index].priceMenuSpecial == 0 ? 105 : 25),
                                                 Container(
+                                                  width: MediaQuery.of(context).size.width * 0.3,
                                                   child: _showListMenu[index].priceMenuPromotion == 0 /// if
                                                       ? null
                                                       : Text("โปรโมชั่น ${_showListMenu[index].priceMenuPromotion.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),),

@@ -71,18 +71,34 @@ class _PayByTransfer extends State<PayByTransfer> {
         return showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              content: Text("ยืนยันการทำรายการ",textAlign: TextAlign.center),
+              content: Text("ยืนยันการทำรายการ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.center),
               actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
                   children: [
-                    ElevatedButton(
-                      child: Text("ยืนยัน"),
-                      onPressed: () => _onSaveTableCheckBill(),
+                    Center(
+                      child: Container(
+                        height: 40,
+                        width: MediaQuery.of(context).size.width,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.green,
+                          ),
+                          child: Text("ยืนยัน"),
+                          onPressed: () => _onSaveTableCheckBill(),
+                        ),
+                      ),
                     ),
-                    ElevatedButton(
-                      child: Text("ยกเลิก"),
-                      onPressed: () => Navigator.pop(context),
+                    Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.red[300],
+                          ),
+                          child: Text("ยกเลิก"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
                     ),
                   ],
                 )
