@@ -128,26 +128,20 @@ class _CartMenu extends State<CartMenu> {
         child: Column(
           children: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(width: 5),
                 IconButton(
                   icon: Icon(Icons.arrow_back_ios),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            color: Colors.red[300],
-                            child: Center(
-                                child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",
-                                  style: TextStyle(fontSize: 25, color: Colors.white),
-                                )
-                            )
-                        )
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Center(
+                          child: Text("รายการที่เลือก : " + "โต๊ะ " + "$numberTable",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.black),)
+                      )
                   ),
                 ),
               ],

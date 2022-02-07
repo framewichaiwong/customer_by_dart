@@ -396,15 +396,12 @@ class _CheckBill extends State<CheckBill> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(8),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.red[300],
-                    child: Center(
-                      child: Text("รายการที่สั่ง : " + "โต๊ะ " + "$numberTable", style: TextStyle(fontSize: 25,color: Colors.white),
-                      ),
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  // color: Colors.grey[500],
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: Text("รายการที่สั่ง : " + "โต๊ะ " + "$numberTable", style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.black),
                     ),
                   ),
                 ),
@@ -534,7 +531,18 @@ class _CheckBill extends State<CheckBill> {
                                                     child: Container(
                                                       height: 25,
                                                       // child: CircularProgressIndicator(strokeWidth: 2),
-                                                      child: Text("รอ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.end,
+                                                        children: [
+                                                          Text("รอ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                          SizedBox(width: 5),
+                                                          Container(
+                                                            height: 10,
+                                                            width: 10,
+                                                            child: CircularProgressIndicator(),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
