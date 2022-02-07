@@ -77,17 +77,17 @@ class _QrCodeScan extends State<QrCodeScan> {
     return Scaffold(
       body: SafeArea(
         child: Card(
-          color: Colors.red[100],
+          color: Colors.white,
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: Container(
-                      width: 300,
+                      width: MediaQuery.of(context).size.width,
                       color: Colors.red[300],
                       child: Center(
                         child: Text(
@@ -102,50 +102,43 @@ class _QrCodeScan extends State<QrCodeScan> {
                     ),
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Scan QR Code for continue",
-                      style: TextStyle(
-                        fontSize: 25,
-                      ),
-                    ),
-                    Icon(
-                      Icons.qr_code_scanner,
-                      size: 200,
-                      color: Colors.black,
-                    ),
-                  ],
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                Container(
+                  // color: Colors.green,
+                  child: Image.asset("images_for_app/homepage_icon/restaurant_1.png"),
                 ),
-                SizedBox(),
               ],
             ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        //icon: Icon(Icons.camera_alt),
-        label: Container(
-          width: 150,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Container(
+        height: MediaQuery.of(context).size.height * 0.15,
+        width: MediaQuery.of(context).size.width,
+        child: FittedBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.camera_alt,
-                size: 40,
+              FloatingActionButton.extended(
+                onPressed: () => _scanQR(),
+                label: Container(
+                  width: 150,
+                  child: Icon(
+                    Icons.qr_code_scanner,
+                    size: 40,
+                  ),
+                ),
               ),
-              SizedBox(width: 5,),
-              Text(
-                "Scan",
-                style: TextStyle(fontSize: 25),
+              SizedBox(height: 10),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Text("Scan QR Code for continue",style: TextStyle(fontSize: 25),textAlign: TextAlign.center),
               ),
             ],
           ),
         ),
-        onPressed: _scanQR,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
