@@ -431,7 +431,7 @@ class _CheckBill extends State<CheckBill> {
                                     child: headerText("เมนู")
                                   ),
                                   Container(
-                                    width: MediaQuery.of(context).size.width * 0.15,
+                                    width: MediaQuery.of(context).size.width * 0.14,
                                     child: headerCenter("ราคา"),
                                   ),
                                   Container(
@@ -439,7 +439,7 @@ class _CheckBill extends State<CheckBill> {
                                     child: headerCenter("จำนวน"),
                                   ),
                                   Container(
-                                    width: MediaQuery.of(context).size.width * 0.16,
+                                    width: MediaQuery.of(context).size.width * 0.14,
                                     child: headerCenter("รวม"),
                                   ),
                                 ],
@@ -460,9 +460,10 @@ class _CheckBill extends State<CheckBill> {
                                             children: [
                                               ListTile(
                                                 title: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Container(
-                                                      width: MediaQuery.of(context).size.width * 0.39,
+                                                      width: MediaQuery.of(context).size.width * 0.38,
                                                       child: bodyText("${snapshot.data[index].nameMenu}")
                                                     ),
                                                     Container(
@@ -470,7 +471,7 @@ class _CheckBill extends State<CheckBill> {
                                                       child: bodyPrice("${snapshot.data[index].priceMenu}"),
                                                     ),
                                                     Container(
-                                                      width: MediaQuery.of(context).size.width * 0.18,
+                                                      width: MediaQuery.of(context).size.width * 0.1,
                                                       child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
                                                     ),
                                                     Container(
@@ -500,10 +501,10 @@ class _CheckBill extends State<CheckBill> {
                                                 children: [
                                                   ListTile(
                                                     title: Row(
-                                                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: [
                                                         Container(
-                                                          width: MediaQuery.of(context).size.width * 0.39,
+                                                          width: MediaQuery.of(context).size.width * 0.38,
                                                           child: bodyText("${snapshot.data[index].nameMenu}")
                                                         ),
                                                         Container(
@@ -511,7 +512,7 @@ class _CheckBill extends State<CheckBill> {
                                                           child: bodyPrice("${snapshot.data[index].priceMenu}"),
                                                         ),
                                                         Container(
-                                                          width: MediaQuery.of(context).size.width * 0.18,
+                                                          width: MediaQuery.of(context).size.width * 0.1,
                                                           child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
                                                         ),
                                                         Container(
@@ -554,10 +555,10 @@ class _CheckBill extends State<CheckBill> {
                                                   children: [
                                                     ListTile(
                                                       title: Row(
-                                                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: [
                                                           Container(
-                                                            width: MediaQuery.of(context).size.width * 0.39,
+                                                            width: MediaQuery.of(context).size.width * 0.38,
                                                             child: bodyText("${snapshot.data[index].nameMenu}")
                                                           ),
                                                           Container(
@@ -565,7 +566,7 @@ class _CheckBill extends State<CheckBill> {
                                                             child: bodyPrice("${snapshot.data[index].priceMenu}"),
                                                           ),
                                                           Container(
-                                                            width: MediaQuery.of(context).size.width * 0.18,
+                                                            width: MediaQuery.of(context).size.width * 0.1,
                                                             child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
                                                           ),
                                                           Container(
@@ -697,7 +698,7 @@ class ListViewForCheckBill extends StatelessWidget {
                 child: bodyText("+${listOrderOtherMenu[index]!.orderOtherName}"),
               ),
               Container(
-                width: MediaQuery.of(context).size.width * 0.14,
+                width: MediaQuery.of(context).size.width * 0.17,
                 child: bodyPrice("${listOrderOtherMenu[index]!.orderOtherPrice}"),
               ),
             ],

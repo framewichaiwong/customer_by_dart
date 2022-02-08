@@ -185,38 +185,52 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                   Center(
                                     child: _showListMenu[index].priceMenuNormal == 0
                                         ? null
-                                        : ListTile(
-                                      title: Text("ธรรมดา"),
-                                      leading: Radio(
-                                        value: 1,
-                                        groupValue: valRadio,
-                                        onChanged: (int? value0) {
-                                          setState(() {
-                                            valRadio = value0!;
-                                            _nameMenu = "${_showListMenu[index].name} (ธรรมดา)";
-                                            _priceMenu = _showListMenu[index].priceMenuNormal;
-                                          });
-                                        },
-                                      ),
-                                    ),
+                                        : Row(
+                                          children: [
+                                            Container(
+                                              child: Radio(
+                                                value: 1,
+                                                groupValue: valRadio,
+                                                onChanged: (int? value0) {
+                                                  setState(() {
+                                                    valRadio = value0!;
+                                                    _nameMenu = "${_showListMenu[index].name} (ธรรมดา)";
+                                                    _priceMenu = _showListMenu[index].priceMenuNormal;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            Container(
+                                              width: MediaQuery.of(context).size.width * 0.55,
+                                              child: Text("ธรรมดา"),
+                                            ),
+                                          ],
+                                        ),
                                   ),
                                   Center(
                                     child: _showListMenu[index].priceMenuSpecial == 0
                                         ? null
-                                        : ListTile(
-                                      title: Text("พิเศษ"),
-                                      leading: Radio(
-                                        value: 2,
-                                        groupValue: valRadio,
-                                        onChanged: (int? value1) {
-                                          setState(() {
-                                            valRadio = value1!;
-                                            _nameMenu = "${_showListMenu[index].name} (พิเศษ)";
-                                            _priceMenu =  _showListMenu[index].priceMenuSpecial;
-                                          });
-                                        },
-                                      ),
-                                    ),
+                                        : Row(
+                                          children: [
+                                            Container(
+                                              child: Radio(
+                                                value: 2,
+                                                groupValue: valRadio,
+                                                onChanged: (int? value1) {
+                                                  setState(() {
+                                                    valRadio = value1!;
+                                                    _nameMenu = "${_showListMenu[index].name} (พิเศษ)";
+                                                    _priceMenu =  _showListMenu[index].priceMenuSpecial;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            Container(
+                                              width: MediaQuery.of(context).size.width * 0.55,
+                                              child: Text("พิเศษ"),
+                                            ),
+                                          ],
+                                        ),
                                   ),
                                 ],
                               )
@@ -231,20 +245,25 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                   Center(
                                     child: _showListMenu[index].priceMenuNormal == 0
                                         ? null
-                                        : ListTile(
-                                      title: Text("โปรโมชั่น"),
-                                      leading: Radio(
-                                        value: 1,
-                                        groupValue: valRadio,
-                                        onChanged: (int? value0) {
-                                          setState(() {
-                                            valRadio = value0!;
-                                            _nameMenu = "${_showListMenu[index].name} (โปรโมชั่น)";
-                                            _priceMenu = _showListMenu[index].priceMenuPromotion;
-                                          });
-                                        },
-                                      ),
-                                    ),
+                                        : Row(
+                                          children: [
+                                            Radio(
+                                              value: 1,
+                                              groupValue: valRadio,
+                                              onChanged: (int? value0) {
+                                                setState(() {
+                                                  valRadio = value0!;
+                                                  _nameMenu = "${_showListMenu[index].name} (โปรโมชั่น)";
+                                                  _priceMenu = _showListMenu[index].priceMenuPromotion;
+                                                });
+                                              },
+                                            ),
+                                            Container(
+                                              width: MediaQuery.of(context).size.width * 0.55,
+                                              child: Text("โปรโมชั่น"),
+                                            ),
+                                          ],
+                                        ),
                                   ),
                                 ],
                               ),

@@ -46,7 +46,7 @@ class _ListViewForOtherMenuState extends State<ListViewForOtherMenu> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 65 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble(),
+      height: 60 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble(),
       // height: 600,
       width: MediaQuery.of(context).size.width,
       child: ListView.builder(
@@ -57,7 +57,11 @@ class _ListViewForOtherMenuState extends State<ListViewForOtherMenu> {
           child: _showOtherStatus[index].contains("เลือกหรือไม่เลือกก็ได้")
               ? Column(
                 children: [
-                  Text("${_showOtherStatus[index]}"),
+                  Container(
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width,
+                    child: Text("${_showOtherStatus[index]}"),
+                  ),
                   Container(
                     child: _listOtherMenuNotSelect.isEmpty
                         ? null
@@ -72,6 +76,8 @@ class _ListViewForOtherMenuState extends State<ListViewForOtherMenu> {
               : Column(
                 children: [
                   Container(
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width,
                     child: checkByStatus.contains(_showOtherStatus[index])
                         ? Text("${_showOtherStatus[index]}")
                         : Text("*${_showOtherStatus[index]}",style: TextStyle(color: Colors.red),),

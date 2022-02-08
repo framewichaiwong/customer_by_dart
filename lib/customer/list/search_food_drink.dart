@@ -135,38 +135,48 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                 Center(
                                   child: _searchListMenu[index].priceMenuNormal == 0
                                       ? null
-                                      : ListTile(
-                                    title: Text("ธรรมดา"),
-                                    leading: Radio(
-                                      value: 1,
-                                      groupValue: valRadio,
-                                      onChanged: (int? value0) {
-                                        setState(() {
-                                          valRadio = value0!;
-                                          _nameMenu = "${_searchListMenu[index].name} (ธรรมดา)";
-                                          _priceMenu = _searchListMenu[index].priceMenuNormal;
-                                        });
-                                      },
-                                    ),
-                                  ),
+                                      : Row(
+                                        children: [
+                                          Radio(
+                                            value: 1,
+                                            groupValue: valRadio,
+                                            onChanged: (int? value0) {
+                                              setState(() {
+                                                valRadio = value0!;
+                                                _nameMenu = "${_searchListMenu[index].name} (ธรรมดา)";
+                                                _priceMenu = _searchListMenu[index].priceMenuNormal;
+                                              });
+                                            },
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context).size.width * 0.55,
+                                            child: Text("ธรรมดา"),
+                                          ),
+                                        ],
+                                      ),
                                 ),
                                 Center(
                                   child: _searchListMenu[index].priceMenuSpecial == 0
                                       ? null
-                                      : ListTile(
-                                    title: Text("พิเศษ"),
-                                    leading: Radio(
-                                      value: 2,
-                                      groupValue: valRadio,
-                                      onChanged: (int? value1) {
-                                        setState(() {
-                                          valRadio = value1!;
-                                          _nameMenu = "${_searchListMenu[index].name} (พิเศษ)";
-                                          _priceMenu =  _searchListMenu[index].priceMenuSpecial;
-                                        });
-                                      },
-                                    ),
-                                  ),
+                                      : Row(
+                                        children: [
+                                          Radio(
+                                            value: 2,
+                                            groupValue: valRadio,
+                                            onChanged: (int? value1) {
+                                              setState(() {
+                                                valRadio = value1!;
+                                                _nameMenu = "${_searchListMenu[index].name} (พิเศษ)";
+                                                _priceMenu =  _searchListMenu[index].priceMenuSpecial;
+                                              });
+                                            },
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context).size.width * 0.55,
+                                            child: Text("พิเศษ"),
+                                          ),
+                                        ],
+                                      ),
                                 ),
                               ],
                             )
@@ -181,20 +191,25 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                 Center(
                                   child: _searchListMenu[index].priceMenuNormal == 0
                                       ? null
-                                      : ListTile(
-                                    title: Text("โปรโมชั่น"),
-                                    leading: Radio(
-                                      value: 1,
-                                      groupValue: valRadio,
-                                      onChanged: (int? value0) {
-                                        setState(() {
-                                          valRadio = value0!;
-                                          _nameMenu = "${_searchListMenu[index].name} (โปรโมชั่น)";
-                                          _priceMenu = _searchListMenu[index].priceMenuPromotion;
-                                        });
-                                      },
-                                    ),
-                                  ),
+                                      : Row(
+                                        children: [
+                                          Radio(
+                                            value: 1,
+                                            groupValue: valRadio,
+                                            onChanged: (int? value0) {
+                                              setState(() {
+                                                valRadio = value0!;
+                                                _nameMenu = "${_searchListMenu[index].name} (โปรโมชั่น)";
+                                                _priceMenu = _searchListMenu[index].priceMenuPromotion;
+                                              });
+                                            },
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context).size.width * 0.55,
+                                            child: Text("โปรโมชั่น"),
+                                          ),
+                                        ],
+                                      ),
                                 ),
                               ],
                             ),

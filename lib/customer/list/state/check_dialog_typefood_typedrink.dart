@@ -45,27 +45,62 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
         shrinkWrap: true,
         itemCount: _listOtherMenuNotSelect.length,
         itemBuilder: (BuildContext context, int index) => Container(
-          child: ListTile(
-            title: Row(
+          child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(_listOtherMenuNotSelect[index].otherMenuName),
-                Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()} บาท"),
+                Checkbox(
+                  value: _isCheckBox[index],
+                  onChanged: (value) => setState(() {
+                    _isCheckBox[index] = value!;
+                    checkValueFromIsCheckBox();
+                    if(value == true){
+                      _valueSetterAddOtherMenu(_listOtherMenuNotSelect[index]); /// Add other_menu to cart.
+                    }else{
+                      _valueSetterRemoveOtherMenu(_listOtherMenuNotSelect[index]); /// Remove other_menu from cart.
+                    }
+                  }),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: Text(_listOtherMenuNotSelect[index].otherMenuName),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.1,
+                  child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.11,
+                  child: Text("บาท"),
+                ),
               ],
             ),
-            leading: Checkbox(
-              value: _isCheckBox[index],
-              onChanged: (value) => setState(() {
-                _isCheckBox[index] = value!;
-                checkValueFromIsCheckBox();
-                if(value == true){
-                  _valueSetterAddOtherMenu(_listOtherMenuNotSelect[index]); /// Add other_menu to cart.
-                }else{
-                  _valueSetterRemoveOtherMenu(_listOtherMenuNotSelect[index]); /// Remove other_menu from cart.
-                }
-              }),
-            ),
-          ),
+          // child: ListTile(
+          //   title: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       Container(
+          //         color: Colors.red,
+          //         child: Text(_listOtherMenuNotSelect[index].otherMenuName),
+          //       ),
+          //       Container(
+          //         color: Colors.green,
+          //         child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()} บาท"),
+          //       ),
+          //     ],
+          //   ),
+          //   leading: Checkbox(
+          //     value: _isCheckBox[index],
+          //     onChanged: (value) => setState(() {
+          //       _isCheckBox[index] = value!;
+          //       checkValueFromIsCheckBox();
+          //       if(value == true){
+          //         _valueSetterAddOtherMenu(_listOtherMenuNotSelect[index]); /// Add other_menu to cart.
+          //       }else{
+          //         _valueSetterRemoveOtherMenu(_listOtherMenuNotSelect[index]); /// Remove other_menu from cart.
+          //       }
+          //     }),
+          //   ),
+          // ),
         ),
       ),
     );
