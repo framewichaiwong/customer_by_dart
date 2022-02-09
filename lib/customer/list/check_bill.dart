@@ -28,6 +28,9 @@ class _CheckBill extends State<CheckBill> {
   // var numberFormat = NumberFormat("#,##0.00"); /// Format price.
   var numberFormat = NumberFormat("#,###"); /// Format price.
 
+  int statusPayEdit = 0;
+  int statusNotPay = 0;
+
   List<ListOrder> _listOrderByCheckStatusForShowTotalPrice = [];
   List<ListOrder> _listOrder = [];
   List<ListOrderMakeStatus> _listMakeStatus = [];
@@ -39,6 +42,8 @@ class _CheckBill extends State<CheckBill> {
   void initState(){
     super.initState();
     _getOrder();
+    _getTableCheckBillByNotPay();
+    _getTableCheckByPayEdit();
   }
 
   /*@override
@@ -115,6 +120,37 @@ class _CheckBill extends State<CheckBill> {
     return _listOrder;
   }
 
+  Future _getTableCheckBillByNotPay() async{
+    String _paymentStatus = "ยังไม่จ่าย"; /// ใช้สำหรับเรียก.
+    Map params = new Map();
+    params['managerId'] = userManager[0].managerId.toString();
+    params['numberTable'] = numberTable.toString();
+    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var jsonData = jsonDecode(response.body);
+    if(jsonData['status'] == 1){
+      statusNotPay = 0;
+      statusNotPay = jsonData['status'];
+    }else{
+      statusNotPay = 0;
+    }
+    return statusNotPay;
+  }
+  Future _getTableCheckByPayEdit() async{
+    String _paymentStatus = "แก้ไขการโอนเงิน"; /// ใช้สำหรับเรียก.
+    Map params = new Map();
+    params['managerId'] = userManager[0].managerId.toString();
+    params['numberTable'] = numberTable.toString();
+    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var jsonData = jsonDecode(response.body);
+    if(jsonData['status'] == 1){
+      statusPayEdit = 0;
+      statusPayEdit = jsonData['status'];
+    }else{
+      statusPayEdit = 0;
+    }
+    return statusPayEdit;
+  }
+
   // Stream<void> _getOrder() async*{
   //   var response = await http.get(Uri.parse("${Config.url}/order/getOrderByManagerIdAndNumberTable/${userManager[0].managerId}/$numberTable"), headers: {'Accept': 'Application/json; charset=UTF-8'});
   //   var jsonData = jsonDecode(response.body);
@@ -144,7 +180,7 @@ class _CheckBill extends State<CheckBill> {
   // }
 
   ///
-  _onCallCheckBill(List<ListOrder> listOrder) async{
+  _onCallCheckBill() async{
     if(_listOrder.length >= 1){
       if(_priceTotal == 0){
         return showDialog(
@@ -212,7 +248,7 @@ class _CheckBill extends State<CheckBill> {
                           ),
                           onTap: () {
                             Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => PayByTransfer(userManager[0],numberTable,_listOrderByCheckStatusForShowTotalPrice)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => PayByTransfer(userManager[0],numberTable,_listOrderByCheckStatusForShowTotalPrice))).then((value) => setState((){_getTableCheckByPayEdit();_getTableCheckBillByNotPay();}));
                           },
                         ),
                       ),
@@ -356,6 +392,10 @@ class _CheckBill extends State<CheckBill> {
       var jsonData = jsonDecode(response.body);
       var status = jsonData['status'];
       if(status == 1){
+        setState(() {
+          _getTableCheckBillByNotPay();
+          _getTableCheckByPayEdit();
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             content: Text("เรียกชำระเงินแล้ว"),
@@ -628,26 +668,149 @@ class _CheckBill extends State<CheckBill> {
                                     ),
                                   ),
                                 ),
+                                // Padding(
+                                //   padding: const EdgeInsets.only(left: 8,right: 8),
+                                //   child: Container(
+                                //     width: MediaQuery.of(context).size.width * 0.7,
+                                //     child: ElevatedButton(
+                                //       style: ElevatedButton.styleFrom(
+                                //           primary: Colors.green[600],
+                                //         // shape: RoundedRectangleBorder(
+                                //         //   borderRadius: BorderRadius.circular(10),
+                                //         // ),
+                                //       ),
+                                //       child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
+                                //       onPressed: () => setState(() {
+                                //         _getOrder();
+                                //         _onCallCheckBill();
+                                //       }),
+                                //     ),
+                                //   ),
+                                // ),
+                                ///
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8,right: 8),
                                   child: Container(
                                     width: MediaQuery.of(context).size.width * 0.7,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.green[600]
-                                        // shape: RoundedRectangleBorder(
-                                        //   borderRadius: BorderRadius.circular(10),
-                                        // ),
-                                      ),
-                                      child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
-                                      onPressed: () => setState(() {
-                                        _getOrder();
-                                        // _onCallCheckBill();
-                                        _onCallCheckBill(snapshot.data);
-                                      }),
-                                    ),
+                                    child: statusPayEdit == 1 /// กรณีแก้ไขรูปสลิป
+                                        ? ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.amber[500],
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.edit),
+                                                Text("ชำระเงินผิดพลาด"),
+                                              ],
+                                            ),
+                                            onPressed: () => setState(() {
+                                              print("ชำระเงินผิดพลาด");
+                                              _getTableCheckByPayEdit();
+                                              _getTableCheckBillByNotPay();
+                                              }),
+                                          )
+                                        : statusNotPay == 1 /// กรณียังไม่จ่าย
+                                            ? ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: Colors.red[300],
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.refresh),
+                                                    Text("รอดำเนินการชำระเงิน"),
+                                                  ],
+                                                ),
+                                                onPressed: () => setState(() {
+                                                  print("รอดำเนินการชำระเงิน");
+                                                  _getTableCheckByPayEdit();
+                                                  _getTableCheckBillByNotPay();
+                                                }),
+                                              )
+                                            : ElevatedButton( /// กรณีเรียกชำระเงิน
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.green[600],
+                                                ),
+                                                child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
+                                                onPressed: () => setState(() {
+                                                  _getOrder();
+                                                  _onCallCheckBill();
+                                                }),
+                                              ),
                                   ),
                                 ),
+                                // Padding(
+                                //   padding: const EdgeInsets.only(left: 8,right: 8),
+                                //   child: Container(
+                                //     width: MediaQuery.of(context).size.width * 0.7,
+                                //     child: statusPayEdit == 1 /// กรณีแก้ไขรูปสลิป
+                                //         ? ElevatedButton(
+                                //             style: ElevatedButton.styleFrom(
+                                //               primary: Colors.amber[500],
+                                //             ),
+                                //             child: Row(
+                                //               mainAxisAlignment: MainAxisAlignment.center,
+                                //               children: [
+                                //                 Icon(Icons.edit),
+                                //                 Text("แก้ไขการโอนเงิน"),
+                                //               ],
+                                //             ),
+                                //             onPressed: () {
+                                //               print("แก้ไขการโอนเงิน");
+                                //               _getTableCheckByPayEdit();
+                                //               _getTableCheckBillByNotPay();
+                                //               // print("statusNotPay ===>> $statusNotPay");
+                                //               // print("statusPayEdit ===>> $statusPayEdit");
+                                //
+                                //               setState(() {
+                                //                 print("statusNotPay ===>> $statusNotPay");
+                                //                 print("statusPayEdit ===>> $statusPayEdit");
+                                //               });
+                                //             },
+                                //           )
+                                //         : statusNotPay == 1 /// กรณียังไม่จ่าย
+                                //             ? ElevatedButton(
+                                //                 style: ElevatedButton.styleFrom(
+                                //                   primary: Colors.red[300],
+                                //                 ),
+                                //                 child: Row(
+                                //                   mainAxisAlignment: MainAxisAlignment.center,
+                                //                   children: [
+                                //                     Icon(Icons.refresh),
+                                //                     Text("รอดำเนินการชำระเงิน"),
+                                //                   ],
+                                //                 ),
+                                //                 onPressed: () {
+                                //                   print("รอดำเนินการชำระเงิน");
+                                //                   _getTableCheckByPayEdit();
+                                //                   _getTableCheckBillByNotPay();
+                                //                   // print("statusNotPay ===>> $statusNotPay");
+                                //                   // print("statusPayEdit ===>> $statusPayEdit");
+                                //                   setState(() {
+                                //                     print("statusNotPay ===>> $statusNotPay");
+                                //                     print("statusPayEdit ===>> $statusPayEdit");
+                                //                   });
+                                //                 },
+                                //               )
+                                //             : ElevatedButton( /// กรณีเรียกชำระเงิน
+                                //                 style: ElevatedButton.styleFrom(
+                                //                   primary: Colors.green[600],
+                                //                 ),
+                                //                 child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
+                                //                 onPressed: () {
+                                //                   print("ชำระเงิน");
+                                //                   _getTableCheckByPayEdit();
+                                //                   _getTableCheckBillByNotPay();
+                                //                   print("statusNotPay ===>> $statusNotPay");
+                                //                   print("statusPayEdit ===>> $statusPayEdit");
+                                //
+                                //                   _getOrder();
+                                //                   _onCallCheckBill();
+                                //                 },
+                                //               ),
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
