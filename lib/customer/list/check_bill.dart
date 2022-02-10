@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:customer_by_dart/config/config.dart';
 import 'package:customer_by_dart/customer/class/class_cancel_order_menu.dart';
+import 'package:customer_by_dart/customer/class/class_image_slip_transfer.dart';
 import 'package:customer_by_dart/customer/class/class_order.dart';
 import 'package:customer_by_dart/customer/class/class_order_other_menu.dart';
+import 'package:customer_by_dart/customer/class/class_table_check_bill.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
-import 'package:customer_by_dart/customer/list/pay_transfer.dart';
+import 'package:customer_by_dart/customer/list/paytransfer/edit_pay_transfer.dart';
+import 'package:customer_by_dart/customer/list/paytransfer/pay_transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -30,6 +33,7 @@ class _CheckBill extends State<CheckBill> {
 
   int statusPayEdit = 0;
   int statusNotPay = 0;
+  TableCheckBill? tableCheckBill;
 
   List<ListOrder> _listOrderByCheckStatusForShowTotalPrice = [];
   List<ListOrder> _listOrder = [];
@@ -136,19 +140,34 @@ class _CheckBill extends State<CheckBill> {
     return statusNotPay;
   }
   Future _getTableCheckByPayEdit() async{
+    List<TableCheckBill> listTableCheckBill = [];
+
     String _paymentStatus = "แก้ไขการโอนเงิน"; /// ใช้สำหรับเรียก.
     Map params = new Map();
     params['managerId'] = userManager[0].managerId.toString();
     params['numberTable'] = numberTable.toString();
     var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
+    var status = jsonData['status'];
+    var data = jsonData['data'];
     if(jsonData['status'] == 1){
       statusPayEdit = 0;
-      statusPayEdit = jsonData['status'];
+      statusPayEdit = status;
+      ///
+      List<ImageSlipTransfer> imageSlipTransfer = [];
+      var responseImage = await http.get(Uri.parse("${Config.url}/imageSlipTransfer/list/${data['tableCheckBillId']}"),headers: {'Accept': 'Application/json; charset=UTF-8'});
+      var jsonDataImage = jsonDecode(responseImage.body);
+      var dataImage = jsonDataImage['data'];
+      for(var d in dataImage){
+        var img = base64Decode(d['imageSlip']);
+        ImageSlipTransfer imgSlip = new ImageSlipTransfer(d['imageSlipId'], d['nameTransfer'], d['telTransfer'], d['tableCheckBillId'], img);
+        imageSlipTransfer.add(imgSlip);
+      }
+      tableCheckBill = new TableCheckBill(data['tableCheckBillId'], data['managerId'], data['numberTable'], data['paymentType'], data['paymentStatus'], data['priceTotal'], data['date'], data['time'], imageSlipTransfer);
     }else{
       statusPayEdit = 0;
     }
-    return statusPayEdit;
+    return tableCheckBill;
   }
 
   // Stream<void> _getOrder() async*{
@@ -701,12 +720,15 @@ class _CheckBill extends State<CheckBill> {
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 Icon(Icons.edit),
-                                                Text("ชำระเงินผิดพลาด"),
+                                                Text("แก้ไขสลิปโอนเงิน"),
                                               ],
                                             ),
                                             onPressed: () => setState(() {
-                                              print("ชำระเงินผิดพลาด");
-                                              _getTableCheckByPayEdit();
+                                              _getTableCheckByPayEdit().then((value){
+                                                if(value != null){
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditPayTransfer(tableCheckBill!))).then((value) => setState((){_getTableCheckBillByNotPay();_getTableCheckByPayEdit();}));
+                                                }
+                                              });
                                               _getTableCheckBillByNotPay();
                                               }),
                                           )
@@ -723,7 +745,7 @@ class _CheckBill extends State<CheckBill> {
                                                   ],
                                                 ),
                                                 onPressed: () => setState(() {
-                                                  print("รอดำเนินการชำระเงิน");
+                                                  // print("รอดำเนินการชำระเงิน");
                                                   _getTableCheckByPayEdit();
                                                   _getTableCheckBillByNotPay();
                                                 }),
@@ -740,77 +762,6 @@ class _CheckBill extends State<CheckBill> {
                                               ),
                                   ),
                                 ),
-                                // Padding(
-                                //   padding: const EdgeInsets.only(left: 8,right: 8),
-                                //   child: Container(
-                                //     width: MediaQuery.of(context).size.width * 0.7,
-                                //     child: statusPayEdit == 1 /// กรณีแก้ไขรูปสลิป
-                                //         ? ElevatedButton(
-                                //             style: ElevatedButton.styleFrom(
-                                //               primary: Colors.amber[500],
-                                //             ),
-                                //             child: Row(
-                                //               mainAxisAlignment: MainAxisAlignment.center,
-                                //               children: [
-                                //                 Icon(Icons.edit),
-                                //                 Text("แก้ไขการโอนเงิน"),
-                                //               ],
-                                //             ),
-                                //             onPressed: () {
-                                //               print("แก้ไขการโอนเงิน");
-                                //               _getTableCheckByPayEdit();
-                                //               _getTableCheckBillByNotPay();
-                                //               // print("statusNotPay ===>> $statusNotPay");
-                                //               // print("statusPayEdit ===>> $statusPayEdit");
-                                //
-                                //               setState(() {
-                                //                 print("statusNotPay ===>> $statusNotPay");
-                                //                 print("statusPayEdit ===>> $statusPayEdit");
-                                //               });
-                                //             },
-                                //           )
-                                //         : statusNotPay == 1 /// กรณียังไม่จ่าย
-                                //             ? ElevatedButton(
-                                //                 style: ElevatedButton.styleFrom(
-                                //                   primary: Colors.red[300],
-                                //                 ),
-                                //                 child: Row(
-                                //                   mainAxisAlignment: MainAxisAlignment.center,
-                                //                   children: [
-                                //                     Icon(Icons.refresh),
-                                //                     Text("รอดำเนินการชำระเงิน"),
-                                //                   ],
-                                //                 ),
-                                //                 onPressed: () {
-                                //                   print("รอดำเนินการชำระเงิน");
-                                //                   _getTableCheckByPayEdit();
-                                //                   _getTableCheckBillByNotPay();
-                                //                   // print("statusNotPay ===>> $statusNotPay");
-                                //                   // print("statusPayEdit ===>> $statusPayEdit");
-                                //                   setState(() {
-                                //                     print("statusNotPay ===>> $statusNotPay");
-                                //                     print("statusPayEdit ===>> $statusPayEdit");
-                                //                   });
-                                //                 },
-                                //               )
-                                //             : ElevatedButton( /// กรณีเรียกชำระเงิน
-                                //                 style: ElevatedButton.styleFrom(
-                                //                   primary: Colors.green[600],
-                                //                 ),
-                                //                 child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
-                                //                 onPressed: () {
-                                //                   print("ชำระเงิน");
-                                //                   _getTableCheckByPayEdit();
-                                //                   _getTableCheckBillByNotPay();
-                                //                   print("statusNotPay ===>> $statusNotPay");
-                                //                   print("statusPayEdit ===>> $statusPayEdit");
-                                //
-                                //                   _getOrder();
-                                //                   _onCallCheckBill();
-                                //                 },
-                                //               ),
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),

@@ -7,7 +7,7 @@ import 'package:customer_by_dart/customer/class/class_menu_cart.dart';
 import 'package:customer_by_dart/customer/class/class_other_menu.dart';
 import 'package:customer_by_dart/customer/class/class_user_manager.dart';
 import 'package:customer_by_dart/customer/list/provider_method/provider_menu.dart';
-import 'package:customer_by_dart/customer/list/search_food_drink.dart';
+import 'package:customer_by_dart/customer/list/menu/search_food_drink.dart';
 import 'package:customer_by_dart/customer/list/state/check_dialog_typefood_typedrink.dart';
 import 'package:customer_by_dart/customer/list/state/check_radio_typefood_typedrink.dart';
 import 'package:customer_by_dart/customer/list/state/listview_other_menu_typefood_typedrink.dart';

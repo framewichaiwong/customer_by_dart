@@ -50,6 +50,7 @@ class _CartMenu extends State<CartMenu> {
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
           content: Text("กำลังสั่งรายการอาหาร กรุณารอสักครู่..."),
+          duration: Duration(seconds: 1),
         ),
       );
       /// Call api save (order_menu).

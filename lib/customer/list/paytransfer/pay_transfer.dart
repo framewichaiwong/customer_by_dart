@@ -24,6 +24,7 @@ class _PayByTransfer extends State<PayByTransfer> {
   List<ListOrder> listOrderByCheckStatusForShowTotalPrice;
   _PayByTransfer(this.userManager,this.numberTable,this.listOrderByCheckStatusForShowTotalPrice);
 
+  /// Key.
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   /// Parameter.
@@ -33,6 +34,7 @@ class _PayByTransfer extends State<PayByTransfer> {
   int? _managerId;
   int? _numberTable;
   int? _priceTotal;
+  List<File> _fileImage = [];
 
   @override
   void initState() {
@@ -52,13 +54,14 @@ class _PayByTransfer extends State<PayByTransfer> {
       if (image!.path.isNotEmpty) {
         setState(() {
           _image = File(image.path);
+          _fileImage.add(_image!);
         });
       }
     } catch (e) {}
   }
 
   _showDialogOnSave() {
-    if(_image == null){
+    if(_fileImage.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
           content: Text("กรุณาเลือกรูปภาพสลิปการโอนเงิน...!"),
@@ -124,32 +127,53 @@ class _PayByTransfer extends State<PayByTransfer> {
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
     if(data != null){
-      var multipart = await http.MultipartFile.fromPath('fileImg',_image!.path);
-      var request = http.MultipartRequest('POST', Uri.parse("${Config.url}/imageSlipTransfer/save"));
-      request.files.add(multipart);
-      request.fields['tableCheckBillId'] = data['tableCheckBillId'].toString();
-      request.fields['nameTransfer'] = _nameTransfer!;
-      request.fields['telTransfer'] = _telTransfer!;
-      request.headers.addAll({'Accept': 'Application/json; charset=UTF-8'});
-      var response = await http.Response.fromStream(await request.send());
-      var jsonData = jsonDecode(response.body);
-      var status = jsonData['status'];
-      if(status == 1){
-        ScaffoldMessenger.of(context).showSnackBar(
-          new SnackBar(
-            content: Text("เรียกชำระเงินแล้ว"),
-            duration: Duration(seconds: 1),
-          )
-        );
-        Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
-      }else{
-        ScaffoldMessenger.of(context).showSnackBar(
-          new SnackBar(
-            content: Text("เรียกไม่สำเร็จ..!!"),
-            duration: Duration(seconds: 1),
-          )
-        );
+      for(int i=0; i<_fileImage.length; i++){
+        var multipart = await http.MultipartFile.fromPath('fileImg',_fileImage[i].path);
+        var request = http.MultipartRequest('POST', Uri.parse("${Config.url}/imageSlipTransfer/save"));
+        request.files.add(multipart);
+        request.fields['tableCheckBillId'] = data['tableCheckBillId'].toString();
+        request.fields['nameTransfer'] = _nameTransfer!;
+        request.fields['telTransfer'] = _telTransfer!;
+        request.headers.addAll({'Accept': 'Application/json; charset=UTF-8'});
+        var response = await http.Response.fromStream(await request.send());
+        var jsonData = jsonDecode(response.body);
+        var status = jsonData['status'];
+        if(status == 1 && _fileImage.length == i+1){
+          ScaffoldMessenger.of(context).showSnackBar(
+              new SnackBar(
+                content: Text("เรียกชำระเงินแล้ว"),
+                duration: Duration(seconds: 1),
+              )
+          );
+          Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
+        }
       }
+      // var multipart = await http.MultipartFile.fromPath('fileImg',_image!.path);
+      // var request = http.MultipartRequest('POST', Uri.parse("${Config.url}/imageSlipTransfer/save"));
+      // request.files.add(multipart);
+      // request.fields['tableCheckBillId'] = data['tableCheckBillId'].toString();
+      // request.fields['nameTransfer'] = _nameTransfer!;
+      // request.fields['telTransfer'] = _telTransfer!;
+      // request.headers.addAll({'Accept': 'Application/json; charset=UTF-8'});
+      // var response = await http.Response.fromStream(await request.send());
+      // var jsonData = jsonDecode(response.body);
+      // var status = jsonData['status'];
+      // if(status == 1){
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     new SnackBar(
+      //       content: Text("เรียกชำระเงินแล้ว"),
+      //       duration: Duration(seconds: 1),
+      //     )
+      //   );
+      //   Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
+      // }else{
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     new SnackBar(
+      //       content: Text("เรียกไม่สำเร็จ..!!"),
+      //       duration: Duration(seconds: 1),
+      //     )
+      //   );
+      // }
     }else{
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
@@ -178,14 +202,10 @@ class _PayByTransfer extends State<PayByTransfer> {
                           icon: Icon(Icons.arrow_back_ios),
                           onPressed: () => Navigator.pop(context),
                         ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            color: Colors.red[300],
-                            child: Center(
-                                child: Text("จ่ายด้วยการโอน",style: TextStyle(fontSize: 25,color: Colors.white),)
-                            ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.75,
+                          child: Center(
+                              child: Text("จ่ายด้วยการโอน",style: TextStyle(fontSize: 25,color: Colors.black),)
                           ),
                         ),
                       ],
@@ -193,60 +213,75 @@ class _PayByTransfer extends State<PayByTransfer> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        child: _image != null
-                            ? Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                  ),
-                                  width: MediaQuery.of(context).size.width * 0.8,
-                                  height: MediaQuery.of(context).size.height * 0.5,
-                                  child: Image.file(_image!,fit: BoxFit.fill),
-                                ),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: IconButton(
-                                      icon: Icon(Icons.clear,color: Colors.red),
-                                      iconSize: 30,
-                                      onPressed: () => setState(() {
-                                        _image = null;
-                                      }),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
-                            : GestureDetector(
-                              onTap: () => _fromGallery(),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black)
-                                  ),
-                                  width: MediaQuery.of(context).size.width * 0.8,
-                                  height: MediaQuery.of(context).size.height * 0.5,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                        child: _fileImage.isNotEmpty
+                            ? Container(
+                                height: MediaQuery.of(context).size.height * 0.5,
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                child: PageView.builder(
+                                  itemCount: _fileImage.length,
+                                  itemBuilder: (BuildContext context,int index) => Stack(
+                                    alignment: Alignment.topRight,
                                     children: [
-                                      Icon(Icons.image,size: 50),
-                                      Text("เพิ่มรูปภาพสลิปการโอนเงิน"),
+                                      Image.file(_fileImage[index], fit: BoxFit.fill),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Container(
+                                          color: Colors.white,
+                                          child: IconButton(
+                                            icon: Icon(Icons.clear,color: Colors.red),
+                                            iconSize: 30,
+                                            onPressed: () => setState(() {
+                                              _fileImage.remove(_fileImage[index]);
+                                            }),
+                                          ),
+                                        ),
+                                      )
                                     ],
-                                  )
-                              ),
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black)
+                                ),
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                height: MediaQuery.of(context).size.height * 0.5,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.image,size: 50),
+                                    Text("เพิ่มรูปภาพสลิปการโอนเงิน"),
+                                  ],
+                                )
+                            ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () => _fromGallery(),
+                        child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.add,size: 25),
+                            )
                         ),
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("จำนวน : $_priceTotal บาท",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: Colors.blue),),
+                        )
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("จำนวน : $_priceTotal บาท",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: Colors.blue),),
-                      )
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
