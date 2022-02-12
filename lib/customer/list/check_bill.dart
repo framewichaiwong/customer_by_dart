@@ -745,7 +745,6 @@ class _CheckBill extends State<CheckBill> {
                                                   ],
                                                 ),
                                                 onPressed: () => setState(() {
-                                                  // print("รอดำเนินการชำระเงิน");
                                                   _getTableCheckByPayEdit();
                                                   _getTableCheckBillByNotPay();
                                                 }),
@@ -756,6 +755,8 @@ class _CheckBill extends State<CheckBill> {
                                                 ),
                                                 child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
                                                 onPressed: () => setState(() {
+                                                  _getTableCheckByPayEdit();
+                                                  _getTableCheckBillByNotPay();
                                                   _getOrder();
                                                   _onCallCheckBill();
                                                 }),
