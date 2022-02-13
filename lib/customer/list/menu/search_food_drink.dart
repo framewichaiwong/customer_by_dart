@@ -149,7 +149,7 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                             },
                                           ),
                                           Container(
-                                            width: MediaQuery.of(context).size.width * 0.55,
+                                            width: MediaQuery.of(context).size.width * 0.53,
                                             child: Text("ธรรมดา"),
                                           ),
                                         ],
@@ -172,7 +172,7 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                             },
                                           ),
                                           Container(
-                                            width: MediaQuery.of(context).size.width * 0.55,
+                                            width: MediaQuery.of(context).size.width * 0.53,
                                             child: Text("พิเศษ"),
                                           ),
                                         ],
@@ -205,7 +205,7 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                             },
                                           ),
                                           Container(
-                                            width: MediaQuery.of(context).size.width * 0.55,
+                                            width: MediaQuery.of(context).size.width * 0.53,
                                             child: Text("โปรโมชั่น"),
                                           ),
                                         ],
@@ -572,22 +572,23 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                                   mainAxisAlignment: MainAxisAlignment.start,
                                                   children: [
                                                     Container(
+                                                      width: MediaQuery.of(context).size.width * 0.3,
                                                       child: _searchListMenu[index].priceMenuNormal == 0 /// if (price_Normal == 0)
                                                           ? null
                                                           : _searchListMenu[index].priceMenuPromotion == 0 /// if
                                                             ? Text("ธรรมดา ${_searchListMenu[index].priceMenuNormal.toString()} บาท", style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold,),)
                                                             : Text("ธรรมดา ${_searchListMenu[index].priceMenuNormal.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                     ),
-                                                    SizedBox(width: 25),
                                                     Container(
+                                                      width: MediaQuery.of(context).size.width * 0.3,
                                                       child: _searchListMenu[index].priceMenuSpecial == 0 /// if
                                                           ? null
                                                           : _searchListMenu[index].priceMenuPromotion == 0 /// if
                                                             ? Text("พิเศษ ${_searchListMenu[index].priceMenuSpecial.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),)
                                                             : Text("พิเศษ ${_searchListMenu[index].priceMenuSpecial.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                     ),
-                                                    SizedBox(width: _searchListMenu[index].priceMenuSpecial == 0 ? 105 : 25),
                                                     Container(
+                                                      width: MediaQuery.of(context).size.width * 0.3,
                                                       child: _searchListMenu[index].priceMenuPromotion == 0 /// if
                                                           ? null
                                                           : Text("โปรโมชั่น ${_searchListMenu[index].priceMenuPromotion.toString()} บาท",style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),),
@@ -666,22 +667,23 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
                                                 Container(
+                                                  width: MediaQuery.of(context).size.width * 0.3,
                                                   child: _searchListMenu[index].priceMenuNormal == 0 /// if (price_Normal == 0)
                                                       ? null
                                                       : _searchListMenu[index].priceMenuPromotion == 0 /// if
                                                         ? Text("ธรรมดา ${_searchListMenu[index].priceMenuNormal.toString()} บาท",style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),)
                                                         : Text("ธรรมดา ${_searchListMenu[index].priceMenuNormal.toString()} บาท",style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                 ),
-                                                SizedBox(width: 25),
                                                 Container(
+                                                  width: MediaQuery.of(context).size.width * 0.3,
                                                   child: _searchListMenu[index].priceMenuSpecial == 0 /// if
                                                       ? null
                                                       : _searchListMenu[index].priceMenuPromotion == 0 /// if
                                                         ? Text("พิเศษ ${_searchListMenu[index].priceMenuSpecial.toString()} บาท",style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold,),)
                                                         : Text("พิเศษ ${_searchListMenu[index].priceMenuSpecial.toString()} บาท",style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough,),),
                                                 ),
-                                                SizedBox(width: _searchListMenu[index].priceMenuSpecial == 0 ? 105 : 25),
                                                 Container(
+                                                  width: MediaQuery.of(context).size.width * 0.3,
                                                   child: _searchListMenu[index].priceMenuPromotion == 0 /// if
                                                       ? null
                                                       : Text("โปรโมชั่น ${_searchListMenu[index].priceMenuPromotion.toString()} บาท", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold,),),

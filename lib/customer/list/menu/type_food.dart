@@ -186,6 +186,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                     child: _showListMenu[index].priceMenuNormal == 0
                                         ? null
                                         : Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Container(
                                               child: Radio(
@@ -201,7 +202,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                               ),
                                             ),
                                             Container(
-                                              width: MediaQuery.of(context).size.width * 0.55,
+                                              width: MediaQuery.of(context).size.width * 0.53,
                                               child: Text("ธรรมดา"),
                                             ),
                                           ],
@@ -211,22 +212,21 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                     child: _showListMenu[index].priceMenuSpecial == 0
                                         ? null
                                         : Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Container(
-                                              child: Radio(
-                                                value: 2,
-                                                groupValue: valRadio,
-                                                onChanged: (int? value1) {
-                                                  setState(() {
-                                                    valRadio = value1!;
-                                                    _nameMenu = "${_showListMenu[index].name} (พิเศษ)";
-                                                    _priceMenu =  _showListMenu[index].priceMenuSpecial;
-                                                  });
-                                                },
-                                              ),
+                                            Radio(
+                                              value: 2,
+                                              groupValue: valRadio,
+                                              onChanged: (int? value1) {
+                                                setState(() {
+                                                  valRadio = value1!;
+                                                  _nameMenu = "${_showListMenu[index].name} (พิเศษ)";
+                                                  _priceMenu =  _showListMenu[index].priceMenuSpecial;
+                                                });
+                                              },
                                             ),
                                             Container(
-                                              width: MediaQuery.of(context).size.width * 0.55,
+                                              width: MediaQuery.of(context).size.width * 0.53,
                                               child: Text("พิเศษ"),
                                             ),
                                           ],
@@ -259,7 +259,7 @@ class _TypeFood extends State<TypeFood> with AutomaticKeepAliveClientMixin {
                                               },
                                             ),
                                             Container(
-                                              width: MediaQuery.of(context).size.width * 0.55,
+                                              width: MediaQuery.of(context).size.width * 0.53,
                                               child: Text("โปรโมชั่น"),
                                             ),
                                           ],
