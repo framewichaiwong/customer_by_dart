@@ -148,8 +148,7 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                               });
                                             },
                                           ),
-                                          Container(
-                                            width: MediaQuery.of(context).size.width * 0.53,
+                                          Expanded(
                                             child: Text("ธรรมดา"),
                                           ),
                                         ],
@@ -171,8 +170,7 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                               });
                                             },
                                           ),
-                                          Container(
-                                            width: MediaQuery.of(context).size.width * 0.53,
+                                          Expanded(
                                             child: Text("พิเศษ"),
                                           ),
                                         ],
@@ -204,8 +202,7 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                                               });
                                             },
                                           ),
-                                          Container(
-                                            width: MediaQuery.of(context).size.width * 0.53,
+                                          Expanded(
                                             child: Text("โปรโมชั่น"),
                                           ),
                                         ],

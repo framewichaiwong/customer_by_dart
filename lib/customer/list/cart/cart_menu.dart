@@ -190,7 +190,7 @@ class _CartMenu extends State<CartMenu> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
+                                width: MediaQuery.of(context).size.width * 0.38,
                                 child: bodyText("${_cart[index].nameMenu}")
                               ),
                               Container(
@@ -236,7 +236,7 @@ class _CartMenu extends State<CartMenu> {
                                 ),
                               ),
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.15,
+                                width: MediaQuery.of(context).size.width * 0.14,
                                 child: bodySumPrice("${(_cart[index].priceMenu * _cart[index].numberMenu) + (_cart[index].otherMenu.length == 0 ?0 :_cart[index].otherMenu.map((e) => e.otherMenuPrice * _cart[index].numberMenu).reduce((value, element) => value + element))}"),
                               ),
                             ],

@@ -197,8 +197,7 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
                                               });
                                             },
                                           ),
-                                          Container(
-                                            width: MediaQuery.of(context).size.width * 0.53,
+                                          Expanded(
                                             child: Text("ธรรมดา"),
                                           ),
                                         ],
@@ -220,8 +219,7 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
                                               });
                                             },
                                           ),
-                                          Container(
-                                            width: MediaQuery.of(context).size.width * 0.53,
+                                          Expanded(
                                             child: Text("พิเศษ"),
                                           ),
                                         ],
@@ -253,8 +251,7 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
                                               });
                                             },
                                           ),
-                                          Container(
-                                            width: MediaQuery.of(context).size.width * 0.53,
+                                          Expanded(
                                             child: Text("โปรโมชั่น"),
                                           ),
                                         ],
