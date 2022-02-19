@@ -305,6 +305,7 @@ class _CartMenu extends State<CartMenu> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               new SnackBar(
                                 content: Text("กรุณาเลือกรายการอาหาร!!"),
+                                duration: Duration(seconds: 1),
                               ),
                             );
                           }else{

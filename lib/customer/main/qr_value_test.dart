@@ -16,8 +16,8 @@ class QRValue extends StatefulWidget {
 
 class _QRValueState extends State<QRValue> {
 
-  int numberTable = 1;
-  int managerId = 1;
+  int numberTable = 2;
+  int managerId = 2;
 
   @override
   void initState() {

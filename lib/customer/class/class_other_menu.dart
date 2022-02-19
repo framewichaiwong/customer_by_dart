@@ -4,7 +4,8 @@ class OtherMenu{
   int otherMenuPrice;
   String otherSelection;
   String otherStatus;
+  String otherStatusSale;
   int managerId;
   String typeMenu;
-  OtherMenu(this.otherMenuId,this.otherMenuName,this.otherMenuPrice,this.otherSelection,this.otherStatus,this.managerId,this.typeMenu);
+  OtherMenu(this.otherMenuId,this.otherMenuName,this.otherMenuPrice,this.otherSelection,this.otherStatus,this.otherStatusSale,this.managerId,this.typeMenu);
 }

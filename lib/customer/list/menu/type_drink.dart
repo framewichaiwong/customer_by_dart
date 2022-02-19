@@ -127,16 +127,16 @@ class _TypeDrink extends State<TypeDrink> with AutomaticKeepAliveClientMixin {
       var responseOtherMenu = await http.get(Uri.parse('${Config.url}/otherMenu/list/${list.otherMenuId}'), headers: {'Accept': 'Application/json; charset=UTF-8'});
       var jsonDataOtherMenu = jsonDecode(responseOtherMenu.body);
       var dataOtherMenu = jsonDataOtherMenu['data'];
-      OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
+      OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['otherStatusSale'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
       listOtherMenu.add(otherMenu);
       showOtherSelection.add(dataOtherMenu['otherSelection']);///
 
       if(dataOtherMenu['otherSelection'] == "เลือก"){
-        OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
+        OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['otherStatusSale'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
         listOtherMenuSelect.add(otherMenu);
         showOtherStatusBySelect.add(dataOtherMenu['otherStatus']);
       }else{
-        OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
+        OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['otherStatusSale'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
         listOtherMenuNotSelect.add(otherMenu);
         showOtherStatusByNotSelect.add(dataOtherMenu['otherStatus']);
       }

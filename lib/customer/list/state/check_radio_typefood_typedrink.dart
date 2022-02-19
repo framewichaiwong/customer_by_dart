@@ -1,4 +1,3 @@
-
 import 'package:customer_by_dart/customer/class/class_other_menu.dart';
 import 'package:flutter/material.dart';
 
@@ -41,48 +40,59 @@ class _CheckRadioTypeFoodAndTypeDrink extends State<CheckRadioTypeFoodAndTypeDri
       shrinkWrap: true,
       itemCount: _listOther.length,
       itemBuilder: (BuildContext context, int index) => Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Radio(
-              value: index,
-              groupValue: valRadio,
-              onChanged: (int? value) => setState(() {
-                valRadio = value;
-                _valueSetterSelectRadio(_listOther[index]);
-              }),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.3,
-              child: Text(_listOther[index].otherMenuName),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.11,
-              child: Text("บาท"),
-            ),
-          ],
-        ),
-        // child: ListTile(
-        //   title: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: [
-        //       Text(_listOther[index].otherMenuName),
-        //       Text("+${_listOther[index].otherMenuPrice.toString()} บาท"),
-        //     ],
-        //   ),
-        //   leading: Radio(
-        //     value: index,
-        //     groupValue: valRadio,
-        //     onChanged: (int? value) => setState(() {
-        //       valRadio = value;
-        //       _valueSetterSelectRadio(_listOther[index]);
-        //     }),
-        //   ),
-        // ),
+        child: _listOther[index].otherStatusSale == "ขาย"
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Radio(
+                    value: index,
+                    groupValue: valRadio,
+                    onChanged: (int? value) => setState(() {
+                      valRadio = value;
+                      _valueSetterSelectRadio(_listOther[index]);
+                    }),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Text(_listOther[index].otherMenuName),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                    child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.11,
+                    child: Text("บาท"),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Radio(
+                    value: index,
+                    groupValue: false,
+                    onChanged: null,
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Wrap(
+                      children: [
+                        Text(_listOther[index].otherMenuName),
+                        Text("[${_listOther[index].otherStatusSale}]",style: TextStyle(color: Colors.red))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                    child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.11,
+                    child: Text("บาท"),
+                  ),
+                ],
+              ),
       ),
     );
   }

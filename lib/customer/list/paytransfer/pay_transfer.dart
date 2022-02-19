@@ -2,27 +2,22 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:customer_by_dart/config/config.dart';
-import 'package:customer_by_dart/customer/class/class_order.dart';
-import 'package:customer_by_dart/customer/class/class_user_manager.dart';
+import 'package:customer_by_dart/customer/class/class_table_check_bill.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 class PayByTransfer extends StatefulWidget {
-  UserManager userManager;
-  int numberTable;
-  List<ListOrder> listOrderByCheckStatusForShowTotalPrice;
-  PayByTransfer(this.userManager,this.numberTable,this.listOrderByCheckStatusForShowTotalPrice);
+  TableCheckBill tableCheckBill;
+  PayByTransfer(this.tableCheckBill);
 
   @override
-  _PayByTransfer createState() => _PayByTransfer(userManager,numberTable,listOrderByCheckStatusForShowTotalPrice);
+  _PayByTransfer createState() => _PayByTransfer(tableCheckBill);
 }
 
 class _PayByTransfer extends State<PayByTransfer> {
-  UserManager userManager;
-  int numberTable;
-  List<ListOrder> listOrderByCheckStatusForShowTotalPrice;
-  _PayByTransfer(this.userManager,this.numberTable,this.listOrderByCheckStatusForShowTotalPrice);
+  TableCheckBill tableCheckBill;
+  _PayByTransfer(this.tableCheckBill);
 
   /// Key.
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
@@ -33,15 +28,19 @@ class _PayByTransfer extends State<PayByTransfer> {
   String? _telTransfer;
   int? _managerId;
   int? _numberTable;
+  String? _paymentType;
+  int? _tableCheckBillId;
   int? _priceTotal;
   List<File> _fileImage = [];
 
   @override
   void initState() {
     super.initState();
-    _managerId = userManager.managerId;
-    _numberTable = numberTable;
-    _priceTotal = listOrderByCheckStatusForShowTotalPrice.map((list) => (list.numberMenu * list.priceMenu) + (list.orderOtherMenu.length<=0 ?0 :list.orderOtherMenu.map((e) => e.orderOtherPrice * list.numberMenu).reduce((value, element) => value + element))).reduce((value, element) => value + element);
+    _managerId = tableCheckBill.managerId;
+    _numberTable = tableCheckBill.numberTable;
+    _paymentType = tableCheckBill.paymentType;
+    _tableCheckBillId = tableCheckBill.tableCheckBillId;
+    _priceTotal = tableCheckBill.priceTotal;
   }
 
   _fromGallery() async {
@@ -115,15 +114,15 @@ class _PayByTransfer extends State<PayByTransfer> {
   _onSaveTableCheckBill() async{
     Navigator.pop(context);
 
-    String _paymentType = "ชำระด้วยเงินโอน";
-    String _paymentStatus = "ยังไม่จ่าย";
+    String _paymentStatus = "ตรวจสอบรูปภาพการโอนเงิน";
     Map params = new Map();
+    params['tableCheckBillId'] = _tableCheckBillId.toString();
     params['managerId'] = _managerId.toString();
     params['numberTable'] = _numberTable.toString();
     params['paymentType'] = _paymentType;
     params['paymentStatus'] = _paymentStatus;
     params['priceTotal'] = _priceTotal.toString();
-    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/updateByCustomer"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
     var data = jsonData['data'];
     if(data != null){
@@ -131,7 +130,7 @@ class _PayByTransfer extends State<PayByTransfer> {
         var multipart = await http.MultipartFile.fromPath('fileImg',_fileImage[i].path);
         var request = http.MultipartRequest('POST', Uri.parse("${Config.url}/imageSlipTransfer/save"));
         request.files.add(multipart);
-        request.fields['tableCheckBillId'] = data['tableCheckBillId'].toString();
+        request.fields['tableCheckBillId'] = _tableCheckBillId.toString();
         request.fields['nameTransfer'] = _nameTransfer!;
         request.fields['telTransfer'] = _telTransfer!;
         request.headers.addAll({'Accept': 'Application/json; charset=UTF-8'});
@@ -141,44 +140,17 @@ class _PayByTransfer extends State<PayByTransfer> {
         if(status == 1 && _fileImage.length == i+1){
           ScaffoldMessenger.of(context).showSnackBar(
               new SnackBar(
-                content: Text("เรียกชำระเงินแล้ว"),
+                content: Text("เพิ่มรูปภาพการโอนเงินแล้ว"),
                 duration: Duration(seconds: 1),
               )
           );
           Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
         }
       }
-      // var multipart = await http.MultipartFile.fromPath('fileImg',_image!.path);
-      // var request = http.MultipartRequest('POST', Uri.parse("${Config.url}/imageSlipTransfer/save"));
-      // request.files.add(multipart);
-      // request.fields['tableCheckBillId'] = data['tableCheckBillId'].toString();
-      // request.fields['nameTransfer'] = _nameTransfer!;
-      // request.fields['telTransfer'] = _telTransfer!;
-      // request.headers.addAll({'Accept': 'Application/json; charset=UTF-8'});
-      // var response = await http.Response.fromStream(await request.send());
-      // var jsonData = jsonDecode(response.body);
-      // var status = jsonData['status'];
-      // if(status == 1){
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     new SnackBar(
-      //       content: Text("เรียกชำระเงินแล้ว"),
-      //       duration: Duration(seconds: 1),
-      //     )
-      //   );
-      //   Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
-      // }else{
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     new SnackBar(
-      //       content: Text("เรียกไม่สำเร็จ..!!"),
-      //       duration: Duration(seconds: 1),
-      //     )
-      //   );
-      // }
     }else{
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
-          content: Text("รูปภาพผิดพลาด...!!"),
-          duration: Duration(seconds: 1),
+          content: Text("ทำรายการไม่สำเร็จ"),
         )
       );
     }
@@ -205,7 +177,7 @@ class _PayByTransfer extends State<PayByTransfer> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.75,
                           child: Center(
-                              child: Text("จ่ายด้วยการโอน",style: TextStyle(fontSize: 25,color: Colors.black),)
+                              child: Text("เพิ่มรูปภาพการโอนเงิน",style: TextStyle(fontSize: 25,color: Colors.black),)
                           ),
                         ),
                       ],
@@ -250,7 +222,7 @@ class _PayByTransfer extends State<PayByTransfer> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.image,size: 50),
-                                    Text("เพิ่มรูปภาพสลิปการโอนเงิน"),
+                                    Text("เพิ่มรูปภาพการโอนเงิน"),
                                   ],
                                 )
                             ),

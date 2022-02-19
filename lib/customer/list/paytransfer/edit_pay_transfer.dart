@@ -94,7 +94,7 @@ class _EditPayTransferState extends State<EditPayTransfer> {
     if(_fileImage.isEmpty && tableCheckBill.imageSlipTransfer.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
-          content: Text("กรุณาเลือกรูปภาพสลิป"),
+          content: Text("กรุณาเลือกรูปภาพการโอนเงิน"),
         )
       );
     }else{
@@ -104,7 +104,7 @@ class _EditPayTransferState extends State<EditPayTransfer> {
         return showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              content: Text("แก้ไขสลิปการโอน",textAlign: TextAlign.center),
+              content: Text("แก้ไขรูปภาพการโอนเงิน",textAlign: TextAlign.center),
               actions: [
                 Column(
                   children: [
@@ -145,7 +145,7 @@ class _EditPayTransferState extends State<EditPayTransfer> {
   _buttonEdit() async{
     Navigator.pop(context);
 
-    String _paymentStatus = "ยังไม่จ่าย";
+    String _paymentStatus = "ตรวจสอบรูปภาพการโอนเงิน";
     Map params = new Map();
     params['tableCheckBillId'] = _tableCheckBillId.toString();
     params['managerId'] = _managerId.toString();
@@ -162,7 +162,7 @@ class _EditPayTransferState extends State<EditPayTransfer> {
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
             duration: Duration(seconds: 1),
-            content: Text("แก้ไขสลิปสำเร็จ"),
+            content: Text("แก้ไขรูปภาพการโอนเงินสำเร็จ"),
           )
         );
         Navigator.pop(context);

@@ -31,8 +31,10 @@ class _CheckBill extends State<CheckBill> {
   // var numberFormat = NumberFormat("#,##0.00"); /// Format price.
   var numberFormat = NumberFormat("#,###"); /// Format price.
 
-  int statusPayEdit = 0;
-  int statusNotPay = 0;
+  int statusInProgress = 0;
+  int statusCheckImageSlip = 0;
+  int statusAddImageSlip = 0;
+  int statusEditImageSlip = 0;
   TableCheckBill? tableCheckBill;
 
   List<ListOrder> _listOrderByCheckStatusForShowTotalPrice = [];
@@ -46,8 +48,10 @@ class _CheckBill extends State<CheckBill> {
   void initState(){
     super.initState();
     _getOrder();
-    _getTableCheckBillByNotPay();
-    _getTableCheckByPayEdit();
+    _getTableCheckBillInProgress();
+    _getTableCheckBillCheckImageSlip();
+    _getTableCheckByAddImageSlip();
+    _getTableCheckByEditImageSlip();
   }
 
   /*@override
@@ -124,25 +128,66 @@ class _CheckBill extends State<CheckBill> {
     return _listOrder;
   }
 
-  Future _getTableCheckBillByNotPay() async{
-    String _paymentStatus = "ยังไม่จ่าย"; /// ใช้สำหรับเรียก.
+  /// สถานะ => กำลังดำเนินการ.
+  Future _getTableCheckBillInProgress() async{
+    String _paymentStatus = "กำลังดำเนินการ"; /// ใช้สำหรับเรียก.
     Map params = new Map();
     params['managerId'] = userManager[0].managerId.toString();
     params['numberTable'] = numberTable.toString();
     var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
     var jsonData = jsonDecode(response.body);
     if(jsonData['status'] == 1){
-      statusNotPay = 0;
-      statusNotPay = jsonData['status'];
+      statusInProgress = 0;
+      statusInProgress = jsonData['status'];
     }else{
-      statusNotPay = 0;
+      statusInProgress = 0;
     }
-    return statusNotPay;
+    return statusInProgress;
   }
-  Future _getTableCheckByPayEdit() async{
+
+  /// สถานะ => ตรวจสอบรูปภาพการโอนเงิน.
+  Future _getTableCheckBillCheckImageSlip() async{
+    String _paymentStatus = "ตรวจสอบรูปภาพการโอนเงิน"; /// ใช้สำหรับเรียก.
+    Map params = new Map();
+    params['managerId'] = userManager[0].managerId.toString();
+    params['numberTable'] = numberTable.toString();
+    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var jsonData = jsonDecode(response.body);
+    if(jsonData['status'] == 1){
+      statusCheckImageSlip = 0;
+      statusCheckImageSlip = jsonData['status'];
+    }else{
+      statusCheckImageSlip = 0;
+    }
+    return statusCheckImageSlip;
+  }
+
+  /// สถานะ => เพิ่มรูปภาพการโอนเงิน.
+  Future _getTableCheckByAddImageSlip() async{
+    TableCheckBill listTableCheckBill;
+
+    String _paymentStatus = "เพิ่มรูปภาพการโอนเงิน"; /// ใช้สำหรับเรียก.
+    Map params = new Map();
+    params['managerId'] = userManager[0].managerId.toString();
+    params['numberTable'] = numberTable.toString();
+    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+    var jsonData = jsonDecode(response.body);
+    var data = jsonData['data'];
+    if(jsonData['status'] == 1){
+      statusAddImageSlip = 0;
+      statusAddImageSlip = jsonData['status'];
+      tableCheckBill = new TableCheckBill(data['tableCheckBillId'], data['managerId'], data['numberTable'], data['paymentType'], data['paymentStatus'], data['priceTotal'], data['date'], data['time'], []);
+    }else{
+      statusAddImageSlip = 0;
+    }
+    return tableCheckBill;
+  }
+
+  /// สถานะ => แก้ไขสลิปการโอนเงิน.
+  Future _getTableCheckByEditImageSlip() async{
     List<TableCheckBill> listTableCheckBill = [];
 
-    String _paymentStatus = "แก้ไขการโอนเงิน"; /// ใช้สำหรับเรียก.
+    String _paymentStatus = "แก้ไขรูปภาพการโอนเงิน"; /// ใช้สำหรับเรียก.
     Map params = new Map();
     params['managerId'] = userManager[0].managerId.toString();
     params['numberTable'] = numberTable.toString();
@@ -151,8 +196,8 @@ class _CheckBill extends State<CheckBill> {
     var status = jsonData['status'];
     var data = jsonData['data'];
     if(jsonData['status'] == 1){
-      statusPayEdit = 0;
-      statusPayEdit = status;
+      statusEditImageSlip = 0;
+      statusEditImageSlip = status;
       ///
       List<ImageSlipTransfer> imageSlipTransfer = [];
       var responseImage = await http.get(Uri.parse("${Config.url}/imageSlipTransfer/list/${data['tableCheckBillId']}"),headers: {'Accept': 'Application/json; charset=UTF-8'});
@@ -165,7 +210,7 @@ class _CheckBill extends State<CheckBill> {
       }
       tableCheckBill = new TableCheckBill(data['tableCheckBillId'], data['managerId'], data['numberTable'], data['paymentType'], data['paymentStatus'], data['priceTotal'], data['date'], data['time'], imageSlipTransfer);
     }else{
-      statusPayEdit = 0;
+      statusEditImageSlip = 0;
     }
     return tableCheckBill;
   }
@@ -241,7 +286,7 @@ class _CheckBill extends State<CheckBill> {
         );
       }else{
         if(_listOrder.length == _listMakeStatus.length){
-          String _paymentStatus = "ยังไม่จ่าย";
+          String _paymentStatus = "กำลังดำเนินการ";
           Map params = new Map();
           params['managerId'] = userManager[0].managerId.toString();
           params['numberTable'] = numberTable.toString();
@@ -265,10 +310,7 @@ class _CheckBill extends State<CheckBill> {
                           title: Center(
                             child: Text("จ่ายด้วยการโอน"),
                           ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => PayByTransfer(userManager[0],numberTable,_listOrderByCheckStatusForShowTotalPrice))).then((value) => setState((){_getTableCheckByPayEdit();_getTableCheckBillByNotPay();}));
-                          },
+                          onTap: () => _checkBillDialogTransfer(),
                         ),
                       ),
                       Card(
@@ -349,6 +391,82 @@ class _CheckBill extends State<CheckBill> {
     });
   }
 
+  _checkBillDialogTransfer() {
+    Navigator.pop(context);
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text("ชำระด้วยเงินโอน",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),),
+            content: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("จำนวน : $_priceTotal บาท",textAlign: TextAlign.center,style: TextStyle(fontSize: 25,color: Colors.blue),),
+            ),
+            actions: [
+              Column(
+                children: [
+                  Center(
+                    child: Container(
+                      height: 40,
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                        ),
+                        child: Text("ยืนยัน"),
+                        onPressed: () => _checkBillTransfer(),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.red[300],
+                          ),
+                          child: Text("ย้อนกลับ"),
+                          onPressed: () => Navigator.pop(context)
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  _checkBillTransfer() async{
+    Navigator.of(context).pop();
+
+    String _paymentType = "ชำระด้วยเงินโอน";
+    String _paymentStatus = "กำลังดำเนินการ";
+    Map params = new Map();
+    params['managerId'] = userManager[0].managerId.toString();
+    params['numberTable'] = numberTable.toString();
+    params['paymentType'] = _paymentType;
+    params['paymentStatus'] = _paymentStatus;
+    params['priceTotal'] = _priceTotal.toString();
+    await http.post(Uri.parse("${Config.url}/tableCheckBill/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'}).then((response){
+      var jsonData = jsonDecode(response.body);
+      var status = jsonData['status'];
+      if(status == 1){
+        setState(() {
+          _getTableCheckBillInProgress();
+          _getTableCheckByEditImageSlip();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            new SnackBar(
+              content: Text("เรียกชำระเงินแล้ว"),
+              duration: Duration(seconds: 1),
+            )
+        );
+      }
+    });
+  }
+
   _checkBillDialog() {
     Navigator.pop(context);
     return showDialog(
@@ -400,7 +518,7 @@ class _CheckBill extends State<CheckBill> {
     Navigator.of(context).pop();
 
     String _paymentType = "ชำระด้วยเงินสด";
-    String _paymentStatus = "ยังไม่จ่าย";
+    String _paymentStatus = "กำลังดำเนินการ";
     Map params = new Map();
     params['managerId'] = userManager[0].managerId.toString();
     params['numberTable'] = numberTable.toString();
@@ -412,8 +530,8 @@ class _CheckBill extends State<CheckBill> {
       var status = jsonData['status'];
       if(status == 1){
         setState(() {
-          _getTableCheckBillByNotPay();
-          _getTableCheckByPayEdit();
+          _getTableCheckBillInProgress();
+          _getTableCheckByEditImageSlip();
         });
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
@@ -455,164 +573,112 @@ class _CheckBill extends State<CheckBill> {
       body: SafeArea(
         child: Card(
           color: Colors.white,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  // color: Colors.grey[500],
-                  width: MediaQuery.of(context).size.width,
-                  child: Center(
-                    child: Text("รายการที่สั่ง : " + "โต๊ะ " + "$numberTable", style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.black),
+          child: RefreshIndicator(
+            onRefresh: () => _refreshFuture(),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    // color: Colors.grey[500],
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Text("รายการที่สั่ง : " + "โต๊ะ " + "$numberTable", style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.black),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: FutureBuilder(
-                  future: _getOrder(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if(snapshot.data == null){
-                      return Container(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }else{
-                      return Column(
-                        children: [
-                          Container(
-                            height: 45,
-                            color: Colors.amber,
-                            child: ListTile(
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width * 0.4,
-                                    child: headerText("เมนู")
-                                  ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width * 0.14,
-                                    child: headerCenter("ราคา"),
-                                  ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width * 0.18,
-                                    child: headerCenter("จำนวน"),
-                                  ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width * 0.14,
-                                    child: headerCenter("รวม"),
-                                  ),
-                                ],
+                Expanded(
+                  child: FutureBuilder(
+                    future: _getOrder(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if(snapshot.data == null){
+                        return Container(
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }else{
+                        return Column(
+                          children: [
+                            Container(
+                              height: 45,
+                              color: Colors.amber,
+                              child: ListTile(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.4,
+                                      child: headerText("เมนู")
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.14,
+                                      child: headerCenter("ราคา"),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.18,
+                                      child: headerCenter("จำนวน"),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.14,
+                                      child: headerCenter("รวม"),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: snapshot.data.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Card(
-                                  color: Colors.grey[200],
-                                  child: Container(
-                                      child: snapshot.data[index].makeStatus == "ส่งแล้ว" /// Status condition
-                                          ? Stack(
-                                            alignment: Alignment.bottomRight,
-                                            children: [
-                                              ListTile(
-                                                title: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Container(
-                                                      width: MediaQuery.of(context).size.width * 0.38,
-                                                      child: bodyText("${snapshot.data[index].nameMenu}")
-                                                    ),
-                                                    Container(
-                                                      width: MediaQuery.of(context).size.width * 0.15,
-                                                      child: bodyPrice("${snapshot.data[index].priceMenu}"),
-                                                    ),
-                                                    Container(
-                                                      width: MediaQuery.of(context).size.width * 0.1,
-                                                      child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
-                                                    ),
-                                                    Container(
-                                                      width: MediaQuery.of(context).size.width * 0.15,
-                                                      child: bodySumPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
-                                                    ),
-                                                  ],
-                                                ),
-                                                subtitle: Container(
-                                                  child: snapshot.data[index].orderOtherMenu==null
-                                                      ? null
-                                                      : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(right: 10,bottom: 5),
-                                                child: Container(
-                                                  height: 25,
-                                                  child: Text("ได้รับ",style: TextStyle(color: Colors.green[600],fontWeight: FontWeight.bold)),
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                          : snapshot.data[index].makeStatus == "ยังไม่ส่ง"
-                                              ? Stack(
-                                                alignment: Alignment.bottomRight,
-                                                children: [
-                                                  ListTile(
-                                                    title: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Container(
-                                                          width: MediaQuery.of(context).size.width * 0.38,
-                                                          child: bodyText("${snapshot.data[index].nameMenu}")
-                                                        ),
-                                                        Container(
-                                                          width: MediaQuery.of(context).size.width * 0.15,
-                                                          child: bodyPrice("${snapshot.data[index].priceMenu}"),
-                                                        ),
-                                                        Container(
-                                                          width: MediaQuery.of(context).size.width * 0.1,
-                                                          child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
-                                                        ),
-                                                        Container(
-                                                          width: MediaQuery.of(context).size.width * 0.15,
-                                                          child: bodySumPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    subtitle: Container(
-                                                      child: snapshot.data[index].orderOtherMenu==null
-                                                          ? null
-                                                          : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(right: 10,bottom: 5),
-                                                    child: Container(
-                                                      height: 25,
-                                                      // child: CircularProgressIndicator(strokeWidth: 2),
-                                                      child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.end,
-                                                        children: [
-                                                          Text("รอ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.right),
-                                                          SizedBox(width: 5),
-                                                          Container(
-                                                            height: 10,
-                                                            width: 10,
-                                                            child: CircularProgressIndicator(),
-                                                          ),
-                                                        ],
+                            SizedBox(height: 8),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: snapshot.data.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Card(
+                                    color: Colors.grey[200],
+                                    child: Container(
+                                        child: snapshot.data[index].makeStatus == "ส่งแล้ว" /// Status condition
+                                            ? Stack(
+                                              alignment: Alignment.bottomRight,
+                                              children: [
+                                                ListTile(
+                                                  title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width * 0.38,
+                                                        child: bodyText("${snapshot.data[index].nameMenu}")
                                                       ),
-                                                    ),
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width * 0.15,
+                                                        child: bodyPrice("${snapshot.data[index].priceMenu}"),
+                                                      ),
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width * 0.1,
+                                                        child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
+                                                      ),
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width * 0.15,
+                                                        child: bodySumPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
-                                              )
-                                              : Container( /// "ยกเลิก"
-                                                color: Colors.black12,
-                                                child: Stack(
+                                                  subtitle: Container(
+                                                    child: snapshot.data[index].orderOtherMenu==null
+                                                        ? null
+                                                        : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(right: 10,bottom: 5),
+                                                  child: Container(
+                                                    height: 25,
+                                                    child: Text("ได้รับ",style: TextStyle(color: Colors.green[600],fontWeight: FontWeight.bold)),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                            : snapshot.data[index].makeStatus == "ยังไม่ส่ง"
+                                                ? Stack(
                                                   alignment: Alignment.bottomRight,
                                                   children: [
                                                     ListTile(
@@ -637,146 +703,235 @@ class _CheckBill extends State<CheckBill> {
                                                           ),
                                                         ],
                                                       ),
-                                                      subtitle: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                        children: [
-                                                          Container(
-                                                            child: snapshot.data[index].orderOtherMenu==null
-                                                                ? null
-                                                                : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
-                                                          ),
-                                                          ListViewCancelOrderMenu(snapshot.data[index].orderId), /// Call
-                                                        ],
+                                                      subtitle: Container(
+                                                        child: snapshot.data[index].orderOtherMenu==null
+                                                            ? null
+                                                            : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
                                                       ),
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.only(right: 10,bottom: 5),
                                                       child: Container(
                                                         height: 25,
-                                                        // child: Icon(Icons.clear,color: Colors.red),
-                                                        child: Text("ยกเลิก",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                        // child: CircularProgressIndicator(strokeWidth: 2),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.end,
+                                                          children: [
+                                                            Text("รอ",style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                            SizedBox(width: 5),
+                                                            Container(
+                                                              height: 10,
+                                                              width: 10,
+                                                              child: CircularProgressIndicator(),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
-                                                ),
-                                              )
-                                  ),
-                                );
-                              },
+                                                )
+                                                : Container( /// "ยกเลิก"
+                                                  color: Colors.black12,
+                                                  child: Stack(
+                                                    alignment: Alignment.bottomRight,
+                                                    children: [
+                                                      ListTile(
+                                                        title: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Container(
+                                                              width: MediaQuery.of(context).size.width * 0.38,
+                                                              child: bodyText("${snapshot.data[index].nameMenu}")
+                                                            ),
+                                                            Container(
+                                                              width: MediaQuery.of(context).size.width * 0.15,
+                                                              child: bodyPrice("${snapshot.data[index].priceMenu}"),
+                                                            ),
+                                                            Container(
+                                                              width: MediaQuery.of(context).size.width * 0.1,
+                                                              child: bodyNumberMenu("${snapshot.data[index].numberMenu}"),
+                                                            ),
+                                                            Container(
+                                                              width: MediaQuery.of(context).size.width * 0.15,
+                                                              child: bodySumPrice("${(snapshot.data[index].priceMenu * snapshot.data[index].numberMenu) + (snapshot.data[index].orderOtherMenu.length == 0 ?0 :snapshot.data[index].orderOtherMenu.map((e) => e.orderOtherPrice * snapshot.data[index].numberMenu).reduce((value, element) => value + element))}"),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        subtitle: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          children: [
+                                                            Container(
+                                                              child: snapshot.data[index].orderOtherMenu==null
+                                                                  ? null
+                                                                  : ListViewForCheckBill(snapshot.data[index].orderOtherMenu),
+                                                            ),
+                                                            ListViewCancelOrderMenu(snapshot.data[index].orderId), /// Call
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(right: 10,bottom: 5),
+                                                        child: Container(
+                                                          height: 25,
+                                                          // child: Icon(Icons.clear,color: Colors.red),
+                                                          child: Text("ยกเลิก",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),textAlign: TextAlign.right),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          Card(
-                            color: Colors.grey[200],
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                    height: 40,
-                                    // color: Colors.yellowAccent,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Text("รวมทั้งหมด :",style: TextStyle(fontSize: 18),),
-                                        Container(
-                                          child: _priceTotal == 0
-                                              ? bodyTotalPrice("${0}")
-                                              : bodyTotalPrice("$_priceTotal"),
-                                        ),
-                                      ],
+                            Card(
+                              color: Colors.grey[200],
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Container(
+                                      height: 40,
+                                      // color: Colors.yellowAccent,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text("รวมทั้งหมด :",style: TextStyle(fontSize: 18),),
+                                          Container(
+                                            child: _priceTotal == 0
+                                                ? bodyTotalPrice("${0}")
+                                                : bodyTotalPrice("$_priceTotal"),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                // Padding(
-                                //   padding: const EdgeInsets.only(left: 8,right: 8),
-                                //   child: Container(
-                                //     width: MediaQuery.of(context).size.width * 0.7,
-                                //     child: ElevatedButton(
-                                //       style: ElevatedButton.styleFrom(
-                                //           primary: Colors.green[600],
-                                //         // shape: RoundedRectangleBorder(
-                                //         //   borderRadius: BorderRadius.circular(10),
-                                //         // ),
-                                //       ),
-                                //       child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
-                                //       onPressed: () => setState(() {
-                                //         _getOrder();
-                                //         _onCallCheckBill();
-                                //       }),
-                                //     ),
-                                //   ),
-                                // ),
-                                ///
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8,right: 8),
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width * 0.7,
-                                    child: statusPayEdit == 1 /// กรณีแก้ไขรูปสลิป
-                                        ? ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Colors.amber[500],
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.edit),
-                                                Text("แก้ไขสลิปโอนเงิน"),
-                                              ],
-                                            ),
-                                            onPressed: () => setState(() {
-                                              _getTableCheckByPayEdit().then((value){
-                                                if(value != null){
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditPayTransfer(tableCheckBill!))).then((value) => setState((){_getTableCheckBillByNotPay();_getTableCheckByPayEdit();}));
-                                                }
-                                              });
-                                              _getTableCheckBillByNotPay();
-                                              }),
-                                          )
-                                        : statusNotPay == 1 /// กรณียังไม่จ่าย
-                                            ? ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  primary: Colors.red[300],
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(Icons.refresh),
-                                                    Text("รอดำเนินการชำระเงิน"),
-                                                  ],
-                                                ),
-                                                onPressed: () => setState(() {
-                                                  _getTableCheckByPayEdit();
-                                                  _getTableCheckBillByNotPay();
-                                                }),
-                                              )
-                                            : ElevatedButton( /// กรณีเรียกชำระเงิน
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Colors.green[600],
-                                                ),
-                                                child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
-                                                onPressed: () => setState(() {
-                                                  _getTableCheckByPayEdit();
-                                                  _getTableCheckBillByNotPay();
-                                                  _getOrder();
-                                                  _onCallCheckBill();
-                                                }),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8,right: 8),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width * 0.7,
+                                      child: statusInProgress == 1 /// สถานะ => กำลังดำเนินการ.
+                                          ? ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Colors.red[300],
                                               ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.refresh),
+                                                  Text("รอดำเนินการชำระเงิน"),
+                                                ],
+                                              ),
+                                              onPressed: () => setState(() {
+                                                _getTableCheckByAddImageSlip();
+                                                _getTableCheckBillCheckImageSlip();
+                                                _getTableCheckByEditImageSlip();
+                                                _getTableCheckBillInProgress();
+                                              }),
+                                            )
+                                          : statusAddImageSlip == 1 /// สถานะ => เพื่มรูปภาพการโอนเงิน.
+                                              ? ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    primary: Colors.lightGreen,
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Icon(Icons.add),
+                                                      Text("เพิ่มรูปภาพการโอนเงิน"),
+                                                    ],
+                                                  ),
+                                                  onPressed: () => setState(() {
+                                                    _getTableCheckByEditImageSlip();
+                                                    _getTableCheckBillCheckImageSlip();
+                                                    _getTableCheckBillInProgress();
+                                                    _getTableCheckByAddImageSlip().then((value){
+                                                      if(value != null){
+                                                        Navigator.push(context, MaterialPageRoute(builder: (context) => PayByTransfer(value))).then((value) => setState((){_getTableCheckByAddImageSlip();_getTableCheckBillCheckImageSlip();_getTableCheckByEditImageSlip();_getTableCheckBillInProgress();}));
+                                                      }
+                                                    });
+                                                  }),
+                                                )
+                                              : statusEditImageSlip == 1 /// สถานะ => แก้ไขรูปภาพการโอนเงิน.
+                                                  ? ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                        primary: Colors.amber[500],
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Icon(Icons.edit),
+                                                          Text("แก้ไขรูปภาพการโอนเงิน"),
+                                                        ],
+                                                      ),
+                                                      onPressed: () => setState(() {
+                                                        _getTableCheckBillInProgress();
+                                                        _getTableCheckBillCheckImageSlip();
+                                                        _getTableCheckByAddImageSlip();
+                                                        _getTableCheckByEditImageSlip().then((value){
+                                                          if(value != null){
+                                                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditPayTransfer(value))).then((value) => setState((){_getTableCheckByAddImageSlip();_getTableCheckBillCheckImageSlip();_getTableCheckByEditImageSlip();_getTableCheckBillInProgress();}));
+                                                          }
+                                                        });
+                                                      }),
+                                                    )
+                                                  : statusCheckImageSlip == 1 ///สถานะ => รอตรวจสอบรูปภาพเงินโอน.
+                                                      ? ElevatedButton(
+                                                          style: ElevatedButton.styleFrom(
+                                                            primary: Colors.red[300],
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Icon(Icons.refresh),
+                                                              Text("รอตรวจสอบรูปภาพการโอน"),
+                                                            ],
+                                                          ),
+                                                          onPressed: () => setState(() {
+                                                            _getTableCheckByAddImageSlip();
+                                                            _getTableCheckBillCheckImageSlip();
+                                                            _getTableCheckByEditImageSlip();
+                                                            _getTableCheckBillInProgress();
+                                                          }),
+                                                        )
+                                                      : ElevatedButton( /// กรณีเรียกชำระเงิน
+                                                          style: ElevatedButton.styleFrom(
+                                                            primary: Colors.green[600],
+                                                          ),
+                                                          child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
+                                                          onPressed: () => setState(() {
+                                                            _getTableCheckByEditImageSlip();
+                                                            _getTableCheckBillCheckImageSlip();
+                                                            _getTableCheckByAddImageSlip();
+                                                            _getTableCheckBillInProgress();
+                                                            _getOrder();
+                                                            _onCallCheckBill();
+                                                          }),
+                                                        ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    }
-                  },
+                          ],
+                        );
+                      }
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _refreshFuture() async{
+    setState(() {
+      _getOrder();
+    });
   }
 }
 

@@ -1,4 +1,3 @@
-import 'package:customer_by_dart/customer/class/class_menu.dart';
 import 'package:customer_by_dart/customer/class/class_other_menu.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +18,7 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
   _CheckBoxOnDialogTypeFoodAndTypeDrink(this._listOtherMenuNotSelect,this._valueSetterAddOtherMenu,this._valueSetterRemoveOtherMenu);
 
   List<bool> _isCheckBox = [];
-  bool _valueFromIsCheckBox = false;
+  // bool _valueFromIsCheckBox = false;
 
   @override
   void initState() {
@@ -31,9 +30,9 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
   }
 
   /// Check for show text.
-  checkValueFromIsCheckBox(){
-    _valueFromIsCheckBox = _isCheckBox.contains(true);
-  }
+  // checkValueFromIsCheckBox(){
+  //   _valueFromIsCheckBox = _isCheckBox.contains(true);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -45,62 +44,63 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
         shrinkWrap: true,
         itemCount: _listOtherMenuNotSelect.length,
         itemBuilder: (BuildContext context, int index) => Container(
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Checkbox(
-                  value: _isCheckBox[index],
-                  onChanged: (value) => setState(() {
-                    _isCheckBox[index] = value!;
-                    checkValueFromIsCheckBox();
-                    if(value == true){
-                      _valueSetterAddOtherMenu(_listOtherMenuNotSelect[index]); /// Add other_menu to cart.
-                    }else{
-                      _valueSetterRemoveOtherMenu(_listOtherMenuNotSelect[index]); /// Remove other_menu from cart.
-                    }
-                  }),
+          child: _listOtherMenuNotSelect[index].otherStatusSale == "ขาย"
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Checkbox(
+                      value: _isCheckBox[index],
+                      onChanged: (value) => setState(() {
+                        _isCheckBox[index] = value!;
+                        // checkValueFromIsCheckBox();
+                        if(value == true){
+                          _valueSetterAddOtherMenu(_listOtherMenuNotSelect[index]); /// Add other_menu to cart.
+                        }else{
+                          _valueSetterRemoveOtherMenu(_listOtherMenuNotSelect[index]); /// Remove other_menu from cart.
+                        }
+                      }),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: Text(_listOtherMenuNotSelect[index].otherMenuName),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.11,
+                      child: Text("บาท"),
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Checkbox(
+                      value: false,
+                      onChanged: null,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: Wrap(
+                        children: [
+                          Text("${_listOtherMenuNotSelect[index].otherMenuName}"),
+                          Text("[${_listOtherMenuNotSelect[index].otherStatusSale}]",style: TextStyle(color: Colors.red)),
+                        ],
+                      ),
+                    ),
+                    // Text("[${_listOtherMenuNotSelect[index].otherStatusSale}]",style: TextStyle(color: Colors.red)),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.11,
+                      child: Text("บาท"),
+                    ),
+                  ],
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  child: Text(_listOtherMenuNotSelect[index].otherMenuName),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.1,
-                  child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.11,
-                  child: Text("บาท"),
-                ),
-              ],
-            ),
-          // child: ListTile(
-          //   title: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       Container(
-          //         color: Colors.red,
-          //         child: Text(_listOtherMenuNotSelect[index].otherMenuName),
-          //       ),
-          //       Container(
-          //         color: Colors.green,
-          //         child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()} บาท"),
-          //       ),
-          //     ],
-          //   ),
-          //   leading: Checkbox(
-          //     value: _isCheckBox[index],
-          //     onChanged: (value) => setState(() {
-          //       _isCheckBox[index] = value!;
-          //       checkValueFromIsCheckBox();
-          //       if(value == true){
-          //         _valueSetterAddOtherMenu(_listOtherMenuNotSelect[index]); /// Add other_menu to cart.
-          //       }else{
-          //         _valueSetterRemoveOtherMenu(_listOtherMenuNotSelect[index]); /// Remove other_menu from cart.
-          //       }
-          //     }),
-          //   ),
-          // ),
         ),
       ),
     );
