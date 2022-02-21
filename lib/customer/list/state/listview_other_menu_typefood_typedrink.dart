@@ -45,9 +45,15 @@ class _ListViewForOtherMenuState extends State<ListViewForOtherMenu> {
 
   @override
   Widget build(BuildContext context) {
+    var _sized = MediaQuery.of(context).size;
+    print("height ===>> ${_sized.height}");
+    print("weight ===>> ${_sized.width}");
+
     return Container(
       height: 60 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble(),
-      // height: 600,
+      // height: _sized.height < 781.1
+      //     ? 60 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble()
+      //     : 90 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble(),
       width: MediaQuery.of(context).size.width,
       child: ListView.builder(
         shrinkWrap: true,

@@ -198,10 +198,11 @@ class _CartMenu extends State<CartMenu> {
                                 child: bodyPriceMenu("${_cart[index].priceMenu}"),
                               ),
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.22,
+                                width: MediaQuery.of(context).size.width * 0.21,
                                 child: Row(
                                   children: [
                                     Container(
+                                      width: MediaQuery.of(context).size.width * 0.06,
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(3),
                                         child: InkWell(
@@ -222,13 +223,16 @@ class _CartMenu extends State<CartMenu> {
                                         ),
                                       ),
                                     ),
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(3),
-                                      child: InkWell(
-                                        onTap: () => context.read<MenuProvider>().removeNumberToCart(index),
-                                        child: Container(
-                                          color: Colors.orange,
-                                          child: Icon(Icons.remove,size: 25,color: Colors.white),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.06,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(3),
+                                        child: InkWell(
+                                          onTap: () => context.read<MenuProvider>().removeNumberToCart(index),
+                                          child: Container(
+                                            color: Colors.orange,
+                                            child: Icon(Icons.remove,size: 25,color: Colors.white),
+                                          ),
                                         ),
                                       ),
                                     ),

@@ -1,4 +1,3 @@
-
 import 'package:customer_by_dart/customer/list/provider_method/provider_menu.dart';
 import 'package:customer_by_dart/customer/main/qr_scan.dart';
 import 'package:customer_by_dart/customer/main/qr_value_test.dart';
