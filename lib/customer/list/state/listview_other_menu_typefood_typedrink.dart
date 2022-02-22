@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:customer_by_dart/customer/class/class_other_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'check_dialog_typefood_typedrink.dart';
 import 'check_radio_typefood_typedrink.dart';
@@ -45,73 +48,62 @@ class _ListViewForOtherMenuState extends State<ListViewForOtherMenu> {
 
   @override
   Widget build(BuildContext context) {
-    var _sized = MediaQuery.of(context).size;
-    print("height ===>> ${_sized.height}");
-    print("weight ===>> ${_sized.width}");
-
-    return Container(
-      height: 60 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble(),
-      // height: _sized.height < 781.1
-      //     ? 60 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble()
-      //     : 90 * (_listOtherMenuNotSelect.length + _listOtherMenuSelect.length).toDouble(),
-      width: MediaQuery.of(context).size.width,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: _showOtherStatus.length,
-        itemBuilder: (BuildContext context, int index) => Container(
-          child: _showOtherStatus[index].contains("เลือกหรือไม่เลือกก็ได้")
-              ? Column(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width,
-                    child: Text("${_showOtherStatus[index]}"),
-                  ),
-                  Container(
-                    child: _listOtherMenuNotSelect.isEmpty
-                        ? null
-                        : CheckBoxOnDialogTypeFoodAndTypeDrink(
-                          _listOtherMenuNotSelect,
-                          (addOtherMenu) => setState(() => _valueSetterAddOtherMenu(addOtherMenu)),
-                          (removeOtherMenu) => setState(() => _valueSetterRemoveOtherMenu(removeOtherMenu)),
-                    ),
-                  ),
-                ],
-              )
-              : Column(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width,
-                    child: checkByStatus.contains(_showOtherStatus[index])
-                        ? Text("${_showOtherStatus[index]}")
-                        : Text("*${_showOtherStatus[index]}",style: TextStyle(color: Colors.red),),
-                  ),
-                  Container(
-                    child: _listOtherMenuSelect.isEmpty
-                        ? null
-                        : CheckRadioTypeFoodAndTypeDrink(
-                        _showOtherStatus[index],
-                        _listOtherMenuSelect,
-                          (selectOtherMenu) => setState(() {
-                        // _valueSetterSelectRadio(selectOtherMenu); /// data between page.
-                        // checkBySelectRadio[index] = selectOtherMenu;
-                        // checkByStatus[index] = selectOtherMenu.otherStatus;
-                        for(int i=0; i<checkBySelectRadio.length; i++){
-                          checkBySelectRadio[index] = selectOtherMenu;
-                          checkByStatus[index] = selectOtherMenu.otherStatus;
-                          if(checkBySelectRadio[i] != null){
-                            if(!checkBySelectRadio.contains(null)){
-                              _valueSetterSelectRadio(checkBySelectRadio); /// data between page.
-                            }
-                          }
-                        }
-                      }),
-                    ),
-                  ),
-                ],
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: _showOtherStatus.length,
+      itemBuilder: (BuildContext context, int index) => Container(
+        child: _showOtherStatus[index].contains("เลือกหรือไม่เลือกก็ได้")
+            ? Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              child: Text("${_showOtherStatus[index]}"),
+            ),
+            Container(
+              child: _listOtherMenuNotSelect.isEmpty
+                  ? null
+                  : CheckBoxOnDialogTypeFoodAndTypeDrink(
+                _listOtherMenuNotSelect,
+                    (addOtherMenu) => setState(() => _valueSetterAddOtherMenu(addOtherMenu)),
+                    (removeOtherMenu) => setState(() => _valueSetterRemoveOtherMenu(removeOtherMenu)),
               ),
+            ),
+          ],
+        )
+            : Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              child: checkByStatus.contains(_showOtherStatus[index])
+                  ? Text("${_showOtherStatus[index]}")
+                  : Text("*${_showOtherStatus[index]}",style: TextStyle(color: Colors.red),),
+            ),
+            Container(
+              child: _listOtherMenuSelect.isEmpty
+                  ? null
+                  : CheckRadioTypeFoodAndTypeDrink(
+                _showOtherStatus[index],
+                _listOtherMenuSelect,
+                    (selectOtherMenu) => setState(() {
+                  // _valueSetterSelectRadio(selectOtherMenu); /// data between page.
+                  // checkBySelectRadio[index] = selectOtherMenu;
+                  // checkByStatus[index] = selectOtherMenu.otherStatus;
+                  for(int i=0; i<checkBySelectRadio.length; i++){
+                    checkBySelectRadio[index] = selectOtherMenu;
+                    checkByStatus[index] = selectOtherMenu.otherStatus;
+                    if(checkBySelectRadio[i] != null){
+                      if(!checkBySelectRadio.contains(null)){
+                        _valueSetterSelectRadio(checkBySelectRadio); /// data between page.
+                      }
+                    }
+                  }
+                }),
+              ),
+            ),
+          ],
         ),
       ),
     );

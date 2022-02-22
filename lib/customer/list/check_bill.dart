@@ -820,7 +820,7 @@ class _CheckBill extends State<CheckBill> {
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
                                                   Icon(Icons.refresh),
-                                                  Text("รอดำเนินการชำระเงิน"),
+                                                  Text("รอพนักงานสักครู่..."),
                                                 ],
                                               ),
                                               onPressed: () => setState(() {

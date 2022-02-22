@@ -42,27 +42,37 @@ class _CheckRadioTypeFoodAndTypeDrink extends State<CheckRadioTypeFoodAndTypeDri
       itemBuilder: (BuildContext context, int index) => Container(
         child: _listOther[index].otherStatusSale == "ขาย"
             ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Radio(
-                    value: index,
-                    groupValue: valRadio,
-                    onChanged: (int? value) => setState(() {
-                      valRadio = value;
-                      _valueSetterSelectRadio(_listOther[index]);
-                    }),
-                  ),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Text(_listOther[index].otherMenuName),
+                    child: Radio(
+                      value: index,
+                      groupValue: valRadio,
+                      onChanged: (int? value) => setState(() {
+                        valRadio = value;
+                        _valueSetterSelectRadio(_listOther[index]);
+                      }),
+                    ),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.1,
-                    child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.11,
-                    child: Text("บาท"),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          child: Text(_listOther[index].otherMenuName),
+                        ),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: Text("บาท"),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               )
