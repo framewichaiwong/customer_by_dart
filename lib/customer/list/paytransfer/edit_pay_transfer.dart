@@ -165,7 +165,7 @@ class _EditPayTransferState extends State<EditPayTransfer> {
             content: Text("แก้ไขรูปภาพการโอนเงินสำเร็จ"),
           )
         );
-        Navigator.pop(context);
+        Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
       }
     }
   }

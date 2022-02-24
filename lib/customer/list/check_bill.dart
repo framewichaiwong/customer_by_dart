@@ -123,7 +123,6 @@ class _CheckBill extends State<CheckBill> {
     // listOrder.sort((a,b) => a.orderId.compareTo(b.orderId));
     _listOrder = listOrder;
     _listMakeStatus = listMakeStatus; /// Class name this page. create for (if).
-    _listOrderByCheckStatusForShowTotalPrice = listOrderByCheckStatusForShowTotalPrice;
 
     return _listOrder;
   }
@@ -246,45 +245,45 @@ class _CheckBill extends State<CheckBill> {
   ///
   _onCallCheckBill() async{
     if(_listOrder.length >= 1){
-      if(_priceTotal == 0){
-        return showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            content: Text("รายการถูกยกเลิกทั้งหมด ต้องการปิดการชำระเงินหรือไม่",textAlign: TextAlign.center),
-            actions: [
-              Column(
-                children: [
-                  Center(
-                    child: Container(
-                      height: 40,
-                      width: MediaQuery.of(context).size.width,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.green,
-                        ),
-                        child: Text("ยืนยัน"),
-                        onPressed: () => _priceTotalIsZero(),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.red[300],
-                        ),
-                        child: Text("ย้อนกลับ"),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      }else{
+      // if(_priceTotal == 0){
+      //   return showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) => AlertDialog(
+      //       content: Text("รายการถูกยกเลิกทั้งหมด ต้องการปิดการชำระเงินหรือไม่",textAlign: TextAlign.center),
+      //       actions: [
+      //         Column(
+      //           children: [
+      //             Center(
+      //               child: Container(
+      //                 height: 40,
+      //                 width: MediaQuery.of(context).size.width,
+      //                 child: ElevatedButton(
+      //                   style: ElevatedButton.styleFrom(
+      //                     primary: Colors.green,
+      //                   ),
+      //                   child: Text("ยืนยัน"),
+      //                   onPressed: () => _priceTotalIsZero(),
+      //                 ),
+      //               ),
+      //             ),
+      //             Center(
+      //               child: Container(
+      //                 width: MediaQuery.of(context).size.width,
+      //                 child: ElevatedButton(
+      //                   style: ElevatedButton.styleFrom(
+      //                     primary: Colors.red[300],
+      //                   ),
+      //                   child: Text("ย้อนกลับ"),
+      //                   onPressed: () => Navigator.pop(context),
+      //                 ),
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ],
+      //     ),
+      //   );
+      // }else{
         if(_listOrder.length == _listMakeStatus.length){
           String _paymentStatus = "กำลังดำเนินการ";
           Map params = new Map();
@@ -343,7 +342,7 @@ class _CheckBill extends State<CheckBill> {
               )
           );
         }
-      }
+      // }
     }else{
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
@@ -352,6 +351,46 @@ class _CheckBill extends State<CheckBill> {
         ),
       );
     }
+  }
+
+  _showDialogPriceZero(){
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Text("รายการถูกยกเลิกทั้งหมด ต้องการปิดการชำระเงินหรือไม่",textAlign: TextAlign.center),
+        actions: [
+          Column(
+            children: [
+              Center(
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green,
+                    ),
+                    child: Text("ยืนยัน"),
+                    onPressed: () => _priceTotalIsZero(),
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red[300],
+                    ),
+                    child: Text("ย้อนกลับ"),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   /// _Price_Total = 0;
@@ -455,7 +494,9 @@ class _CheckBill extends State<CheckBill> {
       if(status == 1){
         setState(() {
           _getTableCheckBillInProgress();
+          _getTableCheckByAddImageSlip();
           _getTableCheckByEditImageSlip();
+          _getTableCheckBillCheckImageSlip();
         });
         ScaffoldMessenger.of(context).showSnackBar(
             new SnackBar(
@@ -531,7 +572,9 @@ class _CheckBill extends State<CheckBill> {
       if(status == 1){
         setState(() {
           _getTableCheckBillInProgress();
+          _getTableCheckByAddImageSlip();
           _getTableCheckByEditImageSlip();
+          _getTableCheckBillCheckImageSlip();
         });
         ScaffoldMessenger.of(context).showSnackBar(
           new SnackBar(
@@ -540,6 +583,16 @@ class _CheckBill extends State<CheckBill> {
           )
         );
       }
+    });
+  }
+
+  Future<void> _refreshFuture() async{
+    setState(() {
+      _getOrder();
+      _getTableCheckBillInProgress();
+      _getTableCheckByAddImageSlip();
+      _getTableCheckByEditImageSlip();
+      _getTableCheckBillCheckImageSlip();
     });
   }
 
@@ -895,20 +948,35 @@ class _CheckBill extends State<CheckBill> {
                                                             _getTableCheckBillInProgress();
                                                           }),
                                                         )
-                                                      : ElevatedButton( /// กรณีเรียกชำระเงิน
-                                                          style: ElevatedButton.styleFrom(
-                                                            primary: Colors.green[600],
-                                                          ),
-                                                          child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
-                                                          onPressed: () => setState(() {
-                                                            _getTableCheckByEditImageSlip();
-                                                            _getTableCheckBillCheckImageSlip();
-                                                            _getTableCheckByAddImageSlip();
-                                                            _getTableCheckBillInProgress();
-                                                            _getOrder();
-                                                            _onCallCheckBill();
-                                                          }),
-                                                        ),
+                                                      : _priceTotal == 0 && _listOrder.length > 0 ///สถานะ => รอปิดชำระเงิน (กรณียกเลิก).
+                                                           ? ElevatedButton( /// กรณีเรียกชำระเงิน
+                                                               style: ElevatedButton.styleFrom(
+                                                                 primary: Colors.green[600],
+                                                               ),
+                                                               child: Text("ปิดบิล",style: TextStyle(fontSize: 18)),
+                                                               onPressed: () => setState(() {
+                                                                 _getTableCheckByEditImageSlip();
+                                                                 _getTableCheckBillCheckImageSlip();
+                                                                 _getTableCheckByAddImageSlip();
+                                                                 _getTableCheckBillInProgress();
+                                                                 _getOrder();
+                                                                 _showDialogPriceZero();
+                                                               }),
+                                                             )
+                                                           : ElevatedButton( /// กรณีเรียกชำระเงิน
+                                                               style: ElevatedButton.styleFrom(
+                                                                 primary: Colors.green[600],
+                                                               ),
+                                                               child: Text("ชำระเงิน",style: TextStyle(fontSize: 18)),
+                                                               onPressed: () => setState(() {
+                                                                 _getTableCheckByEditImageSlip();
+                                                                 _getTableCheckBillCheckImageSlip();
+                                                                 _getTableCheckByAddImageSlip();
+                                                                 _getTableCheckBillInProgress();
+                                                                 _getOrder();
+                                                                 _onCallCheckBill();
+                                                               }),
+                                                             ),
                                     ),
                                   ),
                                 ],
@@ -926,12 +994,6 @@ class _CheckBill extends State<CheckBill> {
         ),
       ),
     );
-  }
-
-  Future<void> _refreshFuture() async{
-    setState(() {
-      _getOrder();
-    });
   }
 }
 
