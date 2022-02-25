@@ -97,6 +97,58 @@ class _CartMenu extends State<CartMenu> {
     }
   }
 
+  _showDialogRemoveMenu(MenuCart _cart) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: headerTextCenter("${_cart.nameMenu}"),
+        actions: [
+          Column(
+            children: [
+              Center(
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green,
+                    ),
+                    child: Text("ลบ"),
+                    onPressed: () => _removeMenu(_cart),
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red[300],
+                    ),
+                    child: Text("ย้อนกลับ"),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      )
+    );
+  }
+
+  _removeMenu(MenuCart _cart) {
+    Navigator.pop(context);
+
+    setState(() {
+      String forCheckNameRemove = _cart.nameMenu;
+      _cart.otherMenu.forEach((e) {
+        forCheckNameRemove += "+${e.otherMenuName}";
+      });
+      context.read<MenuProvider>().removeMenuTFromCart(_cart,forCheckNameRemove); /// Send data by Provider.
+    });
+  }
+
   /// Widget.
   Text headerText(String string){
     return Text("$string",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),);
@@ -255,13 +307,7 @@ class _CartMenu extends State<CartMenu> {
                           width: MediaQuery.of(context).size.width * 0.09,
                           child: InkWell(
                             child: Icon(Icons.delete_forever,color: Colors.red),
-                            onTap: () => setState(() {
-                              String forCheckNameRemove = _cart[index].nameMenu;
-                              _cart[index].otherMenu.forEach((e) {
-                                forCheckNameRemove += "+${e.otherMenuName}";
-                              });
-                              context.read<MenuProvider>().removeMenuTFromCart(_cart[index],forCheckNameRemove); /// Send data by Provider.
-                            }),
+                            onTap:  () => _showDialogRemoveMenu(_cart[index]),
                           ),
                         ),
                       ],
