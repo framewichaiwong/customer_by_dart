@@ -163,8 +163,6 @@ class _CheckBill extends State<CheckBill> {
 
   /// สถานะ => เพิ่มรูปภาพการโอนเงิน.
   Future _getTableCheckByAddImageSlip() async{
-    TableCheckBill listTableCheckBill;
-
     String _paymentStatus = "เพิ่มรูปภาพการโอนเงิน"; /// ใช้สำหรับเรียก.
     Map params = new Map();
     params['managerId'] = userManager[0].managerId.toString();
@@ -184,8 +182,6 @@ class _CheckBill extends State<CheckBill> {
 
   /// สถานะ => แก้ไขสลิปการโอนเงิน.
   Future _getTableCheckByEditImageSlip() async{
-    List<TableCheckBill> listTableCheckBill = [];
-
     String _paymentStatus = "แก้ไขรูปภาพการโอนเงิน"; /// ใช้สำหรับเรียก.
     Map params = new Map();
     params['managerId'] = userManager[0].managerId.toString();
@@ -245,104 +241,64 @@ class _CheckBill extends State<CheckBill> {
   ///
   _onCallCheckBill() async{
     if(_listOrder.length >= 1){
-      // if(_priceTotal == 0){
-      //   return showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) => AlertDialog(
-      //       content: Text("รายการถูกยกเลิกทั้งหมด ต้องการปิดการชำระเงินหรือไม่",textAlign: TextAlign.center),
-      //       actions: [
-      //         Column(
-      //           children: [
-      //             Center(
-      //               child: Container(
-      //                 height: 40,
-      //                 width: MediaQuery.of(context).size.width,
-      //                 child: ElevatedButton(
-      //                   style: ElevatedButton.styleFrom(
-      //                     primary: Colors.green,
-      //                   ),
-      //                   child: Text("ยืนยัน"),
-      //                   onPressed: () => _priceTotalIsZero(),
-      //                 ),
-      //               ),
-      //             ),
-      //             Center(
-      //               child: Container(
-      //                 width: MediaQuery.of(context).size.width,
-      //                 child: ElevatedButton(
-      //                   style: ElevatedButton.styleFrom(
-      //                     primary: Colors.red[300],
-      //                   ),
-      //                   child: Text("ย้อนกลับ"),
-      //                   onPressed: () => Navigator.pop(context),
-      //                 ),
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       ],
-      //     ),
-      //   );
-      // }else{
-        if(_listOrder.length == _listMakeStatus.length){
-          String _paymentStatus = "กำลังดำเนินการ";
-          Map params = new Map();
-          params['managerId'] = userManager[0].managerId.toString();
-          params['numberTable'] = numberTable.toString();
-          var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
-          var jsonData = jsonDecode(response.body);
-          if(jsonData['status'] == 1){
-            ScaffoldMessenger.of(context).showSnackBar(
-              new SnackBar(
-                content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
-                duration: Duration(seconds: 1),
-              ),
-            );
-          }else{
-            showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) => Container(
-                  child: Wrap(
-                    children: [
-                      Card(
-                        child: ListTile(
-                          title: Center(
-                            child: Text("จ่ายด้วยการโอน"),
-                          ),
-                          onTap: () => _checkBillDialogTransfer(),
-                        ),
-                      ),
-                      Card(
-                        child: ListTile(
-                          title: Center(
-                            child: Text("จ่ายด้วยเงินสด"),
-                          ),
-                          onTap: () => _checkBillDialog(),
-                        ),
-                      ),
-                      Card(
-                        color: Colors.red[300],
-                        child: ListTile(
-                          title: Center(
-                            child: Text("ย้อนกลับ"),
-                          ),
-                          onTap: () => Navigator.pop(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-            );
-          }
-        }else{
+      if(_listOrder.length == _listMakeStatus.length){
+        String _paymentStatus = "กำลังดำเนินการ";
+        Map params = new Map();
+        params['managerId'] = userManager[0].managerId.toString();
+        params['numberTable'] = numberTable.toString();
+        var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+        var jsonData = jsonDecode(response.body);
+        if(jsonData['status'] == 1){
           ScaffoldMessenger.of(context).showSnackBar(
-              new SnackBar(
-                content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
-                duration: Duration(seconds: 1),
+            new SnackBar(
+              content: Text("เรียกชำระเงินไปแล้ว โปรดรอสักครู่.."),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }else{
+          showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) => Container(
+                child: Wrap(
+                  children: [
+                    Card(
+                      child: ListTile(
+                        title: Center(
+                          child: Text("จ่ายด้วยการโอน"),
+                        ),
+                        onTap: () => _checkBillDialogTransfer(),
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        title: Center(
+                          child: Text("จ่ายด้วยเงินสด"),
+                        ),
+                        onTap: () => _checkBillDialog(),
+                      ),
+                    ),
+                    Card(
+                      color: Colors.red[300],
+                      child: ListTile(
+                        title: Center(
+                          child: Text("ย้อนกลับ"),
+                        ),
+                        onTap: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ],
+                ),
               )
           );
         }
-      // }
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+            new SnackBar(
+              content: Text("โปรดรอรายการอาหารสักครู่ ก่อนการชำระเงิน"),
+              duration: Duration(seconds: 1),
+            )
+        );
+      }
     }else{
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(

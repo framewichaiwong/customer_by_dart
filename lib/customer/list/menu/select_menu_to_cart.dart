@@ -225,164 +225,164 @@ class _SelectMenuToCartState extends State<SelectMenuToCart> {
         child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 100),
-              child: FutureBuilder(
-                  future: _getCategoryAndOtherMenu(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.data == null || snapshot.data.length == 0) {
-                      return Center(
-                        // child: CircularProgressIndicator(),
-                        child: null,
-                      );
-                    }else {
-                      return Column(
+              child: Column(
+                  children: [
+                      Divider(
+                      thickness: 2,
+                        color: Colors.black,
+                      ),
+                      Text("${showListMenu.name}",style: TextStyle(fontSize: 18)),
+                      Divider(
+                        thickness: 2,
+                        color: Colors.black,
+                      ),
+                      /// Special or Normal or Promotion.
+                      Center(
+                        child: showListMenu.priceMenuPromotion == 0 /// if
+                            ? Column( ///true
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: valRadio == 0
+                                        ? Text("*กรุณาเลือก พิเศษ หรือ ธรรมดา", style: TextStyle(color: Colors.redAccent),)
+                                        : Text("กรุณาเลือก พิเศษ หรือ ธรรมดา"),
+                                  ),
+                                  Center(
+                                    child: showListMenu.priceMenuNormal == 0
+                                        ? null
+                                        : Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Radio(
+                                          value: 1,
+                                          groupValue: valRadio,
+                                          onChanged: (int? value0) {
+                                            setState(() {
+                                              valRadio = value0!;
+                                              _nameMenu = "${showListMenu.name} (ธรรมดา)";
+                                              _priceMenu = showListMenu.priceMenuNormal;
+                                            });
+                                          },
+                                        ),
+                                        Expanded(
+                                          child: Text("ธรรมดา"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Center(
+                                    child: showListMenu.priceMenuSpecial == 0
+                                        ? null
+                                        : Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Radio(
+                                          value: 2,
+                                          groupValue: valRadio,
+                                          onChanged: (int? value1) {
+                                            setState(() {
+                                              valRadio = value1!;
+                                              _nameMenu = "${showListMenu.name} (พิเศษ)";
+                                              _priceMenu =  showListMenu.priceMenuSpecial;
+                                            });
+                                          },
+                                        ),
+                                        Expanded(
+                                          child: Text("พิเศษ"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column( ///else.
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: valRadio == 0
+                                        ? Text("*กรุณาเลือกโปรโมชั่น", style: TextStyle(color: Colors.redAccent),)
+                                        : Text("กรุณาเลือกโปรโมชั่น"),
+                                  ),
+                                  Center(
+                                    child: showListMenu.priceMenuNormal == 0
+                                        ? null
+                                        : Row(
+                                      children: [
+                                        Radio(
+                                          value: 1,
+                                          groupValue: valRadio,
+                                          onChanged: (int? value0) {
+                                            setState(() {
+                                              valRadio = value0!;
+                                              _nameMenu = "${showListMenu.name} (โปรโมชั่น)";
+                                              _priceMenu = showListMenu.priceMenuPromotion;
+                                            });
+                                          },
+                                        ),
+                                        Expanded(
+                                          child: Text("โปรโมชั่น"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                      FutureBuilder(
+                          future: _getCategoryAndOtherMenu(),
+                          builder: (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.data == null || snapshot.data.length == 0) {
+                              return Center(
+                                // child: CircularProgressIndicator(),
+                                child: null,
+                              );
+                            }else {
+                              return ListViewForOtherMenu(
+                                _listOtherMenuNotSelect,
+                                _listOtherMenuSelect,
+                                _showOtherStatus,
+                                    (addOtherMenu) => setState(() => _otherMenuCheckBox.add(addOtherMenu)),
+                                    (removeOtherMenu) => setState(() => _otherMenuCheckBox.remove(removeOtherMenu)),
+                                    (selectOtherMenu) => setState(() {
+                                  _otherMenuRadio = [];
+                                  for(int i=0; i<selectOtherMenu.length; i++){
+                                    _otherMenuRadio.add(selectOtherMenu[i]);
+                                  }
+                                }),
+                              );
+                            }
+                          }
+                      ),
+                      SizedBox(height: 25),
+                      /// Icon_Button add number.
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Divider(
-                            thickness: 2,
-                            color: Colors.black,
+                          IconButton(
+                            icon: Icon(Icons.remove_circle_outline,color: Colors.red),
+                            iconSize: 40,
+                            onPressed: () {
+                              setState(() {
+                                number--;
+                                if (number < 1) {
+                                  number = 1;
+                                }
+                              });
+                            },
                           ),
-                          Text("${showListMenu.name}",style: TextStyle(fontSize: 18)),
-                          Divider(
-                            thickness: 2,
-                            color: Colors.black,
-                          ),
-                          /// Special or Normal or Promotion.
-                          Center(
-                            child: showListMenu.priceMenuPromotion == 0 /// if
-                                ? Column( ///true
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: valRadio == 0
-                                      ? Text("*กรุณาเลือก พิเศษ หรือ ธรรมดา", style: TextStyle(color: Colors.redAccent),)
-                                      : Text("กรุณาเลือก พิเศษ หรือ ธรรมดา"),
-                                ),
-                                Center(
-                                  child: showListMenu.priceMenuNormal == 0
-                                      ? null
-                                      : Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Radio(
-                                        value: 1,
-                                        groupValue: valRadio,
-                                        onChanged: (int? value0) {
-                                          setState(() {
-                                            valRadio = value0!;
-                                            _nameMenu = "${showListMenu.name} (ธรรมดา)";
-                                            _priceMenu = showListMenu.priceMenuNormal;
-                                          });
-                                        },
-                                      ),
-                                      Expanded(
-                                        child: Text("ธรรมดา"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Center(
-                                  child: showListMenu.priceMenuSpecial == 0
-                                      ? null
-                                      : Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Radio(
-                                        value: 2,
-                                        groupValue: valRadio,
-                                        onChanged: (int? value1) {
-                                          setState(() {
-                                            valRadio = value1!;
-                                            _nameMenu = "${showListMenu.name} (พิเศษ)";
-                                            _priceMenu =  showListMenu.priceMenuSpecial;
-                                          });
-                                        },
-                                      ),
-                                      Expanded(
-                                        child: Text("พิเศษ"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )
-                                : Column( ///else.
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: valRadio == 0
-                                      ? Text("*กรุณาเลือกโปรโมชั่น", style: TextStyle(color: Colors.redAccent),)
-                                      : Text("กรุณาเลือกโปรโมชั่น"),
-                                ),
-                                Center(
-                                  child: showListMenu.priceMenuNormal == 0
-                                      ? null
-                                      : Row(
-                                    children: [
-                                      Radio(
-                                        value: 1,
-                                        groupValue: valRadio,
-                                        onChanged: (int? value0) {
-                                          setState(() {
-                                            valRadio = value0!;
-                                            _nameMenu = "${showListMenu.name} (โปรโมชั่น)";
-                                            _priceMenu = showListMenu.priceMenuPromotion;
-                                          });
-                                        },
-                                      ),
-                                      Expanded(
-                                        child: Text("โปรโมชั่น"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ListViewForOtherMenu(
-                            _listOtherMenuNotSelect,
-                            _listOtherMenuSelect,
-                            _showOtherStatus,
-                                (addOtherMenu) => setState(() => _otherMenuCheckBox.add(addOtherMenu)),
-                                (removeOtherMenu) => setState(() => _otherMenuCheckBox.remove(removeOtherMenu)),
-                                (selectOtherMenu) => setState(() {
-                              _otherMenuRadio = [];
-                              for(int i=0; i<selectOtherMenu.length; i++){
-                                _otherMenuRadio.add(selectOtherMenu[i]);
-                              }
-                            }),
-                          ),
-                          SizedBox(height: 25),
-                          /// Icon_Button add number.
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.remove_circle_outline,color: Colors.red),
-                                iconSize: 40,
-                                onPressed: () {
-                                  setState(() {
-                                    number--;
-                                    if (number < 1) {
-                                      number = 1;
-                                    }
-                                  });
-                                },
-                              ),
-                              Text("$number", style: TextStyle(fontSize: 25)),
-                              IconButton(
-                                icon: Icon(Icons.add_circle_outline,color: Colors.green),
-                                iconSize: 40,
-                                onPressed: () {
-                                  setState(() {
-                                    number++;
-                                  });
-                                },
-                              ),
-                            ],
+                          Text("$number", style: TextStyle(fontSize: 25)),
+                          IconButton(
+                            icon: Icon(Icons.add_circle_outline,color: Colors.green),
+                            iconSize: 40,
+                            onPressed: () {
+                              setState(() {
+                                number++;
+                              });
+                            },
                           ),
                         ],
-                      );
-                    }
-                  }
+                      ),
+                  ],
               ),
             )
         ),

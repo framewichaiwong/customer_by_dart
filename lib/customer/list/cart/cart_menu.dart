@@ -31,68 +31,138 @@ class _CartMenu extends State<CartMenu> {
   String makeStatus = "ยังไม่ส่ง"; /// create status is beginner send to backend.
   int tableCheckBillId = 0; /// create status is beginner send to backend.
 
-  cartMenuToOrder(_cart) async{
-    Navigator.pop(context);
-    String _paymentStatus = "ยังไม่จ่าย";
-    Map params = new Map();
-    params['managerId'] = userManager[0].managerId.toString();
-    params['numberTable'] = numberTable.toString();
-    var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_paymentStatus"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
-    var jsonData = jsonDecode(response.body);
-    if(jsonData['status'] == 1){
+  _showDialogBuyMenu(List<MenuCart> _cart) async{
+    if(_cart.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
         new SnackBar(
-          content: Text("เรียกชำระเงินไปแล้ว ไม่สามารถสั่งอาหารได้..!"),
+          content: Text("กรุณาเลือกรายการอาหาร!!"),
           duration: Duration(seconds: 1),
         ),
       );
     }else{
-      ScaffoldMessenger.of(context).showSnackBar(
-        new SnackBar(
-          content: Text("กำลังสั่งรายการอาหาร กรุณารอสักครู่..."),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      /// Call api save (order_menu).
+      String _statusInProgress = "กำลังดำเนินการ";
+      String _statusAddImage = "เพิ่มสอบรูปภาพการโอนเงิน";
+      String _statusCheckImage = "ตรวจสอบรูปภาพการโอนเงิน";
+      String _statusEditImage = "แก้ไขรูปภาพการโอนเงิน";
       Map params = new Map();
-      for(int i=0; i<_cart.length; i++) {
-        params['numberMenu'] = _cart[i].numberMenu.toString();
-        params['numberTable'] = numberTable.toString();
-        params['nameMenu'] = _cart[i].nameMenu.toString();
-        params['priceMenu'] = _cart[i].priceMenu.toString();
-        params['managerId'] = userManager[0].managerId.toString();
-        params['makeStatus'] = makeStatus; /// กำหนด status เริ่มต้น = ยังไม่ส่ง;
-        params['tableCheckBillId'] = tableCheckBillId.toString();
-        var response = await http.post(Uri.parse("${Config.url}/order/saveOrder"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
-        var jsonData = jsonDecode(response.body);
-        var data = jsonData['data'];
-        if(data != null){
-          /// Call api save (order_other_menu).
-          Map params = new Map();
-          var _orderId = data['orderId'];
-          await _cart[i].otherMenu.forEach((e) async{
-            params['OrderOtherName'] = e.otherMenuName.toString();
-            params['OrderOtherPrice'] = e.otherMenuPrice.toString();
-            params['orderId'] = _orderId.toString();
-            var response = await http.post(Uri.parse("${Config.url}/orderOtherMenu/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
-          });
-          if(i==(_cart.length-1)){
-            ScaffoldMessenger.of(context).showSnackBar(
-              new SnackBar(
-                content: Text("สั่งอาหารเรียบร้อย"),
-                duration: Duration(seconds: 1),
-              ),
-            );
-            context.read<MenuProvider>().clearAllMenuFromCart(); /// Clear cart menu by Provider.
-          }
-        }else{
+      params['managerId'] = userManager[0].managerId.toString();
+      params['numberTable'] = numberTable.toString();
+      var response = await http.post(Uri.parse("${Config.url}/tableCheckBill/check/$_statusInProgress/$_statusAddImage/$_statusCheckImage/$_statusEditImage"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+      var jsonData = jsonDecode(response.body);
+      if(jsonData['status'] == 1){
+        ScaffoldMessenger.of(context).showSnackBar(
+          new SnackBar(
+            content: Text("เรียกชำระเงินไปแล้ว ไม่สามารถสั่งอาหารได้..!"),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }else{
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Center(
+                  child: Text(
+                    "ยืนยันการสั่งอาหาร",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: [
+                      Center(child: Text("เมื่อกดยืนยันการสั่งอาหารไปแล้ว จะไม่สามารถแก้ไขรายการได้")),
+                    ],
+                  ),
+                ),
+                actions: [
+                  Column(
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 40,
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.green,
+                            ),
+                            child: Text("ยืนยัน"),
+                            onPressed: () => cartMenuToOrder(_cart),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red[300],
+                            ),
+                            child: Text("ย้อนกลับ"),
+                            onPressed: (){
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            }
+        );
+      }
+    }
+  }
+
+  cartMenuToOrder(_cart) async{
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      new SnackBar(
+        content: Text("กำลังสั่งรายการอาหาร กรุณารอสักครู่..."),
+        duration: Duration(seconds: 1),
+      ),
+    );
+    /// Call api save (order_menu).
+    Map params = new Map();
+    for(int i=0; i<_cart.length; i++) {
+      params['numberMenu'] = _cart[i].numberMenu.toString();
+      params['numberTable'] = numberTable.toString();
+      params['nameMenu'] = _cart[i].nameMenu.toString();
+      params['priceMenu'] = _cart[i].priceMenu.toString();
+      params['managerId'] = userManager[0].managerId.toString();
+      params['makeStatus'] = makeStatus; /// กำหนด status เริ่มต้น = ยังไม่ส่ง;
+      params['tableCheckBillId'] = tableCheckBillId.toString();
+      var response = await http.post(Uri.parse("${Config.url}/order/saveOrder"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+      var jsonData = jsonDecode(response.body);
+      var data = jsonData['data'];
+      if(data != null){
+        /// Call api save (order_other_menu).
+        Map params = new Map();
+        var _orderId = data['orderId'];
+        await _cart[i].otherMenu.forEach((e) async{
+          params['OrderOtherName'] = e.otherMenuName.toString();
+          params['OrderOtherPrice'] = e.otherMenuPrice.toString();
+          params['orderId'] = _orderId.toString();
+          var response = await http.post(Uri.parse("${Config.url}/orderOtherMenu/save"),body: params,headers: {'Accept': 'Application/json; charset=UTF-8'});
+        });
+        if(i==(_cart.length-1)){
           ScaffoldMessenger.of(context).showSnackBar(
             new SnackBar(
-              content: Text("กดสั่งอาหารอีกครั้ง..."),
+              content: Text("สั่งอาหารเรียบร้อย"),
               duration: Duration(seconds: 1),
             ),
           );
+          context.read<MenuProvider>().clearAllMenuFromCart(); /// Clear cart menu by Provider.
         }
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          new SnackBar(
+            content: Text("กดสั่งอาหารอีกครั้ง..."),
+            duration: Duration(seconds: 1),
+          ),
+        );
       }
     }
   }
@@ -350,72 +420,7 @@ class _CartMenu extends State<CartMenu> {
                           // ),
                         ),
                         child: Text("สั่งซื้อ",style: TextStyle(fontSize: 18)),
-                        onPressed: (){
-                          if(_cart.isEmpty){
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              new SnackBar(
-                                content: Text("กรุณาเลือกรายการอาหาร!!"),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          }else{
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Center(
-                                      child: Text(
-                                        "ยืนยันการสั่งอาหาร",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    content: SingleChildScrollView(
-                                      child: ListBody(
-                                        children: [
-                                          Center(child: Text("เมื่อกดยืนยันการสั่งอาหารไปแล้ว จะไม่สามารถแก้ไขรายการได้")),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: [
-                                      Column(
-                                        children: [
-                                          Center(
-                                            child: Container(
-                                              height: 40,
-                                              width: MediaQuery.of(context).size.width,
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  primary: Colors.green,
-                                                ),
-                                                child: Text("ยืนยัน"),
-                                                onPressed: () => cartMenuToOrder(_cart),
-                                              ),
-                                            ),
-                                          ),
-                                          Center(
-                                            child: Container(
-                                              width: MediaQuery.of(context).size.width,
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  primary: Colors.red[300],
-                                                ),
-                                                child: Text("ย้อนกลับ"),
-                                                onPressed: (){
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                }
-                            );
-                          }
-                        },
+                        onPressed: () => _showDialogBuyMenu(_cart),
                       ),
                     ),
                   ),
