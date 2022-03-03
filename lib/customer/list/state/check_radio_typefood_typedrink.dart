@@ -42,7 +42,6 @@ class _CheckRadioTypeFoodAndTypeDrink extends State<CheckRadioTypeFoodAndTypeDri
       itemBuilder: (BuildContext context, int index) => Container(
         child: _listOther[index].otherStatusSale == "ขาย"
             ? Row(
-                // mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     child: Radio(
@@ -77,32 +76,41 @@ class _CheckRadioTypeFoodAndTypeDrink extends State<CheckRadioTypeFoodAndTypeDri
                 ],
               )
             : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Radio(
-                    value: index,
-                    groupValue: false,
-                    onChanged: null,
-                  ),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Wrap(
+                    child: Radio(
+                      value: index,
+                      groupValue: false,
+                      onChanged: null,
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(_listOther[index].otherMenuName),
-                        Text("[${_listOther[index].otherStatusSale}]",style: TextStyle(color: Colors.red))
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          child: Row(
+                            children: [
+                              Text(_listOther[index].otherMenuName),
+                              Text("[${_listOther[index].otherStatusSale}]",style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: Text("บาท"),
+                        ),
                       ],
                     ),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.1,
-                    child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.11,
-                    child: Text("บาท"),
-                  ),
                 ],
-              ),
+              )
       ),
     );
   }

@@ -86,22 +86,30 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
                     value: false,
                     onChanged: null,
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Wrap(
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("${_listOtherMenuNotSelect[index].otherMenuName}"),
-                        Text("[${_listOtherMenuNotSelect[index].otherStatusSale}]",style: TextStyle(color: Colors.red)),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          child: Row(
+                            children: [
+                              Text(_listOtherMenuNotSelect[index].otherMenuName),
+                              Text("[${_listOtherMenuNotSelect[index].otherStatusSale}]",style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: Text("บาท"),
+                        )
                       ],
                     ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.1,
-                    child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.11,
-                    child: Text("บาท"),
                   ),
                 ],
               ),
