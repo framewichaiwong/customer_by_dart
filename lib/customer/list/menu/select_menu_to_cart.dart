@@ -74,7 +74,7 @@ class _SelectMenuToCartState extends State<SelectMenuToCart> {
       }else{
         OtherMenu otherMenu = new OtherMenu(dataOtherMenu['otherMenuId'], dataOtherMenu['otherMenuName'], dataOtherMenu['otherMenuPrice'], dataOtherMenu['otherSelection'], dataOtherMenu['otherStatus'], dataOtherMenu['otherStatusSale'], dataOtherMenu['managerId'], dataOtherMenu['typeMenu']);
         listOtherMenuNotSelect.add(otherMenu);
-        showOtherStatusByNotSelect.add(dataOtherMenu['otherStatus']);
+        showOtherStatusByNotSelect.add("A-Z" + dataOtherMenu['otherStatus']); /// ใส่ตัวอักษรเพื่อตรวจสอบค่าของการแสดงเมนูเพิ่มเติม.
       }
       _showOtherSelection = showOtherSelection.toSet().toList();///
     }

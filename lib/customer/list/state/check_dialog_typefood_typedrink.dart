@@ -2,23 +2,25 @@ import 'package:customer_by_dart/customer/class/class_other_menu.dart';
 import 'package:flutter/material.dart';
 
 class CheckBoxOnDialogTypeFoodAndTypeDrink extends StatefulWidget {
+  String _showOtherStatus;
   List<OtherMenu> _listOtherMenuNotSelect;
   ValueSetter _valueSetterAddOtherMenu;
   ValueSetter _valueSetterRemoveOtherMenu;
-  CheckBoxOnDialogTypeFoodAndTypeDrink(this._listOtherMenuNotSelect,this._valueSetterAddOtherMenu,this._valueSetterRemoveOtherMenu);
+  CheckBoxOnDialogTypeFoodAndTypeDrink(this._showOtherStatus,this._listOtherMenuNotSelect,this._valueSetterAddOtherMenu,this._valueSetterRemoveOtherMenu);
 
   @override
-  State<StatefulWidget> createState() => _CheckBoxOnDialogTypeFoodAndTypeDrink(_listOtherMenuNotSelect,_valueSetterAddOtherMenu,_valueSetterRemoveOtherMenu);
+  State<StatefulWidget> createState() => _CheckBoxOnDialogTypeFoodAndTypeDrink(_showOtherStatus,_listOtherMenuNotSelect,_valueSetterAddOtherMenu,_valueSetterRemoveOtherMenu);
 }
 
 class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFoodAndTypeDrink> {
+  String _showOtherStatus;
   List<OtherMenu> _listOtherMenuNotSelect;
   ValueSetter _valueSetterAddOtherMenu;
   ValueSetter _valueSetterRemoveOtherMenu;
-  _CheckBoxOnDialogTypeFoodAndTypeDrink(this._listOtherMenuNotSelect,this._valueSetterAddOtherMenu,this._valueSetterRemoveOtherMenu);
+  _CheckBoxOnDialogTypeFoodAndTypeDrink(this._showOtherStatus,this._listOtherMenuNotSelect,this._valueSetterAddOtherMenu,this._valueSetterRemoveOtherMenu);
 
   List<bool> _isCheckBox = [];
-  // bool _valueFromIsCheckBox = false;
+  List<OtherMenu> _listOther = [];
 
   @override
   void initState() {
@@ -27,6 +29,12 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
     _listOtherMenuNotSelect.forEach((element) {
       _isCheckBox.add(false);
     });
+
+    for(int i=0; i<_listOtherMenuNotSelect.length; i++){
+      if(_showOtherStatus.substring(3) == _listOtherMenuNotSelect[i].otherStatus){
+        _listOther.add(_listOtherMenuNotSelect[i]);
+      }
+    }
   }
 
   /// Check for show text.
@@ -39,9 +47,9 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(), /// ไม่ต้องเลื่อนหน้าจอ
       shrinkWrap: true,
-      itemCount: _listOtherMenuNotSelect.length,
+      itemCount: _listOther.length,
       itemBuilder: (BuildContext context, int index) => Container(
-        child: _listOtherMenuNotSelect[index].otherStatusSale == "ขาย"
+        child: _listOther[index].otherStatusSale == "ขาย"
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -51,9 +59,9 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
                       _isCheckBox[index] = value!;
                       // checkValueFromIsCheckBox();
                       if(value == true){
-                        _valueSetterAddOtherMenu(_listOtherMenuNotSelect[index]); /// Add other_menu to cart.
+                        _valueSetterAddOtherMenu(_listOther[index]); /// Add other_menu to cart.
                       }else{
-                        _valueSetterRemoveOtherMenu(_listOtherMenuNotSelect[index]); /// Remove other_menu from cart.
+                        _valueSetterRemoveOtherMenu(_listOther[index]); /// Remove other_menu from cart.
                       }
                     }),
                   ),
@@ -63,12 +71,12 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width * 0.45,
-                          child: Text(_listOtherMenuNotSelect[index].otherMenuName),
+                          child: Text(_listOther[index].otherMenuName),
                         ),
                         SizedBox(width: MediaQuery.of(context).size.width * 0.05),
                         Container(
                           width: MediaQuery.of(context).size.width * 0.15,
-                          child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                          child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width * 0.15,
@@ -94,15 +102,15 @@ class _CheckBoxOnDialogTypeFoodAndTypeDrink extends State<CheckBoxOnDialogTypeFo
                           width: MediaQuery.of(context).size.width * 0.45,
                           child: Row(
                             children: [
-                              Text(_listOtherMenuNotSelect[index].otherMenuName),
-                              Text("[${_listOtherMenuNotSelect[index].otherStatusSale}]",style: TextStyle(color: Colors.red)),
+                              Text(_listOther[index].otherMenuName),
+                              Text("[${_listOther[index].otherStatusSale}]",style: TextStyle(color: Colors.red)),
                             ],
                           ),
                         ),
                         SizedBox(width: MediaQuery.of(context).size.width * 0.05),
                         Container(
                           width: MediaQuery.of(context).size.width * 0.15,
-                          child: Text("+${_listOtherMenuNotSelect[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
+                          child: Text("+${_listOther[index].otherMenuPrice.toString()}",textAlign: TextAlign.right),
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width * 0.15,
