@@ -41,8 +41,10 @@ class _ListMenu extends State<ListMenu> {
         length: _tabPage.length,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.red[300],
-            title: Text("รายการอาหาร : " + "โต๊ะ " + "$numberTable"),
+            // backgroundColor: Colors.red[300],
+            backgroundColor: Colors.white60,
+            shadowColor: Colors.blueGrey[300],
+            title: Text("รายการอาหาร : " + "โต๊ะ " + "$numberTable",style: TextStyle(color: Colors.black),),
             centerTitle: true,
             actions: [
               Padding(
@@ -55,7 +57,7 @@ class _ListMenu extends State<ListMenu> {
                   animationType: BadgeAnimationType.slide,
                   position: BadgePosition.topEnd(top: 0,end: 0),
                   child: IconButton(
-                    icon: Icon(Icons.shopping_cart_outlined),
+                    icon: Icon(Icons.shopping_cart_outlined,color: Colors.black),
                     iconSize: 35,
                     onPressed: () {
                       Navigator.push(context,CupertinoPageRoute(builder: (context) => CartMenu(userManager, numberTable)));
@@ -66,8 +68,11 @@ class _ListMenu extends State<ListMenu> {
             ],
             bottom: TabBar(
               tabs: _tabBarItems,
-              labelColor: Colors.white,
-              indicatorColor: Colors.blueGrey,
+              // labelColor: Colors.white,
+              // indicatorColor: Colors.blueGrey,
+              // unselectedLabelColor: Colors.grey[500],
+              labelColor: Colors.lightBlue,
+              indicatorColor: Colors.lightBlue,
               unselectedLabelColor: Colors.grey[500],
             ),
           ),
