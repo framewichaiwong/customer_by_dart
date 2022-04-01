@@ -42,8 +42,8 @@ class _ListMenu extends State<ListMenu> {
         child: Scaffold(
           appBar: AppBar(
             // backgroundColor: Colors.red[300],
-            backgroundColor: Colors.white60,
-            shadowColor: Colors.blueGrey[300],
+            backgroundColor: Colors.white,
+            // shadowColor: Colors.blueGrey[300],
             title: Text("รายการอาหาร : " + "โต๊ะ " + "$numberTable",style: TextStyle(color: Colors.black),),
             centerTitle: true,
             actions: [

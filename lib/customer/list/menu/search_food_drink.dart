@@ -484,7 +484,9 @@ class _SearchFoodDrinkState extends State<SearchFoodDrink> {
                         title: TextField(
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'ค้นหาชื่อเมนู'
+                              hintText: typeFoodOrDrink == "อาหาร"
+                                  ? 'ค้นหาชื่อเมนูอาหาร'
+                                  : 'ค้นหาชื่อเมนูเครื่องดื่ม'
                           ),
                           onChanged: (searchName) => setState(() {
                                 if (searchName.isNotEmpty) {
